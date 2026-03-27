@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import HexGridBackground from '../components/HexGridBackground';
+import greenFavicon from '../assets/favicons/favicon-green.png';
+import blueFavicon from '../assets/favicons/favicon-blue.png';
 
 const links = [
   { to: '/', label: 'Home', end: true },
@@ -28,6 +30,17 @@ function MainLayout() {
   useEffect(() => {
     document.body.dataset.theme = isBlueTheme ? 'blue' : 'green';
     window.localStorage.setItem('theme', isBlueTheme ? 'blue' : 'green');
+
+    let favicon = document.querySelector("link[rel='icon']");
+
+    if (!favicon) {
+      favicon = document.createElement('link');
+      favicon.setAttribute('rel', 'icon');
+      document.head.appendChild(favicon);
+    }
+
+    favicon.setAttribute('type', 'image/png');
+    favicon.setAttribute('href', isBlueTheme ? blueFavicon : greenFavicon);
   }, [isBlueTheme]);
 
   return (
