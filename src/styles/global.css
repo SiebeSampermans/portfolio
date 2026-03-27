@@ -158,7 +158,7 @@ section {
 
 .theme-switch-floating {
   position: fixed;
-  top: 16px;
+  top: 88px;
   right: 16px;
   z-index: 30;
   padding: 0.4rem 0.55rem;
@@ -2327,7 +2327,7 @@ section {
   }
 
   .theme-switch-floating {
-    top: 12px;
+    top: 86px;
     right: 12px;
     padding: 0.35rem 0.5rem;
   }
