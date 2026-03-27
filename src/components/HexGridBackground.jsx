@@ -12,12 +12,20 @@ function HexGridBackground() {
     const context = canvas.getContext('2d');
     const size = 18;
     const speed = 0.38;
-    const borderColor = '#163020';
-    const hoverFillColor = '#4c9a69';
-    const hoverStrokeColor = '#8fe1aa';
     const hexHorizontalStep = size * 1.5;
     const hexVerticalStep = size * Math.sqrt(3);
     const desktopMinWidth = 1280;
+
+    const getThemeColors = () => {
+      const styles = window.getComputedStyle(document.body);
+      const theme = document.body.dataset.theme || 'green';
+
+      return {
+        borderColor: theme === 'blue' ? '#1a315b' : '#163020',
+        hoverFillColor: theme === 'blue' ? '#3b5fa8' : '#4c9a69',
+        hoverStrokeColor: styles.getPropertyValue('--accent').trim() || '#8fe1aa',
+      };
+    };
 
     const getContainerWidth = () => Math.min(1140, window.innerWidth - 32);
 
@@ -119,6 +127,7 @@ function HexGridBackground() {
     };
 
     const render = () => {
+      const { borderColor, hoverFillColor, hoverStrokeColor } = getThemeColors();
       context.clearRect(0, 0, canvas.width, canvas.height);
 
       const offsetColumn = Math.floor(offsetRef.current.x / hexHorizontalStep);

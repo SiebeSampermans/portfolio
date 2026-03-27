@@ -52,7 +52,8 @@ function HomePage() {
                     <strong>Wat doe ik?</strong>
                     <span>
                       Ik studeer Toegepaste Informatica en werk aan projecten waarin techniek en
-                      creativiteit samenkomen.
+                      creativiteit samenkomen, zowel als communicatie tussen de klant en
+                      projectgroep.
                     </span>
                   </div>
                   <div className="info-item">

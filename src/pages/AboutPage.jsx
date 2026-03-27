@@ -1,10 +1,32 @@
+import { useState } from 'react';
 import PageFooter from '../components/PageFooter';
 import usePageTitle from '../hooks/usePageTitle';
 import useScrollReveal from '../hooks/useScrollReveal';
+import aboutPhoto from '../assets/about-photo.jpg';
 
 function AboutPage() {
+  const [cursorState, setCursorState] = useState({
+    isVisible: false,
+    x: 0,
+    y: 0,
+  });
+
   usePageTitle('Siebe | About me');
   useScrollReveal();
+
+  const handlePhotoPointerMove = (event) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+
+    setCursorState({
+      isVisible: true,
+      x: event.clientX - bounds.left,
+      y: event.clientY - bounds.top,
+    });
+  };
+
+  const handlePhotoPointerLeave = () => {
+    setCursorState((current) => ({ ...current, isVisible: false }));
+  };
 
   return (
     <>
@@ -14,8 +36,8 @@ function AboutPage() {
             <span className="eyebrow scroll-reveal">About me</span>
             <h1 className="page-title scroll-reveal">Wie ik ben</h1>
             <p className="page-text scroll-reveal">
-              Deze pagina bundelt mijn persoonlijke verhaal, studiekeuze, hobbies, ambities en
-              skills op een manier die past binnen een professionele portfolio voor 3ITF.
+              Op deze pagina vertel ik kort wie ik ben, wat mij motiveert en waarin ik verder wil
+              groeien.
             </p>
           </div>
         </section>
@@ -23,11 +45,22 @@ function AboutPage() {
         <section>
           <div className="container about-grid">
             <div className="about-photo scroll-reveal">
-              <div className="photo-placeholder scroll-reveal">
+              <div
+                className="photo-placeholder photo-cursor-zone scroll-reveal"
+                onMouseMove={handlePhotoPointerMove}
+                onMouseLeave={handlePhotoPointerLeave}
+              >
                 <div className="scan-frame"></div>
-                <div className="photo-text">
-                  <strong>Voeg hier je foto toe</strong>
-                  <span>Plaats hier een professionele foto van jezelf.</span>
+                <img className="about-photo-image" src={aboutPhoto} alt="Portretfoto van Siebe" />
+                <div
+                  className={`photo-cursor-follow${cursorState.isVisible ? ' is-visible' : ''}`}
+                  style={{
+                    left: `${cursorState.x}px`,
+                    top: `${cursorState.y}px`,
+                  }}
+                  aria-hidden="true"
+                >
+                  <span>Siebe Sampermans</span>
                 </div>
               </div>
             </div>

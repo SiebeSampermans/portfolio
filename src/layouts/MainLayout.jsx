@@ -6,22 +6,47 @@ const links = [
   { to: '/', label: 'Home', end: true },
   { to: '/about', label: 'About me' },
   { to: '/projects', label: 'Projects / Achievements' },
+  { to: '/contact', label: 'Contact' },
   { to: '/cv', label: 'CV' },
 ];
 
 function MainLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isBlueTheme, setIsBlueTheme] = useState(() => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    return window.localStorage.getItem('theme') === 'blue';
+  });
   const location = useLocation();
 
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
+  useEffect(() => {
+    document.body.dataset.theme = isBlueTheme ? 'blue' : 'green';
+    window.localStorage.setItem('theme', isBlueTheme ? 'blue' : 'green');
+  }, [isBlueTheme]);
+
   return (
     <div className="app-shell">
       <HexGridBackground />
       <div className="page-glow page-glow-left"></div>
       <div className="page-glow page-glow-right"></div>
+      <label className="theme-switch theme-switch-floating" aria-label="Wissel kleurthema">
+        <span className="theme-switch-label">Thema</span>
+        <button
+          type="button"
+          className={`theme-switch-track${isBlueTheme ? ' is-active' : ''}`}
+          role="switch"
+          aria-checked={isBlueTheme}
+          onClick={() => setIsBlueTheme((current) => !current)}
+        >
+          <span className="theme-switch-thumb"></span>
+        </button>
+      </label>
 
       <header className="site-header">
         <nav className="nav">
