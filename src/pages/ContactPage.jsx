@@ -83,7 +83,6 @@ function ContactPage() {
     progress: 0,
     message: '',
   });
-  const [flippedCard, setFlippedCard] = useState(null);
   const progressTimerRef = useRef(null);
   const mountedAtRef = useRef(Date.now());
 
@@ -99,20 +98,6 @@ function ContactPage() {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((current) => ({ ...current, [name]: value }));
-  };
-
-  const isSmallScreen = () => typeof window !== 'undefined' && window.innerWidth <= 640;
-
-  const toggleCardFlip = (label) => {
-    setFlippedCard((current) => (current === label ? null : label));
-  };
-
-  const handleSocialCardActivate = (label) => {
-    if (isSmallScreen()) {
-      return;
-    }
-
-    toggleCardFlip(label);
   };
 
   const submitWithEmailJs = async (event) => {
@@ -377,58 +362,35 @@ function ContactPage() {
 
             <div className="contact-social-grid">
               {SOCIAL_CARDS.map((card) => (
-                <div
+                <a
                   key={card.label}
-                  className={`contact-social-card scroll-reveal${
-                    flippedCard === card.label ? ' is-flipped' : ''
-                  }`}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => handleSocialCardActivate(card.label)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                      event.preventDefault();
-                      handleSocialCardActivate(card.label);
-                    }
-                  }}
+                  className="contact-social-card scroll-reveal"
+                  href={card.href}
+                  target={card.href.startsWith('http') ? '_blank' : undefined}
+                  rel={card.href.startsWith('http') ? 'noreferrer' : undefined}
+                  aria-label={card.cta}
                 >
                   <div className="contact-social-card-inner">
                     <div className="contact-social-face contact-social-face-front">
-                      <a
-                        className="contact-social-icon"
-                        href={card.href}
-                        target={card.href.startsWith('http') ? '_blank' : undefined}
-                        rel={card.href.startsWith('http') ? 'noreferrer' : undefined}
-                        aria-label={`${card.cta} via ${card.label}`}
-                        onClick={(event) => {
-                          if (!isSmallScreen()) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                          }
-                        }}
-                      >
+                      <span className="card-label">{card.label}</span>
+                      <span className="contact-social-icon" aria-hidden="true">
                         <SocialIcon label={card.label} />
-                      </a>
+                      </span>
                       <strong>{card.label}</strong>
-                      <span className="contact-social-hint">Tik op het icoon om te openen</span>
+                      <span className="contact-social-hint">Hover om om te draaien</span>
                     </div>
 
                     <div className="contact-social-face contact-social-face-back">
                       <span className="card-label">{card.label}</span>
+                      <span className="contact-social-icon" aria-hidden="true">
+                        <SocialIcon label={card.label} />
+                      </span>
                       <strong>{card.handle}</strong>
                       <p>{card.text}</p>
-                      <a
-                        className="contact-social-cta"
-                        href={card.href}
-                        target={card.href.startsWith('http') ? '_blank' : undefined}
-                        rel={card.href.startsWith('http') ? 'noreferrer' : undefined}
-                        onClick={(event) => event.stopPropagation()}
-                      >
-                        {card.cta}
-                      </a>
+                      <span className="contact-social-cta">{card.cta}</span>
                     </div>
                   </div>
-                </div>
+                </a>
               ))}
             </div>
           </div>
