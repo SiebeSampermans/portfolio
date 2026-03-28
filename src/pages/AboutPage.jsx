@@ -11,7 +11,7 @@ function AboutPage() {
     y: 0,
   });
 
-  usePageTitle('Siebe | About');
+  usePageTitle('Siebe | About me');
   useScrollReveal();
 
   const handlePhotoPointerMove = (event) => {
@@ -33,11 +33,11 @@ function AboutPage() {
       <main>
         <section className="page-intro">
           <div className="container">
-            <span className="eyebrow scroll-reveal">About</span>
-            <h1 className="page-title scroll-reveal">Who I am</h1>
+            <span className="eyebrow scroll-reveal">About me</span>
+            <h1 className="page-title scroll-reveal">Wie ik ben</h1>
             <p className="page-text scroll-reveal">
-              On this page, I briefly introduce who I am, what motivates me, and what I want to
-              keep growing in.
+              Op deze pagina vertel ik kort wie ik ben, wat mij motiveert en waarin ik verder wil
+              groeien.
             </p>
           </div>
         </section>
@@ -51,7 +51,7 @@ function AboutPage() {
                 onMouseLeave={handlePhotoPointerLeave}
               >
                 <div className="scan-frame"></div>
-                <img className="about-photo-image" src={aboutPhoto} alt="Portrait of Siebe" />
+                <img className="about-photo-image" src={aboutPhoto} alt="Portretfoto van Siebe" />
                 <div
                   className={`photo-cursor-follow${cursorState.isVisible ? ' is-visible' : ''}`}
                   style={{
@@ -66,22 +66,22 @@ function AboutPage() {
             </div>
 
             <div className="about-content scroll-reveal">
-              <h2 className="section-title scroll-reveal">A short introduction</h2>
+              <h2 className="section-title scroll-reveal">Intro over mezelf</h2>
               <p className="scroll-reveal">
-                My name is Siebe and I am a motivated Applied Computer Science student. I am
-                socially minded, naturally curious, and I enjoy working with others to create
-                strong solutions.
+                Mijn naam is Siebe en ik ben een gemotiveerde student Toegepaste Informatica. Ik
+                ben sociaal ingesteld, nieuwsgierig van aard en ik werk graag samen met anderen om
+                tot sterke oplossingen te komen.
               </p>
               <p className="scroll-reveal">
-                Outside of school, I spend time on football, beatboxing, gaming, building PCs, and
-                social activities with friends. These hobbies do not only show what I enjoy, but
-                also say something about my discipline, creativity, and sense of teamwork.
+                Buiten school ben ik bezig met voetbal, beatbox, gamen, pc&apos;s bouwen en sociale
+                activiteiten met vrienden. Dat zijn hobbies die niet alleen tonen wat ik leuk
+                vind, maar ook iets zeggen over mijn discipline, creativiteit en teamgevoel.
               </p>
               <p className="scroll-reveal">
-                I chose Applied Computer Science because I enjoy working with computers and because
-                this program connects perfectly with the IT and development direction I followed in
-                secondary school. From the moment I noticed I could quickly spot bugs in code, I
-                knew IT was the right fit for me.
+                Ik heb voor Toegepaste Informatica gekozen omdat ik graag met computers bezig ben
+                en omdat deze richting perfect aansluit bij de IT- en ontwikkelingsrichting die ik
+                in het middelbaar volgde. Vanaf het moment dat ik merkte dat ik bugs in code snel
+                kon herkennen, wist ik dat IT echt bij mij paste.
               </p>
             </div>
           </div>
@@ -91,33 +91,34 @@ function AboutPage() {
           <div className="container">
             <div className="section-header scroll-reveal">
               <span className="eyebrow">Future</span>
-              <h2>My goals and ambitions</h2>
+              <h2>Mijn dromen en ambities</h2>
               <p>
-                In the long term, I want to use technology in a way that is clear and useful for
-                other people. AI interests me most right now, but application development is also
-                a direction in which I can definitely see myself growing.
+                Op langere termijn wil ik technologie inzetten op een manier die duidelijk en
+                nuttig is voor andere mensen. AI spreekt mij vandaag het meest aan, maar
+                application development blijft zeker ook een richting waarin ik mezelf zie groeien.
               </p>
             </div>
 
             <div className="future-panel scroll-reveal">
               <div className="future-lead scroll-reveal">
                 <span className="card-label">Vision</span>
-                <h3>I want to make technology human and practical.</h3>
+                <h3>Ik wil technologie menselijk en bruikbaar maken.</h3>
                 <p>
-                  To me, a strong IT career is not only technical. I want to build solutions that
-                  are clear, meaningful, and socially valuable.
+                  Voor mij is een sterke IT-carriere niet alleen technisch. Ik wil bouwen aan
+                  oplossingen die duidelijk zijn, impact hebben en ook sociaal iets betekenen.
                 </p>
               </div>
 
               <div className="future-grid-alt">
                 <div className="info-item future-card scroll-reveal">
-                  <strong>Short term</strong>
-                  <span>Keep growing in AI, application development, and project-based work.</span>
+                  <strong>Korte termijn</strong>
+                  <span>Verder groeien in AI, application development en projectmatig werken.</span>
                 </div>
                 <div className="info-item future-card scroll-reveal">
-                  <strong>Long term</strong>
+                  <strong>Lange termijn</strong>
                   <span>
-                    Become an IT professional who makes a clear and social contribution to society.
+                    Een IT-professional worden die een sociale en duidelijke bijdrage levert aan de
+                    maatschappij.
                   </span>
                 </div>
               </div>
@@ -130,36 +131,36 @@ function AboutPage() {
             <div className="stack-showcase">
               <div className="stack-intro scroll-reveal">
                 <span className="card-label">Tech stack</span>
-                <h3>Tools and technologies I have already worked with</h3>
+                <h3>Tools en technologieen waar ik al mee gewerkt heb</h3>
                 <p>
-                  Throughout my education and projects, I have already built experience with
-                  different languages, frameworks, tools, and platforms. That broad base helps me
-                  switch flexibly between front-end, back-end, and technical infrastructure.
+                  Doorheen mijn opleiding en projecten heb ik al ervaring opgebouwd met
+                  verschillende talen, frameworks, tools en platformen. Die brede basis helpt me
+                  om flexibel te schakelen tussen front-end, back-end en technische infrastructuur.
                 </p>
               </div>
 
               <div className="stack-groups">
                 <div className="stack-card scroll-reveal">
-                  <strong>Programming languages</strong>
+                  <strong>Programmeertalen</strong>
                   <div className="stack-tags">
                     <span>Python</span>
                     <span>C#</span>
                     <span>Java</span>
                     <span>JavaScript</span>
-                    <span>PHP</span>
-                    <span>SQL</span>
+                    <span>.NET</span>
+                    <span>React</span>
+                    <span>Alpine</span>
                   </div>
                 </div>
 
                 <div className="stack-card scroll-reveal">
-                  <strong>Frameworks and libraries</strong>
+                  <strong>Back-end</strong>
                   <div className="stack-tags">
-                    <span>.NET</span>
-                    <span>React</span>
-                    <span>Alpine</span>
+                    <span>PHP</span>
+                    <span>MongoDB</span>
                     <span>FastAPI</span>
-                    <span>Laravel</span>
-                    <span>Livewire</span>
+                    <span>SQL</span>
+                    <span>SQLite</span>
                   </div>
                 </div>
 
@@ -170,19 +171,13 @@ function AboutPage() {
                     <span>CSS</span>
                     <span>Bootstrap</span>
                     <span>Tailwind</span>
+                    <span>Livewire</span>
+                    <span>Laravel</span>
                   </div>
                 </div>
 
                 <div className="stack-card scroll-reveal">
-                  <strong>Databases</strong>
-                  <div className="stack-tags">
-                    <span>MongoDB</span>
-                    <span>SQLite</span>
-                  </div>
-                </div>
-
-                <div className="stack-card scroll-reveal">
-                  <strong>Cloud and deployment</strong>
+                  <strong>Cloud en deployment</strong>
                   <div className="stack-tags">
                     <span>Docker</span>
                     <span>Azure</span>
@@ -190,7 +185,7 @@ function AboutPage() {
                 </div>
 
                 <div className="stack-card scroll-reveal">
-                  <strong>Networking</strong>
+                  <strong>Netwerk</strong>
                   <div className="stack-tags">
                     <span>Cisco</span>
                   </div>
@@ -200,37 +195,37 @@ function AboutPage() {
 
             <div className="soft-skills-intro scroll-reveal">
               <span className="card-label">Soft skills</span>
-              <h3>My soft skills make the difference</h3>
+              <h3>Mijn soft skills maken het verschil</h3>
               <p>
-                Besides technical knowledge, it is mainly my soft skills that help me stand out.
-                They allow me not only to build a project, but also to present it clearly, think
-                in a human-centered way, and collaborate strongly with others.
+                Naast technische kennis zijn het vooral mijn soft skills die mij helpen
+                uitblinken. Ze zorgen ervoor dat ik niet alleen een project kan bouwen, maar het
+                ook duidelijk kan voorstellen, mensgericht kan denken en sterk kan samenwerken.
               </p>
             </div>
 
             <div className="pillars-grid soft-skills-grid">
               <div className="pillar-card scroll-reveal">
                 <span className="card-label">Soft skills</span>
-                <h3>Presenting</h3>
+                <h3>Presenteren</h3>
                 <p>
-                  I can communicate information in a structured way and present a project clearly
-                  to others.
+                  Ik kan informatie gestructureerd overbrengen en een project duidelijk voorstellen
+                  aan anderen.
                 </p>
               </div>
               <div className="pillar-card pillar-card-accent scroll-reveal">
                 <span className="card-label">Soft skills</span>
-                <h3>Empathy and client focus</h3>
+                <h3>Empathie en klantgerichtheid</h3>
                 <p>
-                  I show empathy, think along with people, and can explain a project clearly to a
-                  non-technical client.
+                  Ik toon medeleven, denk mee met mensen en kan een niet-technische klant helder
+                  informeren over een project.
                 </p>
               </div>
               <div className="pillar-card scroll-reveal">
                 <span className="card-label">Soft skills</span>
-                <h3>Initiative and teamwork</h3>
+                <h3>Initiatief en teamwork</h3>
                 <p>
-                  I take initiative when needed and enjoy working in a team to build strong
-                  results step by step.
+                  Ik neem initiatief wanneer nodig en werk graag samen in groep om stap voor stap
+                  tot een sterk resultaat te komen.
                 </p>
               </div>
             </div>
@@ -238,7 +233,7 @@ function AboutPage() {
         </section>
       </main>
 
-      <PageFooter text="(c) 2026 Siebe - About" linkTo="/projects" linkLabel="Go to projects" />
+      <PageFooter text="© 2026 Siebe - About me" linkTo="/cv" linkLabel="Ga naar Mijn Projecten" />
     </>
   );
 }

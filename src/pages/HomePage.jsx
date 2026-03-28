@@ -19,19 +19,19 @@ function HomePage() {
                 <span className="hero-title-last">Sampermans</span>
               </h1>
               <p className="hero-text">
-                I&apos;m Siebe, a motivated Applied Computer Science student with a strong passion
-                for technology, creativity, and teamwork.
+                Ik ben Siebe, een gemotiveerde student Toegepaste Informatica met een passie voor
+                technologie, creativiteit en teamwork.
               </p>
               <p className="hero-text">
-                This website shows who I am, what I do, and which projects and skills I want to
-                keep developing as I work toward internships and future opportunities.
+                Op deze website toon ik wie ik ben, wat ik doe en welke projecten en vaardigheden
+                ik verder wil uitbouwen richting stage en werk.
               </p>
               <div className="hero-actions">
                 <Link className="btn btn-primary" to="/about">
-                  More about me
+                  Meer over mij
                 </Link>
                 <Link className="btn btn-secondary" to="/projects">
-                  View projects
+                  Bekijk projecten
                 </Link>
               </div>
             </div>
@@ -43,24 +43,24 @@ function HomePage() {
                 </div>
                 <div className="feature-list">
                   <div className="info-item">
-                    <strong>Who am I?</strong>
+                    <strong>Wie ben ik?</strong>
                     <span>
-                      A social, curious, and sporty student with a solid technical foundation.
+                      Een sociale, nieuwsgierige en sportieve student met een technische basis.
                     </span>
                   </div>
                   <div className="info-item">
-                    <strong>What do I do?</strong>
+                    <strong>Wat doe ik?</strong>
                     <span>
-                      I study Applied Computer Science and work on projects where technology and
-                      creativity come together, along with communication between the client and the
-                      project team.
+                      Ik studeer Toegepaste Informatica en werk aan projecten waarin techniek en
+                      creativiteit samenkomen, zowel als communicatie tussen de klant en
+                      projectgroep.
                     </span>
                   </div>
                   <div className="info-item">
-                    <strong>Why this portfolio?</strong>
+                    <strong>Waarom dit portfolio?</strong>
                     <span>
-                      To build a first professional showcase that is ready for internships and
-                      further growth.
+                      Om een professionele eerste showcase op te bouwen die klaar is voor stage en
+                      verdere groei.
                     </span>
                   </div>
                 </div>
@@ -73,29 +73,32 @@ function HomePage() {
           <div className="container">
             <div className="section-header stats-header scroll-reveal">
               <span className="eyebrow">Snapshot</span>
-              <h2>At a glance</h2>
-              <p>Four key traits that summarize how I work, learn, and where I want to go.</p>
+              <h2>In een oogopslag</h2>
+              <p>Vier kernwoorden die samenvatten hoe ik werk, leer en waar ik naartoe wil.</p>
             </div>
             <div className="stats-grid">
               <div className="stat-card scroll-reveal">
-                <span className="stat-card-label">Personal</span>
-                <strong>Social</strong>
-                <p>I enjoy collaborating, thinking along, and gaining energy from working with others.</p>
+                <span className="stat-card-label">Persoonlijk</span>
+                <strong>Sociaal</strong>
+                <p>Ik werk graag samen, denk mee en haal energie uit contact met andere mensen.</p>
               </div>
               <div className="stat-card scroll-reveal">
                 <span className="stat-card-label">Mindset</span>
-                <strong>Curious</strong>
-                <p>I want to understand how systems work and I enjoy continuously learning new things.</p>
+                <strong>Nieuwsgierig</strong>
+                <p>Ik wil begrijpen hoe systemen werken en blijf graag nieuwe dingen bijleren.</p>
               </div>
               <div className="stat-card scroll-reveal">
-                <span className="stat-card-label">Interest</span>
-                <strong>Technology</strong>
-                <p>Building PCs, development, and AI are the areas that interest me most.</p>
+                <span className="stat-card-label">Interesse</span>
+                <strong>Technologie</strong>
+                <p>Pc&apos;s bouwen, development en AI spreken mij het sterkst aan.</p>
               </div>
               <div className="stat-card scroll-reveal">
-                <span className="stat-card-label">Goal</span>
-                <strong>Internship-ready</strong>
-                <p>This portfolio is my first step toward a strong professional showcase.</p>
+                <span className="stat-card-label">Doel</span>
+                <strong>Stageklaar</strong>
+                <p>
+                  Dit portfolio is mijn eerste stap naar een sterke professionele showcase voor
+                  3ITF.
+                </p>
               </div>
             </div>
           </div>
@@ -103,9 +106,9 @@ function HomePage() {
       </main>
 
       <PageFooter
-        text="(c) 2026 Siebe - Showcase Portfolio"
+        text="© 2026 Siebe - Showcase portfolio"
         linkTo="/cv"
-        linkLabel="Go to my CV page"
+        linkLabel="Ga naar mijn Over Mij"
       />
     </>
   );
