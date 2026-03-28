@@ -3,23 +3,39 @@ import PageFooter from '../components/PageFooter';
 import usePageTitle from '../hooks/usePageTitle';
 import useScrollReveal from '../hooks/useScrollReveal';
 
+const PAPER_RETRACT_DURATION_MS = 3200;
+
 function CvPage() {
   const [isPreviewing, setIsPreviewing] = useState(false);
+  const [isRetracting, setIsRetracting] = useState(false);
 
   usePageTitle('Siebe | CV');
   useScrollReveal();
 
   useEffect(() => {
-    if (!isPreviewing) {
+    if (isPreviewing) {
+      setIsRetracting(false);
       return;
     }
 
-    window.dispatchEvent(
-      new CustomEvent('app-theme-request', {
-        detail: { theme: 'blue' },
-      }),
-    );
+    const timeoutId = window.setTimeout(() => {
+      setIsRetracting(false);
+    }, PAPER_RETRACT_DURATION_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
   }, [isPreviewing]);
+
+  const handlePowerToggle = () => {
+    setIsPreviewing((current) => {
+      if (current) {
+        setIsRetracting(true);
+      }
+
+      return !current;
+    });
+  };
 
   return (
     <>
@@ -49,7 +65,7 @@ function CvPage() {
                     type="button"
                     className={`cv-printer-power${isPreviewing ? ' is-active' : ''}`}
                     aria-label={isPreviewing ? 'Turn printer off' : 'Turn printer on'}
-                    onClick={() => setIsPreviewing((current) => !current)}
+                    onClick={handlePowerToggle}
                   >
                     <span className="cv-printer-led" aria-hidden="true"></span>
                     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -73,7 +89,11 @@ function CvPage() {
                   </div>
                 </div>
 
-                <div className={`cv-paper-stage${isPreviewing ? ' is-visible' : ''}`}>
+                <div
+                  className={`cv-paper-stage${isPreviewing || isRetracting ? ' is-active' : ''}${
+                    isPreviewing ? ' is-visible' : ''
+                  }`}
+                >
                   <div className="cv-paper-sheet">
                     <div className="cv-paper-toolbar">
                       <span className="cv-paper-dot"></span>

@@ -1,104 +1,114 @@
 import PageFooter from '../components/PageFooter';
 import usePageTitle from '../hooks/usePageTitle';
 import useScrollReveal from '../hooks/useScrollReveal';
+import farmforwardImage from '../assets/projects/farmforward.png';
+import fridgemateImage from '../assets/projects/fridgemate.png';
+import vrcadeImage from '../assets/projects/vrcade.png';
+import webdesignPortfolioImage from '../assets/projects/webdesignportfolio.png';
 
 const projects = [
   {
-    image: 'https://siebe-sampermans.vercel.app/images/projects/farmforward.png',
-    alt: 'Screenshot van project FarmForward',
-    label: 'Verplicht project',
-    title: 'SKIL2 project semester 1',
+    image: farmforwardImage,
+    alt: 'Screenshot of project FarmForward',
+    label: 'Required project',
+    title: 'FarmForward',
     details: [
       {
         title: 'Context',
-        text: 'Vul hier kort in wat het project was, voor welk vak of doel het gemaakt werd en waarom het belangrijk was.',
+        text: 'FarmForward was created around the story of Juma, a 54-year-old farmer in rural Tanzania who depends on weather, soil conditions, and timing to support his family. The challenge was that many small farmers face unpredictable weather, limited information about planting or harvesting, and little access to smartphones or internet-based tools.',
       },
       {
-        title: 'Wat ik gedaan heb',
-        text: 'Beschrijf hier heel concreet jouw eigen bijdrage, zeker als het om groepswerk ging.',
+        title: 'What I did',
+        text: 'I helped shape the concept of an AI-powered SMS assistant that gives farmers simple, practical support through numbered options. The system was designed to stay accessible on even the most basic phones, without requiring internet access.',
       },
       {
-        title: 'Resultaat',
-        text: 'Noteer wat er uiteindelijk gebouwd of opgeleverd werd en voeg eventueel een beeld toe.',
+        title: 'Result',
+        text: 'The result was a clear proof of concept for an AI SMS assistant that can provide weather forecasts, pesticide advice, and storm alerts in a simple menu-based flow. It showed how technology can be made useful and accessible for farmers who are often excluded from digital tools.',
       },
       {
-        title: 'Wat ik geleerd heb',
-        text: 'Beschrijf hier de hard skills en soft skills die je uit dit project hebt meegenomen.',
+        title: 'What I learned',
+        text: 'I learned how important accessibility and simplicity are when designing digital solutions. I also improved my ability to think from the user perspective and to translate a real-world problem into a practical technical concept.',
       },
     ],
   },
   {
     id: 'project-2',
-    image: 'https://siebe-sampermans.vercel.app/images/projects/fridgemate.png',
-    alt: 'Screenshot van project FridgeMate',
-    label: 'Verplicht project',
-    title: 'SKIL2 project semester 2',
+    image: fridgemateImage,
+    alt: 'Screenshot of project FridgeMate',
+    label: 'Required project',
+    title: 'FridgeMate',
     details: [
       {
         title: 'Context',
-        text: 'Vul hier kort in wat het project was, wat de doelstelling was en in welke context het plaatsvond.',
+        text: 'FridgeMate is a proof of concept developed to help users track what is in their fridge. The goal was to reduce food waste, save money, and make it easier to decide what to cook.',
       },
       {
-        title: 'Wat ik gedaan heb',
-        text: 'Beschrijf jouw persoonlijke taken, keuzes en verantwoordelijkheden binnen het project.',
+        title: 'What I did',
+        text: 'I worked on the concept and front-end of the application. I also pitched the idea, where I developed and found my own voice in presenting.',
       },
       {
-        title: 'Resultaat',
-        text: 'Leg uit wat het eindresultaat was en hoe het project uiteindelijk werd afgewerkt.',
+        title: 'Result',
+        text: 'The result is a simple and clear prototype that demonstrates how fridge inventory tracking can work in practice.',
+        link: 'https://fridgemate-tds.netlify.app/',
+        linkLabel: 'View FridgeMate',
       },
       {
-        title: 'Wat ik geleerd heb',
-        text: 'Vermeld hier welke technische en professionele vaardigheden je verder hebt ontwikkeld.',
+        title: 'What I learned',
+        text: 'I learned how to turn an idea into a working proof of concept. I also improved my pitching and communication skills.',
       },
     ],
   },
   {
     id: 'project-3',
-    image: 'https://siebe-sampermans.vercel.app/images/projects/vrcade.png',
-    alt: 'Screenshot van project VRCade',
-    label: 'Extra project',
-    title: 'Quickcode',
+    image: vrcadeImage,
+    alt: 'Screenshot of project VRCade',
+    label: 'Required project',
+    title: 'VRCade',
     details: [
       {
         title: 'Context',
-        text: 'In het eerste jaar maakte ik Quickcode, een website om mensen op een speelse en competitieve manier te helpen leren coderen.',
+        text: 'For the Fullstack Essentials course, I developed a front-end for a hypothetical VR arcade. The goal was to create a modern and engaging website that reflects a VR experience.',
       },
       {
-        title: 'Wat ik gedaan heb',
-        text: 'Ik werkte mee aan het concept en de uitwerking van de website en dacht na over hoe leren coderen motiverender gemaakt kon worden.',
+        title: 'What I did',
+        text: 'I designed and built the entire front-end using HTML, CSS, and JavaScript. I focused on clear structure and a futuristic design.',
       },
       {
-        title: 'Resultaat',
-        text: 'Het resultaat was een interactieve website waarin leren, competitie en gebruikservaring samenkomen.',
+        title: 'Result',
+        text: 'The result is a responsive website with a modern look that fits a VR arcade.',
+        link: 'https://vrcade.netlify.app/',
+        linkLabel: 'View VRCade',
       },
       {
-        title: 'Wat ik geleerd heb',
-        text: 'Ik leerde beter nadenken over development, gebruikservaring, creativiteit en het bouwen van iets met echte meerwaarde.',
+        title: 'What I learned',
+        text: 'I improved my front-end development and responsive design skills. I also learned the importance of UX/UI in creating a good user experience.',
       },
     ],
   },
   {
     id: 'project-4',
-    image: 'https://siebe-sampermans.vercel.app/images/projects/webdesignportfolio.png',
-    alt: 'Screenshot van webdesign portfolio project',
-    label: 'Extra project',
-    title: 'Showcase portfolio',
+    image: webdesignPortfolioImage,
+    alt: 'Screenshot of web design portfolio project',
+    label: 'Required project',
+    title: 'Webdesign Portfolio',
     details: [
       {
         title: 'Context',
-        text: 'Voor 3ITF bouw ik een eerste showcase portfolio dat professioneel oogt en klaar is voor stage, projecten en verdere groei.',
+        text: 'For the Webdesign Essentials course, I created a website to improve my web design skills. The goal was to build a visually appealing and well-structured personal website.',
       },
       {
-        title: 'Wat ik gedaan heb',
-        text: 'Ik werkte de structuur, inhoud en presentatie uit zodat de website toont wie ik ben en wat ik al kan.',
+        title: 'What I did',
+        text: 'I designed and developed the website from scratch, focusing on layout, styling, and usability. I experimented with different design elements to improve the overall look and feel.',
       },
       {
-        title: 'Resultaat',
-        text: 'Het resultaat is een duidelijke HTML-website met een vaste navigatie, een about-pagina, projectenpagina en aparte CV-pagina.',
+        title: 'Result',
+        text: 'The result is a personal gaming-themed website that showcases my design skills and style. The site is hosted via a student webhosting platform.',
+        link: 'https://siebegaming.sinners.be/',
+        linkLabel: 'View Website',
       },
       {
-        title: 'Wat ik geleerd heb',
-        text: 'Ik leerde informatie professioneler structureren, inhoud afstemmen op requirements en mijn profiel beter presenteren.',
+        title: 'What I learned',
+        text: 'I improved my web design and layout skills through hands-on practice. I also gained a better understanding of visual design and user experience.',
       },
     ],
   },
@@ -114,11 +124,11 @@ function ProjectsPage() {
         <section className="page-intro">
           <div className="container">
             <span className="eyebrow">Projects / Achievements</span>
-            <h1 className="page-title">Mijn projecten</h1>
+            <h1 className="page-title">My projects</h1>
             <p className="page-text">
-              Volgens de minimum requirements toon ik hier de verplichte SKIL2-projecten en twee
-              extra projecten. Per project beschrijf ik de context, mijn bijdrage, het resultaat
-              en wat ik eruit geleerd heb.
+              Following the minimum requirements, I show the required SKIL2 projects here together
+              with two extra projects. For each project, I describe the context, my contribution,
+              the result, and what I learned from it.
             </p>
           </div>
         </section>
@@ -128,9 +138,21 @@ function ProjectsPage() {
             {projects.map((project, index) => (
               <div key={project.title}>
                 <article className="project-card scroll-reveal" id={project.id}>
-                  <div className="project-visual project-image">
-                    <img src={project.image} alt={project.alt} />
-                  </div>
+                  {project.details.some((detail) => detail.link) ? (
+                    <a
+                      className="project-visual project-image"
+                      href={project.details.find((detail) => detail.link)?.link}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`Open ${project.title}`}
+                    >
+                      <img src={project.image} alt={project.alt} />
+                    </a>
+                  ) : (
+                    <div className="project-visual project-image">
+                      <img src={project.image} alt={project.alt} />
+                    </div>
+                  )}
                   <div className="project-body">
                     <span className="card-label">{project.label}</span>
                     <h2>{project.title}</h2>
@@ -138,6 +160,13 @@ function ProjectsPage() {
                       <div key={detail.title} className="project-detail">
                         <strong>{detail.title}</strong>
                         <p>{detail.text}</p>
+                        {detail.link && (
+                          <p>
+                            <a href={detail.link} target="_blank" rel="noreferrer">
+                              {detail.linkLabel}
+                            </a>
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -149,7 +178,7 @@ function ProjectsPage() {
                     aria-hidden="true"
                     data-cue-for={projects[index + 1].id}
                   >
-                    <span>Scroll verder</span>
+                    <span>Scroll further</span>
                     <span className="project-scroll-arrow"></span>
                   </div>
                 )}
@@ -159,11 +188,7 @@ function ProjectsPage() {
         </section>
       </main>
 
-      <PageFooter
-        text="© 2026 Siebe - Projects"
-        linkTo="/about"
-        linkLabel="Ga naar Cv"
-      />
+      <PageFooter text="&copy; 2026 Siebe - Projects" linkTo="/about" linkLabel="Go to About" />
     </>
   );
 }

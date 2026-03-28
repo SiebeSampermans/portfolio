@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import HexGridBackground from '../components/HexGridBackground';
 import greenFavicon from '../assets/favicons/favicon-green.png';
@@ -6,8 +6,8 @@ import blueFavicon from '../assets/favicons/favicon-blue.png';
 
 const links = [
   { to: '/', label: 'Home', end: true },
-  { to: '/about', label: 'Over Mij' },
-  { to: '/projects', label: 'Projecten' },
+  { to: '/about', label: 'About' },
+  { to: '/projects', label: 'Projects' },
   { to: '/cv', label: 'CV' },
   { to: '/contact', label: 'Contact' },
 
@@ -15,7 +15,8 @@ const links = [
 
 function MainLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isBlueTheme, setIsBlueTheme] = useState(() => {
+  const [themeTransition, setThemeTransition] = useState(null);
+  const [preferredBlueTheme, setPreferredBlueTheme] = useState(() => {
     if (typeof window === 'undefined') {
       return false;
     }
@@ -23,14 +24,53 @@ function MainLayout() {
     return window.localStorage.getItem('theme') === 'blue';
   });
   const location = useLocation();
+  const hasMountedThemeRef = useRef(false);
+  const isCvRoute = location.pathname === '/cv' || location.pathname === '/cv.html';
+  const hideThemeSwitch = isCvRoute;
+  const isBlueTheme = isCvRoute || preferredBlueTheme;
 
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
   useEffect(() => {
+    const handleThemeRequest = (event) => {
+      const requestedTheme = event.detail?.theme;
+
+      if (requestedTheme === 'blue') {
+        setPreferredBlueTheme(true);
+      }
+
+      if (requestedTheme === 'green') {
+        setPreferredBlueTheme(false);
+      }
+    };
+
+    window.addEventListener('app-theme-request', handleThemeRequest);
+
+    return () => {
+      window.removeEventListener('app-theme-request', handleThemeRequest);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!hasMountedThemeRef.current) {
+      hasMountedThemeRef.current = true;
+      return;
+    }
+
+    setThemeTransition(isBlueTheme ? 'blue' : 'green');
+    const timeoutId = window.setTimeout(() => {
+      setThemeTransition(null);
+    }, 1100);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [isBlueTheme]);
+
+  useEffect(() => {
     document.body.dataset.theme = isBlueTheme ? 'blue' : 'green';
-    window.localStorage.setItem('theme', isBlueTheme ? 'blue' : 'green');
 
     let favicon = document.querySelector("link[rel='icon']");
 
@@ -44,23 +84,35 @@ function MainLayout() {
     favicon.setAttribute('href', isBlueTheme ? blueFavicon : greenFavicon);
   }, [isBlueTheme]);
 
+  useEffect(() => {
+    window.localStorage.setItem('theme', preferredBlueTheme ? 'blue' : 'green');
+  }, [preferredBlueTheme]);
+
   return (
     <div className="app-shell">
       <HexGridBackground />
       <div className="page-glow page-glow-left"></div>
       <div className="page-glow page-glow-right"></div>
-      <label className="theme-switch theme-switch-floating" aria-label="Wissel kleurthema">
-        <span className="theme-switch-label">Thema</span>
-        <button
-          type="button"
-          className={`theme-switch-track${isBlueTheme ? ' is-active' : ''}`}
-          role="switch"
-          aria-checked={isBlueTheme}
-          onClick={() => setIsBlueTheme((current) => !current)}
-        >
-          <span className="theme-switch-thumb"></span>
-        </button>
-      </label>
+      {themeTransition && (
+        <div
+          className={`theme-transition-overlay theme-transition-overlay-${themeTransition}`}
+          aria-hidden="true"
+        ></div>
+      )}
+      {!hideThemeSwitch && (
+        <label className="theme-switch theme-switch-floating" aria-label="Switch color theme">
+          <span className="theme-switch-label">Theme</span>
+          <button
+            type="button"
+            className={`theme-switch-track${isBlueTheme ? ' is-active' : ''}`}
+            role="switch"
+            aria-checked={isBlueTheme}
+            onClick={() => setPreferredBlueTheme((current) => !current)}
+          >
+            <span className="theme-switch-thumb"></span>
+          </button>
+        </label>
+      )}
 
       <header className="site-header">
         <nav className="nav">
@@ -73,7 +125,7 @@ function MainLayout() {
               className={`nav-toggle${isMenuOpen ? ' is-open' : ''}`}
               aria-expanded={isMenuOpen}
               aria-controls="primary-navigation"
-              aria-label={isMenuOpen ? 'Sluit navigatiemenu' : 'Open navigatiemenu'}
+              aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
               onClick={() => setIsMenuOpen((current) => !current)}
             >
               <span></span>

@@ -5,7 +5,8 @@ import usePageTitle from '../hooks/usePageTitle';
 import useScrollReveal from '../hooks/useScrollReveal';
 
 const LINKEDIN_URL = 'https://www.linkedin.com/in/siebe-sampermans-727a75330/';
-const INSTAGRAM_URL = 'http://instagram.com/siebe_sampermans/';
+const INSTAGRAM_URL = 'https://www.instagram.com/siebe_sampermans/';
+const FACEBOOK_URL = 'https://www.facebook.com/siebe.sampermans.7?locale=nl_BE';
 const CONTACT_RECIPIENT = 'sampermans.dev@gmail.com';
 const OUTLOOK_EMAIL = 'r1058833@student.thomasmore.be';
 const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
@@ -34,6 +35,15 @@ function SocialIcon({ label }) {
     );
   }
 
+  if (label === 'Facebook') {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="3" y="3" width="18" height="18" rx="3.5" />
+        <path d="M13.2 18v-5.2h1.95l.35-2.2H13.2V9.35c0-.75.26-1.3 1.42-1.3h1.02V6.1c-.18-.03-.8-.08-1.52-.08-1.5 0-2.52.9-2.52 2.62v1.96H10v2.2h1.62V18z" />
+      </svg>
+    );
+  }
+
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M3.5 7.2 11 12.4l7.5-5.2" />
@@ -47,27 +57,24 @@ function SocialIcon({ label }) {
 const SOCIAL_CARDS = [
   {
     label: 'Instagram',
-    icon: 'IG',
     handle: '@siebe_sampermans',
-    text: 'Voor behind the scenes, dagelijkse updates en een meer persoonlijke inkijk.',
+    text: 'For behind-the-scenes moments, daily updates, and a more personal side of me.',
     href: INSTAGRAM_URL,
     cta: 'Open Instagram',
   },
   {
-    label: 'LinkedIn',
-    icon: 'in',
+    label: 'Facebook',
     handle: 'Siebe Sampermans',
-    text: 'Voor stage, werk en professionele connecties rond IT, projecten en groei.',
-    href: LINKEDIN_URL,
-    cta: 'Open LinkedIn',
+    text: 'For personal updates, social connections, and another way to stay in touch with me.',
+    href: FACEBOOK_URL,
+    cta: 'Open Facebook',
   },
   {
     label: 'Outlook',
-    icon: 'O',
     handle: 'R1058833',
-    text: 'Voor directe vragen, samenwerkingen of een professionele kennismaking via mail.',
+    text: 'For direct questions, collaborations, or a professional introduction by email.',
     href: `mailto:${OUTLOOK_EMAIL}`,
-    cta: 'Mail via Outlook',
+    cta: 'Email via Outlook',
   },
 ];
 
@@ -77,7 +84,7 @@ function ContactPage() {
     email: '',
     message: '',
   });
-  const [website, setWebsite] = useState('');
+  const [honeypotValue, setHoneypotValue] = useState('');
   const [sendState, setSendState] = useState({
     status: 'idle',
     progress: 0,
@@ -107,11 +114,11 @@ function ContactPage() {
       return;
     }
 
-    if (website.trim()) {
+    if (honeypotValue.trim()) {
       setSendState({
         status: 'error',
         progress: 0,
-        message: 'Versturen geblokkeerd. Probeer het opnieuw.',
+        message: 'Sending was blocked. Please try again.',
       });
       return;
     }
@@ -120,7 +127,7 @@ function ContactPage() {
       setSendState({
         status: 'error',
         progress: 0,
-        message: 'Wacht heel even en probeer dan opnieuw te verzenden.',
+        message: 'Please wait a moment and try sending again.',
       });
       return;
     }
@@ -130,7 +137,7 @@ function ContactPage() {
         status: 'error',
         progress: 0,
         message:
-          'EmailJS is nog niet ingesteld. Voeg VITE_EMAILJS_SERVICE_ID, VITE_EMAILJS_TEMPLATE_ID en VITE_EMAILJS_PUBLIC_KEY toe aan je .env-bestand.',
+          'EmailJS is not configured yet. Add VITE_EMAILJS_SERVICE_ID, VITE_EMAILJS_TEMPLATE_ID, and VITE_EMAILJS_PUBLIC_KEY to your .env file.',
       });
       return;
     }
@@ -138,7 +145,7 @@ function ContactPage() {
     setSendState({
       status: 'sending',
       progress: 8,
-      message: 'Bericht wordt voorbereid...',
+      message: 'Preparing your message...',
     });
 
     let currentProgress = 8;
@@ -147,7 +154,7 @@ function ContactPage() {
       setSendState((current) => ({
         ...current,
         progress: currentProgress,
-        message: 'Bericht wordt verzonden...',
+        message: 'Sending your message...',
       }));
     }, 180);
 
@@ -169,24 +176,25 @@ function ContactPage() {
             user_email: formData.email,
             reply_to: formData.email,
             message: formData.message,
-            subject: `Nieuw contactbericht van ${formData.name}`,
+            subject: `New contact message from ${formData.name}`,
           },
         }),
       });
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(errorText || 'Onbekende fout bij het versturen.');
+        throw new Error(errorText || 'Unknown error while sending.');
       }
 
       if (progressTimerRef.current) {
         window.clearInterval(progressTimerRef.current);
         progressTimerRef.current = null;
       }
+
       setSendState({
         status: 'success',
         progress: 100,
-        message: 'Je mail is succesvol verstuurd.',
+        message: 'Your email was sent successfully.',
       });
       setFormData({
         name: '',
@@ -198,10 +206,11 @@ function ContactPage() {
         window.clearInterval(progressTimerRef.current);
         progressTimerRef.current = null;
       }
+
       setSendState({
         status: 'error',
         progress: 100,
-        message: 'Versturen mislukt. Controleer je EmailJS-configuratie en probeer opnieuw.',
+        message: 'Sending failed. Please check your EmailJS configuration and try again.',
       });
     }
   };
@@ -212,11 +221,10 @@ function ContactPage() {
         <section className="page-intro">
           <div className="container">
             <span className="eyebrow scroll-reveal">Contact</span>
-            <h1 className="page-title scroll-reveal">Neem contact op</h1>
+            <h1 className="page-title scroll-reveal">Get in touch</h1>
             <p className="page-text scroll-reveal">
-              Wil je me contacteren voor een stage, project of kennismaking? Laat een bericht
-              achter via het formulier of scan de QR-code om rechtstreeks naar mijn LinkedIn te
-              gaan.
+              Would you like to contact me for an internship, project, or introduction? Leave a
+              message through the form or scan the QR code to go straight to my LinkedIn profile.
             </p>
           </div>
         </section>
@@ -225,57 +233,61 @@ function ContactPage() {
           <div className="container contact-layout">
             <div className="contact-card contact-form-card scroll-reveal">
               <span className="card-label">Contact form</span>
-              <h2>Stuur me een bericht</h2>
+              <h2>Send me a message</h2>
               <p>
-                Vul je bericht in en verstuur het rechtstreeks via EmailJS. Tijdens het verzenden
-                zie je eerst een progress bar en daarna een melding of het gelukt is. Berichten
-                van deze pagina gaan naar <code>{CONTACT_RECIPIENT}</code>.
+                Fill in your message and send it directly through EmailJS. While sending, you will
+                first see a progress bar and then a message telling you whether it worked.
+                Messages from this page are sent to <code>{CONTACT_RECIPIENT}</code>.
               </p>
 
-              <form className="contact-form" onSubmit={submitWithEmailJs} aria-busy={sendState.status === 'sending'}>
+              <form
+                className="contact-form"
+                onSubmit={submitWithEmailJs}
+                aria-busy={sendState.status === 'sending'}
+              >
                 <label className="contact-field contact-field-honeypot" aria-hidden="true">
-                  <span>Website</span>
+                  <span>Leave this field empty</span>
                   <input
                     type="text"
-                    name="website"
-                    value={website}
-                    onChange={(event) => setWebsite(event.target.value)}
+                    name="contact_company"
+                    value={honeypotValue}
+                    onChange={(event) => setHoneypotValue(event.target.value)}
                     tabIndex="-1"
-                    autoComplete="off"
+                    autoComplete="new-password"
                   />
                 </label>
 
                 <label className="contact-field">
-                  <span>Naam</span>
+                  <span>Name</span>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    placeholder="Jouw naam"
+                    placeholder="Your name"
                     required
                   />
                 </label>
 
                 <label className="contact-field">
-                  <span>E-mail</span>
+                  <span>Email</span>
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="jij@email.com"
+                    placeholder="you@email.com"
                     required
                   />
                 </label>
 
                 <label className="contact-field">
-                  <span>Bericht</span>
+                  <span>Message</span>
                   <textarea
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
-                    placeholder="Vertel kort waarvoor je me contacteert..."
+                    placeholder="Briefly tell me why you are getting in touch..."
                     rows="6"
                     required
                   ></textarea>
@@ -296,7 +308,7 @@ function ContactPage() {
                       aria-live="polite"
                     >
                       <div className="contact-progress-meta">
-                        <span>Mail versturen</span>
+                        <span>Sending email</span>
                         <span>{Math.round(sendState.progress)}%</span>
                       </div>
                       <div className="contact-progress-track">
@@ -314,7 +326,7 @@ function ContactPage() {
                         }`}
                         role="alert"
                       >
-                        <strong>{sendState.status === 'success' ? 'Succes' : 'Fout'}</strong>
+                        <strong>{sendState.status === 'success' ? 'Success' : 'Error'}</strong>
                         <span>{sendState.message}</span>
                       </div>
                     )}
@@ -326,17 +338,17 @@ function ContactPage() {
                   type="submit"
                   disabled={sendState.status === 'sending'}
                 >
-                  {sendState.status === 'sending' ? 'Bezig met verzenden...' : 'Verstuur bericht'}
+                  {sendState.status === 'sending' ? 'Sending...' : 'Send message'}
                 </button>
               </form>
             </div>
 
             <aside className="contact-card linkedin-card scroll-reveal">
               <span className="card-label">LinkedIn</span>
-              <h2>Scan mijn QR-code</h2>
+              <h2>Scan my QR code</h2>
               <p>
-                Scan de code om meteen mijn LinkedIn-profiel te openen of gebruik de knop hieronder
-                om direct door te klikken.
+                Scan the code to instantly open my LinkedIn profile, or use the button below to go
+                there directly.
               </p>
 
               <div className="linkedin-qr-frame">
@@ -354,9 +366,10 @@ function ContactPage() {
           <div className="container">
             <div className="section-header scroll-reveal">
               <span className="eyebrow">Socials</span>
-              <h2>Vind me ook hier</h2>
+              <h2>Find me here as well</h2>
               <p>
-                Naast het formulier kan je me ook rechtstreeks bereiken via deze drie contactkaarten.
+                Besides the contact form, you can also reach me directly through these three
+                contact cards.
               </p>
             </div>
 
@@ -377,7 +390,6 @@ function ContactPage() {
                         <SocialIcon label={card.label} />
                       </span>
                       <strong>{card.label}</strong>
-                      <span className="contact-social-hint">Hover om om te draaien</span>
                     </div>
 
                     <div className="contact-social-face contact-social-face-back">
@@ -397,11 +409,7 @@ function ContactPage() {
         </section>
       </main>
 
-      <PageFooter
-        text="© 2026 Siebe - Contact"
-        linkTo="/cv"
-        linkLabel="Ga naar Contact"
-      />
+      <PageFooter text="&copy; 2026 Siebe - Contact" linkTo="/cv" linkLabel="Go to my CV" />
     </>
   );
 }
