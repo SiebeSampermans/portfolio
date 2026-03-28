@@ -1,10 +1,25 @@
+import { useEffect, useState } from 'react';
 import PageFooter from '../components/PageFooter';
 import usePageTitle from '../hooks/usePageTitle';
 import useScrollReveal from '../hooks/useScrollReveal';
 
 function CvPage() {
+  const [isPreviewing, setIsPreviewing] = useState(false);
+
   usePageTitle('Siebe | CV');
   useScrollReveal();
+
+  useEffect(() => {
+    if (!isPreviewing) {
+      return;
+    }
+
+    window.dispatchEvent(
+      new CustomEvent('app-theme-request', {
+        detail: { theme: 'blue' },
+      }),
+    );
+  }, [isPreviewing]);
 
   return (
     <>
@@ -14,35 +29,72 @@ function CvPage() {
             <span className="eyebrow">Curriculum Vitae</span>
             <h1 className="page-title">CV download</h1>
             <p className="page-text">
-              De opdracht vraagt een aparte CV-pagina met een downloadbare PDF. Zet jouw bestand
-              in deze map met de naam <code>CV_siebe.pdf</code>.
+              This page contains a dedicated CV section with a downloadable PDF. You can download
+              it directly or preview it on the page itself.
             </p>
             <div className="hero-actions">
               <a className="btn btn-primary" href="/CV_siebe.pdf" download>
-                Download CV_siebe.pdf
+                Download CV
               </a>
             </div>
           </div>
         </section>
 
         <section>
-          <div className="container">
-            <div className="info-item scroll-reveal">
-              <strong>Belangrijk</strong>
-              <span>
-                De downloadlink werkt zodra je jouw echte CV als <code>CV_siebe.pdf</code> in
-                dezelfde map zet als deze bestanden.
-              </span>
+          <div className="container cv-preview-section">
+            <div className={`cv-printer-assembly${isPreviewing ? ' is-previewing' : ''}`}>
+              <div className="cv-printer-anchor">
+                <div className={`cv-printer-card${isPreviewing ? ' is-printing' : ''}`}>
+                  <button
+                    type="button"
+                    className={`cv-printer-power${isPreviewing ? ' is-active' : ''}`}
+                    aria-label={isPreviewing ? 'Turn printer off' : 'Turn printer on'}
+                    onClick={() => setIsPreviewing((current) => !current)}
+                  >
+                    <span className="cv-printer-led" aria-hidden="true"></span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M12 3.4v7.4" />
+                      <path d="M7.05 5.75A8.2 8.2 0 1 0 16.95 5.75" />
+                    </svg>
+                  </button>
+
+                  <div className="cv-printer-top">
+                    <div>
+                      <span className="card-label">Preview Station</span>
+                      <h2>Interactive CV printer</h2>
+                      <p>
+                        Press the power button and watch your CV print out below the slot.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="cv-printer-slot-wrap" aria-hidden="true">
+                    <div className="cv-printer-slot"></div>
+                  </div>
+                </div>
+
+                <div className={`cv-paper-stage${isPreviewing ? ' is-visible' : ''}`}>
+                  <div className="cv-paper-sheet">
+                    <div className="cv-paper-toolbar">
+                      <span className="cv-paper-dot"></span>
+                      <span className="cv-paper-dot"></span>
+                      <span className="cv-paper-dot"></span>
+                      <span className="cv-paper-label">CV Preview</span>
+                    </div>
+                    <iframe
+                      className="cv-paper-frame"
+                      src="/CV_siebe.pdf#toolbar=0&navpanes=0&scrollbar=1"
+                      title="CV preview"
+                    ></iframe>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
       </main>
 
-      <PageFooter
-        text="© 2026 Siebe - CV"
-        linkTo="/projects"
-        linkLabel="Bekijk mijn projecten"
-      />
+      <PageFooter text="(c) 2026 Siebe - CV" linkTo="/" linkLabel="Back to home" />
     </>
   );
 }

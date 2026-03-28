@@ -8,8 +8,8 @@ const links = [
   { to: '/', label: 'Home', end: true },
   { to: '/about', label: 'About me' },
   { to: '/projects', label: 'Projects / Achievements' },
-  { to: '/contact', label: 'Contact' },
   { to: '/cv', label: 'CV' },
+  { to: '/contact', label: 'Contact' },
 ];
 
 function MainLayout() {
@@ -21,10 +21,13 @@ function MainLayout() {
 
     return window.localStorage.getItem('theme') === 'blue';
   });
+  const [themeTransitionTheme, setThemeTransitionTheme] = useState(null);
   const location = useLocation();
+  const hideThemeSwitch = location.pathname === '/cv' || location.pathname === '/cv.html';
 
   useEffect(() => {
     setIsMenuOpen(false);
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   }, [location.pathname]);
 
   useEffect(() => {
@@ -43,23 +46,87 @@ function MainLayout() {
     favicon.setAttribute('href', isBlueTheme ? blueFavicon : greenFavicon);
   }, [isBlueTheme]);
 
+  useEffect(() => {
+    const syncThemeFromStorage = () => {
+      const nextIsBlueTheme = window.localStorage.getItem('theme') === 'blue';
+      setIsBlueTheme(nextIsBlueTheme);
+    };
+
+    const requestThemeChange = (event) => {
+      const requestedTheme = event.detail?.theme;
+
+      if (requestedTheme !== 'blue' && requestedTheme !== 'green') {
+        return;
+      }
+
+      const nextIsBlueTheme = requestedTheme === 'blue';
+
+      if (nextIsBlueTheme === isBlueTheme) {
+        return;
+      }
+
+      setThemeTransitionTheme(requestedTheme);
+
+      window.setTimeout(() => {
+        setIsBlueTheme(nextIsBlueTheme);
+      }, 420);
+
+      window.setTimeout(() => {
+        setThemeTransitionTheme(null);
+      }, 1100);
+    };
+
+    window.addEventListener('storage', syncThemeFromStorage);
+    window.addEventListener('app-theme-sync', syncThemeFromStorage);
+    window.addEventListener('app-theme-request', requestThemeChange);
+
+    return () => {
+      window.removeEventListener('storage', syncThemeFromStorage);
+      window.removeEventListener('app-theme-sync', syncThemeFromStorage);
+      window.removeEventListener('app-theme-request', requestThemeChange);
+    };
+  }, [isBlueTheme]);
+
+  const handleThemeToggle = () => {
+    const nextIsBlueTheme = !isBlueTheme;
+    const nextTheme = nextIsBlueTheme ? 'blue' : 'green';
+
+    setThemeTransitionTheme(nextTheme);
+
+    window.setTimeout(() => {
+      setIsBlueTheme(nextIsBlueTheme);
+    }, 420);
+
+    window.setTimeout(() => {
+      setThemeTransitionTheme(null);
+    }, 1100);
+  };
+
   return (
     <div className="app-shell">
       <HexGridBackground />
       <div className="page-glow page-glow-left"></div>
       <div className="page-glow page-glow-right"></div>
-      <label className="theme-switch theme-switch-floating" aria-label="Wissel kleurthema">
-        <span className="theme-switch-label">Thema</span>
-        <button
-          type="button"
-          className={`theme-switch-track${isBlueTheme ? ' is-active' : ''}`}
-          role="switch"
-          aria-checked={isBlueTheme}
-          onClick={() => setIsBlueTheme((current) => !current)}
-        >
-          <span className="theme-switch-thumb"></span>
-        </button>
-      </label>
+      {themeTransitionTheme && (
+        <div
+          className={`theme-transition-overlay theme-transition-overlay-${themeTransitionTheme}`}
+          aria-hidden="true"
+        ></div>
+      )}
+      {!hideThemeSwitch && (
+        <label className="theme-switch theme-switch-floating" aria-label="Toggle color theme">
+          <span className="theme-switch-label">Theme</span>
+          <button
+            type="button"
+            className={`theme-switch-track${isBlueTheme ? ' is-active' : ''}`}
+            role="switch"
+            aria-checked={isBlueTheme}
+            onClick={handleThemeToggle}
+          >
+            <span className="theme-switch-thumb"></span>
+          </button>
+        </label>
+      )}
 
       <header className="site-header">
         <nav className="nav">
@@ -72,7 +139,7 @@ function MainLayout() {
               className={`nav-toggle${isMenuOpen ? ' is-open' : ''}`}
               aria-expanded={isMenuOpen}
               aria-controls="primary-navigation"
-              aria-label={isMenuOpen ? 'Sluit navigatiemenu' : 'Open navigatiemenu'}
+              aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
               onClick={() => setIsMenuOpen((current) => !current)}
             >
               <span></span>

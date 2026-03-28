@@ -5,16 +5,44 @@ function HexGridBackground() {
   const animationRef = useRef();
   const offsetRef = useRef({ x: 0, y: 0 });
   const hoveredCellRef = useRef(null);
-  const fillMapRef = useRef(new Map());
+  const pointerRef = useRef(null);
+  const hoverVisibilityRef = useRef(0);
+  const lastPointerMoveAtRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
     const size = 18;
-    const speed = 0.38;
+    const speed = 0.42;
     const hexHorizontalStep = size * 1.5;
     const hexVerticalStep = size * Math.sqrt(3);
-    const desktopMinWidth = 1280;
+    const idleDelay = 500;
+    const blockHoverSelector = [
+      '.hero-card-inner',
+      '.info-item',
+      '.stat-card',
+      '.pillar-card',
+      '.project-card',
+      '.stack-card',
+      '.photo-placeholder',
+      '.future-panel',
+      '.future-lead',
+      '.contact-card',
+      '.contact-social-card',
+      '.linkedin-qr-frame',
+    ].join(', ');
+
+    const isBlockedHoverTarget = (eventTarget) => {
+      if (eventTarget instanceof Element && eventTarget.closest(blockHoverSelector)) {
+        return true;
+      }
+
+      if (eventTarget instanceof Node && eventTarget.parentElement?.closest(blockHoverSelector)) {
+        return true;
+      }
+
+      return false;
+    };
 
     const getThemeColors = () => {
       const styles = window.getComputedStyle(document.body);
@@ -22,20 +50,10 @@ function HexGridBackground() {
 
       return {
         borderColor: theme === 'blue' ? '#1a315b' : '#163020',
-        hoverFillColor: theme === 'blue' ? '#3b5fa8' : '#4c9a69',
+        hoverFillColor: theme === 'blue' ? '#2f4d86' : '#35684a',
+        hoverCoreFillColor: theme === 'blue' ? '#3b5f9f' : '#427b56',
         hoverStrokeColor: styles.getPropertyValue('--accent').trim() || '#8fe1aa',
       };
-    };
-
-    const getContainerWidth = () => Math.min(1140, window.innerWidth - 32);
-
-    const isInDesktopSideZone = (clientX) => {
-      if (window.innerWidth < desktopMinWidth) {
-        return false;
-      }
-
-      const sideGap = Math.max((window.innerWidth - getContainerWidth()) / 2, 0);
-      return clientX <= sideGap || clientX >= window.innerWidth - sideGap;
     };
 
     const resizeCanvas = () => {
@@ -80,54 +98,8 @@ function HexGridBackground() {
           ];
     };
 
-    const updateFillMap = () => {
-      const nextFillMap = new Map();
-      const columnOffset = Math.floor(offsetRef.current.x / hexHorizontalStep);
-
-      if (hoveredCellRef.current) {
-        nextFillMap.set(`${hoveredCellRef.current.x},${hoveredCellRef.current.y}`, {
-          intensity: 1,
-          type: 'core',
-        });
-
-        getNeighborCells(hoveredCellRef.current, columnOffset).forEach((neighborCell) => {
-          const neighborKey = `${neighborCell.x},${neighborCell.y}`;
-          if (!nextFillMap.has(neighborKey)) {
-            nextFillMap.set(neighborKey, {
-              intensity: 0.46,
-              type: 'neighbor',
-            });
-          }
-        });
-      }
-
-      for (const [key] of nextFillMap) {
-        if (!fillMapRef.current.has(key)) {
-          fillMapRef.current.set(key, {
-            intensity: 0,
-            type: nextFillMap.get(key)?.type || 'core',
-          });
-        }
-      }
-
-      for (const [key, value] of fillMapRef.current) {
-        const targetEntry = nextFillMap.get(key);
-        const targetValue = targetEntry ? targetEntry.intensity : 0;
-        const easedValue = value.intensity + (targetValue - value.intensity) * 0.1;
-
-        if (easedValue < 0.005) {
-          fillMapRef.current.delete(key);
-        } else {
-          fillMapRef.current.set(key, {
-            intensity: easedValue,
-            type: targetEntry?.type || value.type || 'core',
-          });
-        }
-      }
-    };
-
     const render = () => {
-      const { borderColor, hoverFillColor, hoverStrokeColor } = getThemeColors();
+      const { borderColor, hoverFillColor, hoverCoreFillColor, hoverStrokeColor } = getThemeColors();
       context.clearRect(0, 0, canvas.width, canvas.height);
 
       const offsetColumn = Math.floor(offsetRef.current.x / hexHorizontalStep);
@@ -135,6 +107,18 @@ function HexGridBackground() {
       const offsetY = ((offsetRef.current.y % hexVerticalStep) + hexVerticalStep) % hexVerticalStep;
       const totalColumns = Math.ceil(canvas.width / hexHorizontalStep) + 3;
       const totalRows = Math.ceil(canvas.height / hexVerticalStep) + 3;
+      const highlightedCells = new Set();
+      const coreCellKey = hoveredCellRef.current
+        ? `${hoveredCellRef.current.x},${hoveredCellRef.current.y}`
+        : null;
+
+      if (hoveredCellRef.current && hoverVisibilityRef.current > 0.01) {
+        highlightedCells.add(coreCellKey);
+
+        getNeighborCells(hoveredCellRef.current, offsetColumn).forEach((neighborCell) => {
+          highlightedCells.add(`${neighborCell.x},${neighborCell.y}`);
+        });
+      }
 
       for (let column = -2; column < totalColumns; column += 1) {
         for (let row = -2; row < totalRows; row += 1) {
@@ -144,17 +128,18 @@ function HexGridBackground() {
             (((column + offsetColumn) % 2 !== 0) ? hexVerticalStep / 2 : 0) +
             offsetY;
 
-          const key = `${column},${row}`;
-          const fillEntry = fillMapRef.current.get(key);
+          const cellKey = `${column},${row}`;
+          const isHovered = highlightedCells.has(cellKey);
 
-          if (fillEntry) {
-            context.globalAlpha = fillEntry.intensity;
+          if (isHovered) {
             drawHexagon(x, y, size);
-            context.fillStyle = hoverFillColor;
+            context.globalAlpha =
+              hoverVisibilityRef.current * (coreCellKey === cellKey ? 1 : 0.82);
+            context.fillStyle = coreCellKey === cellKey ? hoverCoreFillColor : hoverFillColor;
             context.fill();
 
             context.strokeStyle = hoverStrokeColor;
-            context.lineWidth = 1.25;
+            context.lineWidth = 1.15;
             context.stroke();
             context.globalAlpha = 1;
           }
@@ -184,7 +169,20 @@ function HexGridBackground() {
     const animate = () => {
       const movementSpeed = Math.max(speed, 0.1);
       offsetRef.current.x = (offsetRef.current.x - movementSpeed + hexHorizontalStep * 2) % (hexHorizontalStep * 2);
-      updateFillMap();
+      offsetRef.current.y =
+        (offsetRef.current.y - movementSpeed * 0.58 + hexVerticalStep * 2) % (hexVerticalStep * 2);
+
+      const now = Date.now();
+      const shouldShowHover =
+        pointerRef.current && now - lastPointerMoveAtRef.current < idleDelay;
+      const targetVisibility = shouldShowHover ? 1 : 0;
+      const easing = shouldShowHover ? 0.12 : 0.08;
+      hoverVisibilityRef.current +=
+        (targetVisibility - hoverVisibilityRef.current) * easing;
+
+      if (pointerRef.current) {
+        setHoveredCellFromPoint(pointerRef.current.x, pointerRef.current.y);
+      }
       render();
       animationRef.current = window.requestAnimationFrame(animate);
     };
@@ -207,26 +205,27 @@ function HexGridBackground() {
       }
     };
 
-    const handleMouseMove = (event) => {
+    const handleWindowMouseMove = (event) => {
+      if (isBlockedHoverTarget(event.target)) {
+        pointerRef.current = null;
+        hoveredCellRef.current = null;
+        return;
+      }
+
+      pointerRef.current = { x: event.clientX, y: event.clientY };
+      lastPointerMoveAtRef.current = Date.now();
       setHoveredCellFromPoint(event.clientX, event.clientY);
     };
 
-    const handleWindowMouseMove = (event) => {
-      if (isInDesktopSideZone(event.clientX)) {
-        setHoveredCellFromPoint(event.clientX, event.clientY);
-      } else if (event.target !== canvas) {
-        hoveredCellRef.current = null;
-      }
-    };
-
     const handleMouseLeave = () => {
+      pointerRef.current = null;
+      lastPointerMoveAtRef.current = 0;
       hoveredCellRef.current = null;
     };
 
     window.addEventListener('resize', resizeCanvas);
     window.addEventListener('mousemove', handleWindowMouseMove);
-    canvas.addEventListener('mousemove', handleMouseMove);
-    canvas.addEventListener('mouseleave', handleMouseLeave);
+    window.addEventListener('mouseleave', handleMouseLeave);
 
     resizeCanvas();
     animationRef.current = window.requestAnimationFrame(animate);
@@ -234,8 +233,7 @@ function HexGridBackground() {
     return () => {
       window.removeEventListener('resize', resizeCanvas);
       window.removeEventListener('mousemove', handleWindowMouseMove);
-      canvas.removeEventListener('mousemove', handleMouseMove);
-      canvas.removeEventListener('mouseleave', handleMouseLeave);
+      window.removeEventListener('mouseleave', handleMouseLeave);
       window.cancelAnimationFrame(animationRef.current);
     };
   }, []);

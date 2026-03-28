@@ -5,100 +5,100 @@ import useScrollReveal from '../hooks/useScrollReveal';
 const projects = [
   {
     image: 'https://siebe-sampermans.vercel.app/images/projects/farmforward.png',
-    alt: 'Screenshot van project FarmForward',
-    label: 'Verplicht project',
+    alt: 'Screenshot of the FarmForward project',
+    label: 'Required project',
     title: 'SKIL2 project semester 1',
     details: [
       {
         title: 'Context',
-        text: 'Vul hier kort in wat het project was, voor welk vak of doel het gemaakt werd en waarom het belangrijk was.',
+        text: 'Briefly explain what the project was, for which course or goal it was created, and why it was important.',
       },
       {
-        title: 'Wat ik gedaan heb',
-        text: 'Beschrijf hier heel concreet jouw eigen bijdrage, zeker als het om groepswerk ging.',
+        title: 'What I did',
+        text: 'Describe your personal contribution clearly, especially if this was a group project.',
       },
       {
-        title: 'Resultaat',
-        text: 'Noteer wat er uiteindelijk gebouwd of opgeleverd werd en voeg eventueel een beeld toe.',
+        title: 'Result',
+        text: 'Explain what was built or delivered in the end and optionally add a visual.',
       },
       {
-        title: 'Wat ik geleerd heb',
-        text: 'Beschrijf hier de hard skills en soft skills die je uit dit project hebt meegenomen.',
+        title: 'What I learned',
+        text: 'Describe the hard skills and soft skills you gained from this project.',
       },
     ],
   },
   {
     id: 'project-2',
     image: 'https://siebe-sampermans.vercel.app/images/projects/fridgemate.png',
-    alt: 'Screenshot van project FridgeMate',
-    label: 'Verplicht project',
+    alt: 'Screenshot of the FridgeMate project',
+    label: 'Required project',
     title: 'SKIL2 project semester 2',
     details: [
       {
         title: 'Context',
-        text: 'Vul hier kort in wat het project was, wat de doelstelling was en in welke context het plaatsvond.',
+        text: 'Briefly explain what the project was, what the objective was, and in which context it took place.',
       },
       {
-        title: 'Wat ik gedaan heb',
-        text: 'Beschrijf jouw persoonlijke taken, keuzes en verantwoordelijkheden binnen het project.',
+        title: 'What I did',
+        text: 'Describe your personal tasks, choices, and responsibilities within the project.',
       },
       {
-        title: 'Resultaat',
-        text: 'Leg uit wat het eindresultaat was en hoe het project uiteindelijk werd afgewerkt.',
+        title: 'Result',
+        text: 'Explain what the final result was and how the project was completed.',
       },
       {
-        title: 'Wat ik geleerd heb',
-        text: 'Vermeld hier welke technische en professionele vaardigheden je verder hebt ontwikkeld.',
+        title: 'What I learned',
+        text: 'Mention which technical and professional skills you developed further.',
       },
     ],
   },
   {
     id: 'project-3',
     image: 'https://siebe-sampermans.vercel.app/images/projects/vrcade.png',
-    alt: 'Screenshot van project VRCade',
+    alt: 'Screenshot of the VRCade project',
     label: 'Extra project',
     title: 'Quickcode',
     details: [
       {
         title: 'Context',
-        text: 'In het eerste jaar maakte ik Quickcode, een website om mensen op een speelse en competitieve manier te helpen leren coderen.',
+        text: 'In my first year, I worked on Quickcode, a website designed to help people learn coding in a playful and competitive way.',
       },
       {
-        title: 'Wat ik gedaan heb',
-        text: 'Ik werkte mee aan het concept en de uitwerking van de website en dacht na over hoe leren coderen motiverender gemaakt kon worden.',
+        title: 'What I did',
+        text: 'I contributed to the concept and development of the website and thought about how learning to code could become more motivating.',
       },
       {
-        title: 'Resultaat',
-        text: 'Het resultaat was een interactieve website waarin leren, competitie en gebruikservaring samenkomen.',
+        title: 'Result',
+        text: 'The result was an interactive website where learning, competition, and user experience come together.',
       },
       {
-        title: 'Wat ik geleerd heb',
-        text: 'Ik leerde beter nadenken over development, gebruikservaring, creativiteit en het bouwen van iets met echte meerwaarde.',
+        title: 'What I learned',
+        text: 'I learned to think more carefully about development, user experience, creativity, and building something with real added value.',
       },
     ],
   },
   {
     id: 'project-4',
     image: 'https://siebe-sampermans.vercel.app/images/projects/webdesignportfolio.png',
-    alt: 'Screenshot van webdesign portfolio project',
+    alt: 'Screenshot of the portfolio web design project',
     label: 'Extra project',
     title: 'Showcase portfolio',
     details: [
       {
         title: 'Context',
-        text: 'Voor 3ITF bouw ik een eerste showcase portfolio dat professioneel oogt en klaar is voor stage, projecten en verdere groei.',
+        text: 'For this portfolio, I am building a first showcase website that looks professional and is ready for internships, projects, and further growth.',
       },
       {
-        title: 'Wat ik gedaan heb',
-        text: 'Ik werkte de structuur, inhoud en presentatie uit zodat de website toont wie ik ben en wat ik al kan.',
+        title: 'What I did',
+        text: 'I worked on the structure, content, and presentation so the website clearly shows who I am and what I can already do.',
       },
       {
-        title: 'Resultaat',
-        text: 'Het resultaat is een duidelijke HTML-website met een vaste navigatie, een about-pagina, projectenpagina en aparte CV-pagina.',
+        title: 'Result',
+        text: 'The result is a clear website with fixed navigation, an about page, a projects page, and a separate CV page.',
       },
       {
-        title: 'Wat ik geleerd heb',
-        text: 'Ik leerde informatie professioneler structureren, inhoud afstemmen op requirements en mijn profiel beter presenteren.',
+        title: 'What I learned',
+        text: 'I learned to structure information more professionally, align content with requirements, and present my profile more clearly.',
       },
     ],
   },
@@ -113,12 +113,12 @@ function ProjectsPage() {
       <main>
         <section className="page-intro">
           <div className="container">
-            <span className="eyebrow">Projects / Achievements</span>
-            <h1 className="page-title">Mijn projecten</h1>
+            <span className="eyebrow">Projects</span>
+            <h1 className="page-title">My projects</h1>
             <p className="page-text">
-              Volgens de minimum requirements toon ik hier de verplichte SKIL2-projecten en twee
-              extra projecten. Per project beschrijf ik de context, mijn bijdrage, het resultaat
-              en wat ik eruit geleerd heb.
+              Here I present the required SKIL2 projects together with two extra projects. For each
+              project, I describe the context, my contribution, the result, and what I learned from
+              it.
             </p>
           </div>
         </section>
@@ -149,7 +149,7 @@ function ProjectsPage() {
                     aria-hidden="true"
                     data-cue-for={projects[index + 1].id}
                   >
-                    <span>Scroll verder</span>
+                    <span>Scroll down</span>
                     <span className="project-scroll-arrow"></span>
                   </div>
                 )}
@@ -159,11 +159,7 @@ function ProjectsPage() {
         </section>
       </main>
 
-      <PageFooter
-        text="© 2026 Siebe - Projects"
-        linkTo="/about"
-        linkLabel="Terug naar About me"
-      />
+      <PageFooter text="(c) 2026 Siebe - Projects" linkTo="/contact" linkLabel="Go to contact" />
     </>
   );
 }
