@@ -12,6 +12,8 @@ const OUTLOOK_EMAIL = 'r1058833@student.thomasmore.be';
 const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
 const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '';
 const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
+const OFFENSIVE_NAME_WORDS = ['fuck', 'shit', 'bitch', 'asshole', 'cunt', 'nigger', 'faggot'];
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
 
 function SocialIcon({ label }) {
   if (label === 'Instagram') {
@@ -109,6 +111,11 @@ function ContactPage() {
 
   const submitWithEmailJs = async (event) => {
     event.preventDefault();
+    const trimmedName = formData.name.trim();
+    const normalizedName = trimmedName.toLowerCase();
+    const trimmedEmail = formData.email.trim();
+    const trimmedMessage = formData.message.trim();
+    const normalizedMessage = trimmedMessage.toLowerCase();
 
     if (sendState.status === 'sending') {
       return;
@@ -128,6 +135,33 @@ function ContactPage() {
         status: 'error',
         progress: 0,
         message: 'Please wait a moment and try sending again.',
+      });
+      return;
+    }
+
+    if (OFFENSIVE_NAME_WORDS.some((word) => normalizedName.includes(word))) {
+      setSendState({
+        status: 'error',
+        progress: 0,
+        message: 'Please use a respectful name without offensive language.',
+      });
+      return;
+    }
+
+    if (OFFENSIVE_NAME_WORDS.some((word) => normalizedMessage.includes(word))) {
+      setSendState({
+        status: 'error',
+        progress: 0,
+        message: 'Please keep your message respectful and free of offensive language.',
+      });
+      return;
+    }
+
+    if (!EMAIL_PATTERN.test(trimmedEmail)) {
+      setSendState({
+        status: 'error',
+        progress: 0,
+        message: 'Please enter a valid email address.',
       });
       return;
     }
@@ -171,12 +205,12 @@ function ContactPage() {
           template_params: {
             to_email: CONTACT_RECIPIENT,
             recipient_email: CONTACT_RECIPIENT,
-            from_name: formData.name,
-            from_email: formData.email,
-            user_email: formData.email,
-            reply_to: formData.email,
-            message: formData.message,
-            subject: `New contact message from ${formData.name}`,
+            from_name: trimmedName,
+            from_email: trimmedEmail,
+            user_email: trimmedEmail,
+            reply_to: trimmedEmail,
+            message: trimmedMessage,
+            subject: `New contact message from ${trimmedName}`,
           },
         }),
       });

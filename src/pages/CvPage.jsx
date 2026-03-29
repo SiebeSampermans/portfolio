@@ -58,7 +58,11 @@ function CvPage() {
 
         <section>
           <div className="container cv-preview-section">
-            <div className={`cv-printer-assembly${isPreviewing ? ' is-previewing' : ''}`}>
+            <div
+              className={`cv-printer-assembly${
+                isPreviewing || isRetracting ? ' is-paper-active' : ''
+              }${isPreviewing ? ' is-previewing' : ''}`}
+            >
               <div className="cv-printer-anchor">
                 <div className={`cv-printer-card${isPreviewing ? ' is-printing' : ''}`}>
                   <button

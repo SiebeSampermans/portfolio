@@ -1460,15 +1460,21 @@ section {
   display: grid;
   gap: 0;
   --cv-preview-height: min(72vh, 920px);
+  transition: padding-bottom 3.2s cubic-bezier(0.2, 0.88, 0.24, 1);
 }
 
-.cv-printer-assembly.is-previewing {
+.cv-printer-assembly.is-paper-active {
   padding-bottom: calc(var(--cv-preview-height) + 52px);
 }
 
 .cv-printer-anchor {
   position: relative;
   isolation: isolate;
+  overflow: hidden;
+}
+
+.cv-printer-assembly.is-paper-active .cv-printer-anchor {
+  overflow: visible;
 }
 
 .cv-printer-card {
@@ -2427,6 +2433,14 @@ section {
 
 
 @media (min-width: 641px) {
+  .cv-paper-stage {
+    width: calc(100% - 5.5rem);
+  }
+
+  .cv-paper-sheet {
+    width: 100%;
+  }
+
   .nav-inner,
   .footer-inner {
     flex-direction: row;
@@ -2523,6 +2537,14 @@ section {
 }
 
 @media (max-width: 640px) {
+  .cv-paper-stage {
+    width: calc(100% - 3.75rem);
+  }
+
+  .cv-paper-sheet {
+    width: 100%;
+  }
+
   .nav-toggle {
     order: 2;
   }
