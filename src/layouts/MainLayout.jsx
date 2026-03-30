@@ -18,16 +18,15 @@ function MainLayout() {
   const [themeTransition, setThemeTransition] = useState(null);
   const [preferredBlueTheme, setPreferredBlueTheme] = useState(() => {
     if (typeof window === 'undefined') {
-      return false;
+      return true;
     }
 
-    return window.localStorage.getItem('theme') === 'blue';
+    const savedTheme = window.localStorage.getItem('theme');
+    return savedTheme ? savedTheme === 'blue' : true;
   });
   const location = useLocation();
   const hasMountedThemeRef = useRef(false);
-  const isCvRoute = location.pathname === '/cv' || location.pathname === '/cv.html';
-  const hideThemeSwitch = isCvRoute;
-  const isBlueTheme = isCvRoute || preferredBlueTheme;
+  const isBlueTheme = preferredBlueTheme;
 
   useEffect(() => {
     setIsMenuOpen(false);
@@ -100,20 +99,18 @@ function MainLayout() {
           aria-hidden="true"
         ></div>
       )}
-      {!hideThemeSwitch && (
-        <label className="theme-switch theme-switch-floating" aria-label="Switch color theme">
-          <span className="theme-switch-label">Theme</span>
-          <button
-            type="button"
-            className={`theme-switch-track${isBlueTheme ? ' is-active' : ''}`}
-            role="switch"
-            aria-checked={isBlueTheme}
-            onClick={() => setPreferredBlueTheme((current) => !current)}
-          >
-            <span className="theme-switch-thumb"></span>
-          </button>
-        </label>
-      )}
+      <label className="theme-switch theme-switch-floating" aria-label="Switch color theme">
+        <span className="theme-switch-label">Theme</span>
+        <button
+          type="button"
+          className={`theme-switch-track${isBlueTheme ? ' is-active' : ''}`}
+          role="switch"
+          aria-checked={isBlueTheme}
+          onClick={() => setPreferredBlueTheme((current) => !current)}
+        >
+          <span className="theme-switch-thumb"></span>
+        </button>
+      </label>
 
       <header className="site-header">
         <nav className="nav">

@@ -5,12 +5,12 @@ function LinkedInQr({ value }) {
   const qrRef = useRef(null);
   const qrCodeRef = useRef(null);
   const [theme, setTheme] = useState(() =>
-    typeof document !== 'undefined' ? document.body.dataset.theme || 'green' : 'green',
+    typeof document !== 'undefined' ? document.body.dataset.theme || 'blue' : 'blue',
   );
 
   useEffect(() => {
     const observer = new MutationObserver(() => {
-      setTheme(document.body.dataset.theme || 'green');
+      setTheme(document.body.dataset.theme || 'blue');
     });
 
     observer.observe(document.body, {
