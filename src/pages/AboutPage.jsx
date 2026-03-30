@@ -4,6 +4,95 @@ import usePageTitle from '../hooks/usePageTitle';
 import useScrollReveal from '../hooks/useScrollReveal';
 import aboutPhoto from '../assets/about-photo.jpg';
 
+const technicalSkills = [
+  { name: 'Python', category: 'Programming' },
+  { name: 'C#', category: 'Programming' },
+  { name: 'Java', category: 'Programming' },
+  { name: 'JavaScript', category: 'Programming' },
+  { name: '.NET', category: 'Framework' },
+  { name: 'React', category: 'Framework' },
+  { name: 'Alpine', category: 'Framework' },
+  { name: 'PHP', category: 'Back-end' },
+  { name: 'MongoDB', category: 'Database' },
+  { name: 'FastAPI', category: 'Back-end' },
+  { name: 'SQL', category: 'Database' },
+  { name: 'SQLite', category: 'Database' },
+  { name: 'HTML', category: 'Front-end' },
+  { name: 'CSS', category: 'Front-end' },
+  { name: 'Bootstrap', category: 'Front-end' },
+  { name: 'Tailwind', category: 'Front-end' },
+  { name: 'Livewire', category: 'Front-end' },
+  { name: 'Laravel', category: 'Framework' },
+  { name: 'Docker', category: 'Cloud' },
+  { name: 'Azure', category: 'Cloud' },
+  { name: 'Cisco', category: 'Networking' },
+];
+
+const spotifyPlaylists = [
+  {
+    title: 'OAT',
+    description: 'A playlist with some of my all-time favorite tracks that I keep coming back to.',
+    vibe: 'Focus • Energy • Rhythm',
+    themeClass: 'spotify-preview-emerald',
+    meta: 'Siebe.sampermans • 11 keer opgeslagen • 818 nummers, langer dan 24 uur',
+    coverTiles: ['BABY', 'PIT', 'CITY', 'TYPE'],
+    tracks: [
+      {
+        title: 'Babydoll',
+        artworkLabel: 'BABY',
+        artworkClass: 'spotify-track-artwork-sand',
+      },
+      {
+        title: 'We Are One',
+        artworkLabel: 'PIT',
+        artworkClass: 'spotify-track-artwork-earth',
+      },
+      {
+        title: 'CITY OF ANGELS',
+        artworkLabel: 'CITY',
+        artworkClass: 'spotify-track-artwork-gold',
+      },
+      {
+        title: 'My Type',
+        artworkLabel: 'TYPE',
+        artworkClass: 'spotify-track-artwork-aqua',
+      },
+    ],
+    href: 'https://open.spotify.com/playlist/7d8YggW1sHHbGtrNUCxg7l',
+  },
+  {
+    title: 'Beatbox',
+    description: 'A second selection that shows another side of my music taste and daily vibe.',
+    vibe: 'Reset • Atmosphere • Daily flow',
+    themeClass: 'spotify-preview-ocean',
+    meta: 'Siebe.sampermans • 68 nummers, ongeveer 3 uur 15 min.',
+    coverTiles: ['MATEJ', 'SYJO', 'D-LOW', 'DEN'],
+    tracks: [
+      {
+        title: 'Poison Dagger',
+        artworkLabel: 'DLOW',
+        artworkClass: 'spotify-track-artwork-lime',
+      },
+      {
+        title: 'Warrior',
+        artworkLabel: 'SYJO',
+        artworkClass: 'spotify-track-artwork-amber',
+      },
+      {
+        title: 'Blindfold',
+        artworkLabel: 'MAT',
+        artworkClass: 'spotify-track-artwork-rose',
+      },
+      {
+        title: 'Missing You',
+        artworkLabel: 'DEN',
+        artworkClass: 'spotify-track-artwork-violet',
+      },
+    ],
+    href: 'https://open.spotify.com/playlist/7c3MDzD9R9mpNbDdAVmMZg',
+  },
+];
+
 function AboutPage() {
   const [cursorState, setCursorState] = useState({
     isVisible: false,
@@ -87,6 +176,80 @@ function AboutPage() {
           </div>
         </section>
 
+        <section className="spotify-section">
+          <div className="container spotify-layout">
+            <div className="spotify-intro scroll-reveal">
+              <span className="eyebrow">Spotify</span>
+              <h2>Music is a big part of my lifestyle</h2>
+              <p>
+                I listen to a lot of music, and it is genuinely a big part of how I live day to
+                day. It helps me through thick and thin, keeps me focused, gives me energy, and is
+                always there whether I want to relax, work, or reset my mind.
+              </p>
+              <p>
+                These two playlists give a small impression of the kind of sound that stays with me
+                and supports me in different moments.
+              </p>
+            </div>
+
+            <div className="spotify-grid">
+              {spotifyPlaylists.map((playlist) => (
+                <article className="spotify-card scroll-reveal" key={playlist.title}>
+                  <div className={`spotify-preview ${playlist.themeClass}`} aria-hidden="true">
+                    <div className="spotify-preview-collage">
+                      {playlist.coverTiles.map((tile) => (
+                        <span className="spotify-preview-tile" key={`${playlist.title}-${tile}`}>
+                          {tile}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="spotify-preview-content">
+                      <div className="spotify-preview-top">
+                        <span className="spotify-preview-brand">Openbare playlist</span>
+                      </div>
+                      <div className="spotify-preview-body">
+                        <strong>{playlist.title}</strong>
+                        <span>{playlist.vibe}</span>
+                      </div>
+                      <div className="spotify-preview-meta">
+                        <a
+                          className="spotify-preview-plus"
+                          href={playlist.href}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          +
+                        </a>
+                        <span>{playlist.meta}</span>
+                      </div>
+                    </div>
+                  </div>
+                  {playlist.tracks.length > 0 && (
+                    <div className="spotify-track-list">
+                      {playlist.tracks.map((track) => (
+                        <div className="spotify-track-row" key={`${playlist.title}-${track.title}`}>
+                          <span className={`spotify-track-artwork ${track.artworkClass}`}>
+                            {track.artworkLabel}
+                          </span>
+                          <span className="spotify-track-title">{track.title}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <a
+                    className="btn btn-secondary spotify-link"
+                    href={playlist.href}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Open on Spotify
+                  </a>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section className="future-section">
           <div className="container">
             <div className="section-header scroll-reveal">
@@ -139,56 +302,22 @@ function AboutPage() {
                 </p>
               </div>
 
-              <div className="stack-groups">
-                <div className="stack-card scroll-reveal">
-                  <strong>Programming languages</strong>
-                  <div className="stack-tags">
-                    <span>Python</span>
-                    <span>C#</span>
-                    <span>Java</span>
-                    <span>JavaScript</span>
-                    <span>.NET</span>
-                    <span>React</span>
-                    <span>Alpine</span>
-                  </div>
-                </div>
-
-                <div className="stack-card scroll-reveal">
-                  <strong>Back-end</strong>
-                  <div className="stack-tags">
-                    <span>PHP</span>
-                    <span>MongoDB</span>
-                    <span>FastAPI</span>
-                    <span>SQL</span>
-                    <span>SQLite</span>
-                  </div>
-                </div>
-
-                <div className="stack-card scroll-reveal">
-                  <strong>Front-end</strong>
-                  <div className="stack-tags">
-                    <span>HTML</span>
-                    <span>CSS</span>
-                    <span>Bootstrap</span>
-                    <span>Tailwind</span>
-                    <span>Livewire</span>
-                    <span>Laravel</span>
-                  </div>
-                </div>
-
-                <div className="stack-card scroll-reveal">
-                  <strong>Cloud and deployment</strong>
-                  <div className="stack-tags">
-                    <span>Docker</span>
-                    <span>Azure</span>
-                  </div>
-                </div>
-
-                <div className="stack-card scroll-reveal">
-                  <strong>Networking</strong>
-                  <div className="stack-tags">
-                    <span>Cisco</span>
-                  </div>
+              <div className="skills-carousel scroll-reveal" aria-label="Technical skills carousel">
+                <div className="skills-carousel-track">
+                  {[0, 1].map((loopIndex) => (
+                    <div
+                      className="skills-carousel-group"
+                      key={`skills-loop-${loopIndex}`}
+                      aria-hidden={loopIndex === 1}
+                    >
+                      {technicalSkills.map((skill) => (
+                        <article className="skill-chip" key={`${loopIndex}-${skill.name}`}>
+                          <span className="skill-chip-name">{skill.name}</span>
+                          <span className="skill-chip-category">{skill.category}</span>
+                        </article>
+                      ))}
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -231,6 +360,7 @@ function AboutPage() {
             </div>
           </div>
         </section>
+
       </main>
 
       <PageFooter text="&copy; 2026 Siebe - About me" linkTo="/cv" linkLabel="Go to my CV" />
