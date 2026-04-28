@@ -736,6 +736,49 @@ section {
   gap: 1rem;
 }
 
+.projects-grid-shell {
+  position: relative;
+}
+
+.projects-grid-shell.is-loading .projects-grid {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.projects-grid-shell.is-ready .projects-grid {
+  opacity: 1;
+}
+
+.projects-grid-shell .projects-grid {
+  transition: opacity 0.28s ease;
+}
+
+.projects-loading {
+  display: grid;
+  justify-items: center;
+  gap: 0.9rem;
+  min-height: 320px;
+  place-content: center;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.projects-loading-spinner {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 3px solid rgba(var(--accent-rgb), 0.18);
+  border-top-color: var(--accent);
+  border-right-color: rgba(var(--accent-rgb), 0.72);
+  box-shadow:
+    0 0 18px rgba(var(--accent-rgb), 0.12),
+    inset 0 0 12px rgba(var(--accent-rgb), 0.08);
+  animation: projectSpinner 0.82s linear infinite;
+}
+
 .feature-list > *,
 .stats-grid > *,
 .pillars-grid > *,
@@ -2871,6 +2914,16 @@ section {
   50% {
     transform: rotate(45deg) translateY(7px);
     opacity: 1;
+  }
+}
+
+@keyframes projectSpinner {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
   }
 }
 

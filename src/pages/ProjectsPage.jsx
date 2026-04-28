@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import PageFooter from '../components/PageFooter';
 import usePageTitle from '../hooks/usePageTitle';
 import useScrollReveal from '../hooks/useScrollReveal';
@@ -204,8 +205,57 @@ const projects = [
 ];
 
 function ProjectsPage() {
+  const [areProjectImagesReady, setAreProjectImagesReady] = useState(false);
+
   usePageTitle('Siebe | Projects');
   useScrollReveal({ withProjectCues: true });
+
+  useEffect(() => {
+    const imageSources = projects
+      .map((project) => project.image)
+      .filter((imageSource) => typeof imageSource === 'string' && imageSource.length > 0);
+
+    setAreProjectImagesReady(false);
+
+    if (imageSources.length === 0) {
+      setAreProjectImagesReady(true);
+      return undefined;
+    }
+
+    let isCancelled = false;
+    let loadedImages = 0;
+
+    const markImageAsReady = () => {
+      loadedImages += 1;
+
+      if (!isCancelled && loadedImages >= imageSources.length) {
+        setAreProjectImagesReady(true);
+      }
+    };
+
+    const preloadedImages = imageSources.map((source) => {
+      const image = new Image();
+      image.onload = markImageAsReady;
+      image.onerror = markImageAsReady;
+      image.src = source;
+
+      if (image.complete) {
+        image.onload = null;
+        image.onerror = null;
+        markImageAsReady();
+      }
+
+      return image;
+    });
+
+    return () => {
+      isCancelled = true;
+      preloadedImages.forEach((image) => {
+        image.onload = null;
+        image.onerror = null;
+      });
+    };
+  }, []);
 
   return (
     <>
@@ -223,72 +273,85 @@ function ProjectsPage() {
         </section>
 
         <section>
-          <div className="container projects-grid">
-            {projects.map((project, index) => (
-              <div key={project.title}>
-                <article className="project-card scroll-reveal" id={project.id}>
-                  {project.image && project.details.some((detail) => detail.link) ? (
-                    <a
-                      className="project-visual project-image"
-                      href={project.details.find((detail) => detail.link)?.link}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label={`Open ${project.title}`}
-                    >
-                      <img src={project.image} alt={project.alt} />
-                    </a>
-                  ) : project.image ? (
-                    <div className="project-visual project-image">
-                      <img src={project.image} alt={project.alt} />
+          <div
+            className={`container projects-grid-shell${
+              areProjectImagesReady ? ' is-ready' : ' is-loading'
+            }`}
+          >
+            {!areProjectImagesReady && (
+              <div className="projects-loading" role="status" aria-live="polite">
+                <span className="projects-loading-spinner" aria-hidden="true"></span>
+                <span>Loading project visuals...</span>
+              </div>
+            )}
+
+            <div className="projects-grid">
+              {projects.map((project, index) => (
+                <div key={project.title}>
+                  <article className="project-card scroll-reveal" id={project.id}>
+                    {project.image && project.details.some((detail) => detail.link) ? (
+                      <a
+                        className="project-visual project-image"
+                        href={project.details.find((detail) => detail.link)?.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`Open ${project.title}`}
+                      >
+                        <img src={project.image} alt={project.alt} />
+                      </a>
+                    ) : project.image ? (
+                      <div className="project-visual project-image">
+                        <img src={project.image} alt={project.alt} />
+                      </div>
+                    ) : project.details.some((detail) => detail.link) ? (
+                      <a
+                        className="project-visual project-placeholder"
+                        href={project.details.find((detail) => detail.link)?.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`Open ${project.title}`}
+                      >
+                        <strong>{project.visualTitle ?? project.title}</strong>
+                        {project.visualMeta && <span>{project.visualMeta}</span>}
+                      </a>
+                    ) : (
+                      <div className="project-visual project-placeholder" aria-hidden="true">
+                        <strong>{project.visualTitle ?? project.title}</strong>
+                        {project.visualMeta && <span>{project.visualMeta}</span>}
+                      </div>
+                    )}
+                    <div className="project-body">
+                      <span className="card-label">{project.label}</span>
+                      <h2>{project.title}</h2>
+                      {project.details.map((detail) => (
+                        <div key={detail.title} className="project-detail">
+                          <strong>{detail.title}</strong>
+                          <p>{detail.text}</p>
+                          {detail.link && (
+                            <p>
+                              <a href={detail.link} target="_blank" rel="noreferrer">
+                                {detail.linkLabel}
+                              </a>
+                            </p>
+                          )}
+                        </div>
+                      ))}
                     </div>
-                  ) : project.details.some((detail) => detail.link) ? (
-                    <a
-                      className="project-visual project-placeholder"
-                      href={project.details.find((detail) => detail.link)?.link}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label={`Open ${project.title}`}
+                  </article>
+
+                  {index < projects.length - 1 && (
+                    <div
+                      className="project-scroll-cue scroll-reveal"
+                      aria-hidden="true"
+                      data-cue-for={projects[index + 1].id}
                     >
-                      <strong>{project.visualTitle ?? project.title}</strong>
-                      {project.visualMeta && <span>{project.visualMeta}</span>}
-                    </a>
-                  ) : (
-                    <div className="project-visual project-placeholder" aria-hidden="true">
-                      <strong>{project.visualTitle ?? project.title}</strong>
-                      {project.visualMeta && <span>{project.visualMeta}</span>}
+                      <span>Scroll further</span>
+                      <span className="project-scroll-arrow"></span>
                     </div>
                   )}
-                  <div className="project-body">
-                    <span className="card-label">{project.label}</span>
-                    <h2>{project.title}</h2>
-                    {project.details.map((detail) => (
-                      <div key={detail.title} className="project-detail">
-                        <strong>{detail.title}</strong>
-                        <p>{detail.text}</p>
-                        {detail.link && (
-                          <p>
-                            <a href={detail.link} target="_blank" rel="noreferrer">
-                              {detail.linkLabel}
-                            </a>
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </article>
-
-                {index < projects.length - 1 && (
-                  <div
-                    className="project-scroll-cue scroll-reveal"
-                    aria-hidden="true"
-                    data-cue-for={projects[index + 1].id}
-                  >
-                    <span>Scroll further</span>
-                    <span className="project-scroll-arrow"></span>
-                  </div>
-                )}
-              </div>
-            ))}
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       </main>
