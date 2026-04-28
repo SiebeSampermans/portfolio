@@ -8,9 +8,34 @@ const PAPER_RETRACT_DURATION_MS = 3200;
 function CvPage() {
   const [isPreviewing, setIsPreviewing] = useState(false);
   const [isRetracting, setIsRetracting] = useState(false);
+  const [theme, setTheme] = useState(() =>
+    typeof document !== 'undefined' ? document.body.dataset.theme || 'blue' : 'blue',
+  );
 
   usePageTitle('Siebe | CV');
   useScrollReveal();
+
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return undefined;
+    }
+
+    const syncTheme = () => {
+      setTheme(document.body.dataset.theme || 'blue');
+    };
+
+    syncTheme();
+
+    const observer = new MutationObserver(syncTheme);
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     if (isPreviewing) {
@@ -37,6 +62,9 @@ function CvPage() {
     });
   };
 
+  const cvFile = theme === 'green' ? '/CV_groen.pdf' : '/CV_blauw.pdf';
+  const cvPreviewSrc = `${cvFile}#toolbar=0&navpanes=0&scrollbar=1`;
+
   return (
     <>
       <main>
@@ -49,7 +77,7 @@ function CvPage() {
               it directly or preview it on the page itself.
             </p>
             <div className="hero-actions">
-              <a className="btn btn-primary" href="/CV_siebe.pdf" download>
+              <a className="btn btn-primary" href={cvFile} download>
                 Download CV
               </a>
             </div>
@@ -107,7 +135,7 @@ function CvPage() {
                     </div>
                     <iframe
                       className="cv-paper-frame"
-                      src="/CV_siebe.pdf#toolbar=0&navpanes=0&scrollbar=1"
+                      src={cvPreviewSrc}
                       title="CV preview"
                     ></iframe>
                   </div>

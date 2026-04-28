@@ -5,9 +5,98 @@ import farmforwardImage from '../assets/projects/farmforward.png';
 import fridgemateImage from '../assets/projects/fridgemate.png';
 import vrcadeImage from '../assets/projects/vrcade.png';
 import webdesignPortfolioImage from '../assets/projects/webdesignportfolio.png';
+import skilSemesterOneImage from '../assets/projects/skil-semester-1.png';
+import poutrelImage from '../assets/projects/poutrel.png';
+import tsnuffeltjeImage from '../assets/projects/tsnuffeltje.png';
 
 const projects = [
   {
+    id: 'project-5',
+    image: skilSemesterOneImage,
+    alt: 'Screenshot of the semester 1 analysis and design data model',
+    label: 'Second year / Semester 1',
+    title: 'Analytic Report',
+    visualTitle: 'SKIL S1',
+    visualMeta: 'Analysis, design and data model',
+    details: [
+      {
+        title: 'Context',
+        text: 'During the first semester of my second year in Applied Computer Science, we worked on a larger SKIL project in which analysis and design were central. The project was not only about building ideas, but about documenting a complete solution with clear requirements, flows, and a structured data model.',
+      },
+      {
+        title: 'What I did',
+        text: 'I contributed to the analysis, helped structure the documentation, and translated requirements into a concrete design. That included thinking about entities, relationships, user flows, and how the database and application structure should support the project.',
+      },
+      {
+        title: 'Result',
+        text: 'The end result was a complete analysis and design deliverable, including a detailed data model that could serve as a strong starting point for implementation. It showed that I can help shape a project before development starts and keep complex information structured.',
+      },
+      {
+        title: 'What I learned',
+        text: 'I learned how important a strong analysis phase is for later development. I also improved in documenting decisions, modeling data clearly, and turning abstract requirements into a technical foundation a team can build on.',
+      },
+    ],
+  },
+  {
+    id: 'project-6',
+    image: poutrelImage,
+    alt: 'Screenshot of the Poutrel fitness and coaching platform',
+    label: 'Second year / Semester 2',
+    title: 'Poutrel',
+    visualTitle: 'TALL Stack',
+    visualMeta: 'Fitness and coaching platform',
+    details: [
+      {
+        title: 'Context',
+        text: 'In the second semester of my second year in Applied Computer Science, we received an analysis and design report from another group and had to turn it into a working TALL stack website. The concept became Poutrel, a fitness and coaching platform where users can book lessons, reserve material, and follow training schedules.',
+      },
+      {
+        title: 'What I did',
+        text: 'I worked on translating the handed-over analysis into a functional web application, paying attention to structure, usability, and consistency with the original concept. That meant helping build both the interface and the underlying application logic within the TALL stack.',
+      },
+      {
+        title: 'Result',
+        text: 'The result was a working TALL stack website with a clean dashboard-style interface and clear user flows for reservations and training follow-up.',
+        link: 'https://poutrel.lepuort.be/',
+        linkLabel: 'View Poutrel',
+      },
+      {
+        title: 'What I learned',
+        text: 'I learned how to build from someone else\'s analysis instead of starting from my own concept. That improved my ability to read requirements carefully, make technical decisions within constraints, and collaborate in a workflow that feels closer to a real client handover.',
+      },
+    ],
+  },
+  {
+    id: 'project-7',
+    image: tsnuffeltjeImage,
+    alt: "Screenshot of the T'Snuffeltje dog grooming salon website",
+    label: 'Personal project',
+    title: "T'Snuffeltje",
+    visualTitle: 'Client Website',
+    visualMeta: 'Warm brand site for a dog grooming salon',
+    details: [
+      {
+        title: 'Context',
+        text: "This project started when a friend of my mother asked for a website for her dog grooming salon. The goal was to create a warm and personal site that matches the calm atmosphere of the salon and gives visitors immediate trust.",
+      },
+      {
+        title: 'What I did',
+        text: 'I designed and built the website, and recently updated it so it better reflects the skills I have developed since the first version. I focused on soft visual styling, better content structure, and a presentation that feels caring and professional for a real client.',
+      },
+      {
+        title: 'Result',
+        text: 'The result is a live website for a real business with a strong visual identity, service-focused content, and a design that fits the salon atmosphere shown in the photography and typography.',
+        link: 'https://tsnuffeltje.vercel.app/',
+        linkLabel: "View T'Snuffeltje",
+      },
+      {
+        title: 'What I learned',
+        text: 'I learned a lot about designing for a real client, translating feedback into concrete improvements, and matching the visual style of a website to the personality of a business. It also helped me grow in ownership and polish.',
+      },
+    ],
+  },
+  {
+    id: 'project-1',
     image: farmforwardImage,
     alt: 'Screenshot of project FarmForward',
     label: 'Required project',
@@ -126,9 +215,9 @@ function ProjectsPage() {
             <span className="eyebrow">Projects / Achievements</span>
             <h1 className="page-title">My projects</h1>
             <p className="page-text">
-              Following the minimum requirements, I show the required SKIL2 projects here together
-              with two extra projects. For each project, I describe the context, my contribution,
-              the result, and what I learned from it.
+              This page brings together course projects and personal work that show how I grow in
+              analysis, design, development, and collaboration. For each project, I describe the
+              context, my contribution, the result, and what I learned from it.
             </p>
           </div>
         </section>
@@ -138,7 +227,7 @@ function ProjectsPage() {
             {projects.map((project, index) => (
               <div key={project.title}>
                 <article className="project-card scroll-reveal" id={project.id}>
-                  {project.details.some((detail) => detail.link) ? (
+                  {project.image && project.details.some((detail) => detail.link) ? (
                     <a
                       className="project-visual project-image"
                       href={project.details.find((detail) => detail.link)?.link}
@@ -148,9 +237,25 @@ function ProjectsPage() {
                     >
                       <img src={project.image} alt={project.alt} />
                     </a>
-                  ) : (
+                  ) : project.image ? (
                     <div className="project-visual project-image">
                       <img src={project.image} alt={project.alt} />
+                    </div>
+                  ) : project.details.some((detail) => detail.link) ? (
+                    <a
+                      className="project-visual project-placeholder"
+                      href={project.details.find((detail) => detail.link)?.link}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`Open ${project.title}`}
+                    >
+                      <strong>{project.visualTitle ?? project.title}</strong>
+                      {project.visualMeta && <span>{project.visualMeta}</span>}
+                    </a>
+                  ) : (
+                    <div className="project-visual project-placeholder" aria-hidden="true">
+                      <strong>{project.visualTitle ?? project.title}</strong>
+                      {project.visualMeta && <span>{project.visualMeta}</span>}
                     </div>
                   )}
                   <div className="project-body">

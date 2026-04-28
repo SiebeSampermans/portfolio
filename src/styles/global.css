@@ -2489,6 +2489,30 @@ section {
   align-items: stretch;
 }
 
+.project-visual.project-placeholder {
+  align-content: center;
+  justify-items: center;
+  padding: 1.5rem;
+  text-decoration: none;
+}
+
+.project-placeholder strong {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.project-placeholder span {
+  position: relative;
+  z-index: 1;
+  max-width: 20rem;
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
 .project-visual strong,
 .project-body h2,
 .info-item strong,
