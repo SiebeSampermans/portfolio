@@ -1252,7 +1252,7 @@ section {
 
 .spotify-now-playing-secondary {
   display: grid;
-  gap: 0.55rem;
+  gap: 0.35rem;
 }
 
 .spotify-progress {
@@ -1286,10 +1286,6 @@ section {
 .spotify-now-playing-idle {
   margin: 0;
   color: var(--muted);
-}
-
-.spotify-now-playing-link {
-  width: fit-content;
 }
 
 .spotify-card {

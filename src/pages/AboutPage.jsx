@@ -304,17 +304,6 @@ function AboutPage() {
                         Spotify starts.
                       </p>
                     )}
-
-                    {nowPlayingTrack.songUrl && (
-                      <a
-                        className="btn btn-secondary spotify-now-playing-link"
-                        href={nowPlayingTrack.songUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        Open track on Spotify
-                      </a>
-                    )}
                   </div>
                 </div>
               )}
