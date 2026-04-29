@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PageFooter from '../components/PageFooter';
 import usePageTitle from '../hooks/usePageTitle';
 import useScrollReveal from '../hooks/useScrollReveal';
@@ -93,15 +93,70 @@ const spotifyPlaylists = [
   },
 ];
 
+const initialNowPlayingState = {
+  status: 'loading',
+  track: null,
+};
+
+const formatPlaybackTime = (milliseconds) => {
+  const totalSeconds = Math.floor(milliseconds / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${minutes}:${String(seconds).padStart(2, '0')}`;
+};
+
 function AboutPage() {
   const [cursorState, setCursorState] = useState({
     isVisible: false,
     x: 0,
     y: 0,
   });
+  const [nowPlayingState, setNowPlayingState] = useState(initialNowPlayingState);
 
   usePageTitle('Siebe | About me');
   useScrollReveal();
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadNowPlaying = async () => {
+      try {
+        const response = await fetch('/api/spotify-now-playing');
+        const data = await response.json();
+
+        if (!isMounted) {
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error(data?.error || 'Unable to load Spotify status.');
+        }
+
+        setNowPlayingState({
+          status: 'ready',
+          track: data,
+        });
+      } catch (error) {
+        if (!isMounted) {
+          return;
+        }
+
+        setNowPlayingState({
+          status: 'error',
+          track: null,
+        });
+      }
+    };
+
+    loadNowPlaying();
+    const intervalId = window.setInterval(loadNowPlaying, 45000);
+
+    return () => {
+      isMounted = false;
+      window.clearInterval(intervalId);
+    };
+  }, []);
 
   const handlePhotoPointerMove = (event) => {
     const bounds = event.currentTarget.getBoundingClientRect();
@@ -116,6 +171,13 @@ function AboutPage() {
   const handlePhotoPointerLeave = () => {
     setCursorState((current) => ({ ...current, isVisible: false }));
   };
+
+  const { status: nowPlayingStatus, track: nowPlayingTrack } = nowPlayingState;
+  const isTrackPlaying = nowPlayingTrack?.isPlaying;
+  const playbackProgress =
+    nowPlayingTrack?.durationMs && nowPlayingTrack?.progressMs != null
+      ? Math.min((nowPlayingTrack.progressMs / nowPlayingTrack.durationMs) * 100, 100)
+      : 0;
 
   return (
     <>
@@ -191,6 +253,113 @@ function AboutPage() {
                 and supports me in different moments.
               </p>
             </div>
+
+            <article className="spotify-now-playing-card scroll-reveal">
+              <div className="spotify-now-playing-head">
+                <div>
+                  <span className="card-label">Live listening</span>
+                  <h3>What I am listening to right now</h3>
+                </div>
+                <span
+                  className={`spotify-live-pill${
+                    isTrackPlaying ? ' is-active' : ''
+                  }${nowPlayingStatus === 'error' ? ' is-error' : ''}`}
+                >
+                  {nowPlayingStatus === 'loading'
+                    ? 'Loading'
+                    : nowPlayingStatus === 'error'
+                      ? 'Offline'
+                      : isTrackPlaying
+                        ? 'Listening now'
+                        : 'Not playing'}
+                </span>
+              </div>
+
+              {nowPlayingStatus === 'loading' && (
+                <div className="spotify-now-playing-state" role="status" aria-live="polite">
+                  <div className="spotify-now-playing-artwork spotify-now-playing-artwork-placeholder"></div>
+                  <div className="spotify-now-playing-copy">
+                    <strong>Checking Spotify...</strong>
+                    <span>Loading the current track.</span>
+                  </div>
+                </div>
+              )}
+
+              {nowPlayingStatus === 'error' && (
+                <div className="spotify-now-playing-state spotify-now-playing-state-error">
+                  <div className="spotify-now-playing-artwork spotify-now-playing-artwork-placeholder"></div>
+                  <div className="spotify-now-playing-copy">
+                    <strong>Spotify connection is not set up yet.</strong>
+                    <span>
+                      Add your Spotify app credentials and refresh token to show live listening
+                      here.
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {nowPlayingStatus === 'ready' && nowPlayingTrack && (
+                <div className="spotify-now-playing-body">
+                  <div className="spotify-now-playing-primary">
+                    {nowPlayingTrack.albumImageUrl ? (
+                      <img
+                        className="spotify-now-playing-artwork"
+                        src={nowPlayingTrack.albumImageUrl}
+                        alt={`Artwork for ${nowPlayingTrack.title}`}
+                      />
+                    ) : (
+                      <div className="spotify-now-playing-artwork spotify-now-playing-artwork-placeholder"></div>
+                    )}
+
+                    <div className="spotify-now-playing-copy">
+                      <strong>{nowPlayingTrack.title}</strong>
+                      <span>{nowPlayingTrack.artist}</span>
+                      <span className="spotify-now-playing-album">{nowPlayingTrack.album}</span>
+                    </div>
+                  </div>
+
+                  <div className="spotify-now-playing-secondary">
+                    {isTrackPlaying ? (
+                      <>
+                        <div
+                          className="spotify-progress"
+                          role="progressbar"
+                          aria-valuemin="0"
+                          aria-valuemax={nowPlayingTrack.durationMs || 0}
+                          aria-valuenow={nowPlayingTrack.progressMs || 0}
+                          aria-label="Current track progress"
+                        >
+                          <span
+                            className="spotify-progress-bar"
+                            style={{ width: `${playbackProgress}%` }}
+                          ></span>
+                        </div>
+                        <div className="spotify-progress-meta">
+                          <span>{formatPlaybackTime(nowPlayingTrack.progressMs || 0)}</span>
+                          <span>{formatPlaybackTime(nowPlayingTrack.durationMs || 0)}</span>
+                        </div>
+                      </>
+                    ) : (
+                      <p className="spotify-now-playing-idle">
+                        Nothing is currently playing, but this card will update automatically when
+                        Spotify starts.
+                      </p>
+                    )}
+
+                    {nowPlayingTrack.songUrl && (
+                      <a
+                        className="btn btn-secondary spotify-now-playing-link"
+                        href={nowPlayingTrack.songUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Open track on Spotify
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+            </article>
 
             <div className="spotify-grid">
               {spotifyPlaylists.map((playlist) => (
