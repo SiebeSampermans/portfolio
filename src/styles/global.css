@@ -299,7 +299,7 @@ section {
 
 .brand-indicator-wave {
   position: absolute;
-  inset: -14px;
+  inset: -9px;
   border-radius: 50%;
   opacity: 0;
   transform: scale(0.7);
@@ -316,15 +316,15 @@ section {
 .brand.is-listening .brand-indicator-wave {
   opacity: 1;
   background:
-    radial-gradient(circle at center, transparent 44%, rgba(var(--accent-rgb), 0.88) 45%, transparent 49%),
+    radial-gradient(circle at center, transparent 45%, rgba(var(--accent-rgb), 0.88) 46%, transparent 50%),
     repeating-conic-gradient(
       from 0deg,
       rgba(var(--accent-rgb), 0) 0deg 7deg,
       rgba(var(--accent-rgb), 0.95) 7deg 9deg,
       rgba(var(--accent-rgb), 0) 9deg 15deg
     );
-  mask: radial-gradient(circle at center, transparent 0 49%, #000 51% 62%, transparent 64%);
-  -webkit-mask: radial-gradient(circle at center, transparent 0 49%, #000 51% 62%, transparent 64%);
+  mask: radial-gradient(circle at center, transparent 0 54%, #000 56% 66%, transparent 68%);
+  -webkit-mask: radial-gradient(circle at center, transparent 0 54%, #000 56% 66%, transparent 68%);
   filter: drop-shadow(0 0 10px rgba(var(--accent-rgb), 0.28));
   animation: brandWaveOrbit 3.4s linear infinite;
 }
@@ -1271,8 +1271,12 @@ section {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #1ed760, color-mix(in srgb, #1ed760 45%, var(--accent)));
-  box-shadow: 0 0 20px rgba(30, 215, 96, 0.35);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent-strong) 78%, white 22%),
+    color-mix(in srgb, var(--accent) 72%, white 28%)
+  );
+  box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.32);
 }
 
 .spotify-progress-meta {
