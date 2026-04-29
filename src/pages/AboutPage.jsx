@@ -96,6 +96,7 @@ const spotifyPlaylists = [
 const initialNowPlayingState = {
   status: 'loading',
   track: null,
+  errorMessage: '',
 };
 
 const formatPlaybackTime = (milliseconds) => {
@@ -136,6 +137,7 @@ function AboutPage() {
         setNowPlayingState({
           status: 'ready',
           track: data,
+          errorMessage: '',
         });
       } catch (error) {
         if (!isMounted) {
@@ -145,6 +147,7 @@ function AboutPage() {
         setNowPlayingState({
           status: 'error',
           track: null,
+          errorMessage: error instanceof Error ? error.message : 'Unable to load Spotify status.',
         });
       }
     };
@@ -172,7 +175,11 @@ function AboutPage() {
     setCursorState((current) => ({ ...current, isVisible: false }));
   };
 
-  const { status: nowPlayingStatus, track: nowPlayingTrack } = nowPlayingState;
+  const {
+    status: nowPlayingStatus,
+    track: nowPlayingTrack,
+    errorMessage: nowPlayingErrorMessage,
+  } = nowPlayingState;
   const isTrackPlaying = nowPlayingTrack?.isPlaying;
   const playbackProgress =
     nowPlayingTrack?.durationMs && nowPlayingTrack?.progressMs != null
@@ -294,6 +301,9 @@ function AboutPage() {
                       Add your Spotify app credentials and refresh token to show live listening
                       here.
                     </span>
+                    {nowPlayingErrorMessage && (
+                      <span className="spotify-now-playing-error-detail">{nowPlayingErrorMessage}</span>
+                    )}
                   </div>
                 </div>
               )}
