@@ -153,7 +153,7 @@ function MainLayout() {
                   </span>
                 </div>
 
-                {spotifyNowPlaying.status === 'ready' && navbarTrack && (
+                {spotifyNowPlaying.status === 'ready' && navbarTrack?.isPlaying && (
                   <div className="brand-hover-card-body">
                     {navbarTrack.albumImageUrl ? (
                       <img
