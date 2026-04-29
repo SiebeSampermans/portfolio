@@ -299,7 +299,7 @@ section {
 
 .brand-indicator-wave {
   position: absolute;
-  inset: -9px;
+  inset: -6px;
   border-radius: 50%;
   opacity: 0;
   transform: scale(0.7);
@@ -316,15 +316,15 @@ section {
 .brand.is-listening .brand-indicator-wave {
   opacity: 1;
   background:
-    radial-gradient(circle at center, transparent 45%, rgba(var(--accent-rgb), 0.88) 46%, transparent 50%),
+    radial-gradient(circle at center, transparent 48%, rgba(var(--accent-rgb), 0.88) 49%, transparent 53%),
     repeating-conic-gradient(
       from 0deg,
       rgba(var(--accent-rgb), 0) 0deg 7deg,
       rgba(var(--accent-rgb), 0.95) 7deg 9deg,
       rgba(var(--accent-rgb), 0) 9deg 15deg
     );
-  mask: radial-gradient(circle at center, transparent 0 54%, #000 56% 66%, transparent 68%);
-  -webkit-mask: radial-gradient(circle at center, transparent 0 54%, #000 56% 66%, transparent 68%);
+  mask: radial-gradient(circle at center, transparent 0 58%, #000 60% 70%, transparent 72%);
+  -webkit-mask: radial-gradient(circle at center, transparent 0 58%, #000 60% 70%, transparent 72%);
   filter: drop-shadow(0 0 10px rgba(var(--accent-rgb), 0.28));
   animation: brandWaveOrbit 3.4s linear infinite;
 }
