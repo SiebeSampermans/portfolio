@@ -3713,10 +3713,12 @@ section {
   }
 
   .spotify-now-playing-primary {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) 88px;
+    align-items: start;
   }
 
   .spotify-now-playing-artwork {
+    order: 2;
     width: 88px;
     height: 88px;
   }
