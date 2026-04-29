@@ -215,10 +215,7 @@ function AboutPage() {
 
             <article className="spotify-now-playing-card scroll-reveal">
               <div className="spotify-now-playing-head">
-                <div>
-                  <span className="card-label">Live listening</span>
-                  <h3>What I am listening to right now</h3>
-                </div>
+                <span className="card-label">Live listening</span>
                 <span
                   className={`spotify-live-pill${
                     isTrackPlaying ? ' is-active' : ''
