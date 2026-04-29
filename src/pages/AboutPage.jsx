@@ -29,71 +29,6 @@ const technicalSkills = [
   { name: 'Cisco', category: 'Networking' },
 ];
 
-const spotifyPlaylists = [
-  {
-    title: 'OAT',
-    description: 'A playlist with some of my all-time favorite tracks that I keep coming back to.',
-    vibe: 'Focus • Energy • Rhythm',
-    themeClass: 'spotify-preview-emerald',
-    meta: 'Siebe.sampermans • 11 keer opgeslagen • 818 nummers, langer dan 24 uur',
-    coverTiles: ['BABY', 'PIT', 'CITY', 'TYPE'],
-    tracks: [
-      {
-        title: 'Babydoll',
-        artworkLabel: 'BABY',
-        artworkClass: 'spotify-track-artwork-sand',
-      },
-      {
-        title: 'We Are One',
-        artworkLabel: 'PIT',
-        artworkClass: 'spotify-track-artwork-earth',
-      },
-      {
-        title: 'CITY OF ANGELS',
-        artworkLabel: 'CITY',
-        artworkClass: 'spotify-track-artwork-gold',
-      },
-      {
-        title: 'My Type',
-        artworkLabel: 'TYPE',
-        artworkClass: 'spotify-track-artwork-aqua',
-      },
-    ],
-    href: 'https://open.spotify.com/playlist/7d8YggW1sHHbGtrNUCxg7l',
-  },
-  {
-    title: 'Beatbox',
-    description: 'A second selection that shows another side of my music taste and daily vibe.',
-    vibe: 'Reset • Atmosphere • Daily flow',
-    themeClass: 'spotify-preview-ocean',
-    meta: 'Siebe.sampermans • 68 nummers, ongeveer 3 uur 15 min.',
-    coverTiles: ['MATEJ', 'SYJO', 'D-LOW', 'DEN'],
-    tracks: [
-      {
-        title: 'Poison Dagger',
-        artworkLabel: 'DLOW',
-        artworkClass: 'spotify-track-artwork-lime',
-      },
-      {
-        title: 'Warrior',
-        artworkLabel: 'SYJO',
-        artworkClass: 'spotify-track-artwork-amber',
-      },
-      {
-        title: 'Blindfold',
-        artworkLabel: 'MAT',
-        artworkClass: 'spotify-track-artwork-rose',
-      },
-      {
-        title: 'Missing You',
-        artworkLabel: 'DEN',
-        artworkClass: 'spotify-track-artwork-violet',
-      },
-    ],
-    href: 'https://open.spotify.com/playlist/7c3MDzD9R9mpNbDdAVmMZg',
-  },
-];
-
 const formatPlaybackTime = (milliseconds) => {
   const totalSeconds = Math.floor(milliseconds / 1000);
   const minutes = Math.floor(totalSeconds / 60);
@@ -208,8 +143,8 @@ function AboutPage() {
                 always there whether I want to relax, work, or reset my mind.
               </p>
               <p>
-                These two playlists give a small impression of the kind of sound that stays with me
-                and supports me in different moments.
+                The live block on the right gives a quick snapshot of what is currently setting the
+                tone for my day.
               </p>
             </div>
 
@@ -308,62 +243,6 @@ function AboutPage() {
                 </div>
               )}
             </article>
-
-            <div className="spotify-grid">
-              {spotifyPlaylists.map((playlist) => (
-                <article className="spotify-card scroll-reveal" key={playlist.title}>
-                  <div className={`spotify-preview ${playlist.themeClass}`} aria-hidden="true">
-                    <div className="spotify-preview-collage">
-                      {playlist.coverTiles.map((tile) => (
-                        <span className="spotify-preview-tile" key={`${playlist.title}-${tile}`}>
-                          {tile}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="spotify-preview-content">
-                      <div className="spotify-preview-top">
-                        <span className="spotify-preview-brand">Openbare playlist</span>
-                      </div>
-                      <div className="spotify-preview-body">
-                        <strong>{playlist.title}</strong>
-                        <span>{playlist.vibe}</span>
-                      </div>
-                      <div className="spotify-preview-meta">
-                        <a
-                          className="spotify-preview-plus"
-                          href={playlist.href}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          +
-                        </a>
-                        <span>{playlist.meta}</span>
-                      </div>
-                    </div>
-                  </div>
-                  {playlist.tracks.length > 0 && (
-                    <div className="spotify-track-list">
-                      {playlist.tracks.map((track) => (
-                        <div className="spotify-track-row" key={`${playlist.title}-${track.title}`}>
-                          <span className={`spotify-track-artwork ${track.artworkClass}`}>
-                            {track.artworkLabel}
-                          </span>
-                          <span className="spotify-track-title">{track.title}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <a
-                    className="btn btn-secondary spotify-link"
-                    href={playlist.href}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Open on Spotify
-                  </a>
-                </article>
-              ))}
-            </div>
           </div>
         </section>
 
@@ -477,7 +356,6 @@ function AboutPage() {
             </div>
           </div>
         </section>
-
       </main>
 
       <PageFooter text="&copy; 2026 Siebe - About me" linkTo="/cv" linkLabel="Go to my CV" />
