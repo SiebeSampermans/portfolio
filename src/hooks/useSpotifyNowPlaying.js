@@ -6,7 +6,7 @@ const initialNowPlayingState = {
   errorMessage: '',
 };
 
-function useSpotifyNowPlaying(refreshIntervalMs = 45000) {
+function useSpotifyNowPlaying(refreshIntervalMs = 10000) {
   const [nowPlayingState, setNowPlayingState] = useState(initialNowPlayingState);
 
   useEffect(() => {
