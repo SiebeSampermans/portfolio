@@ -3506,7 +3506,7 @@ section {
 
   .spotify-layout {
     grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
-    align-items: stretch;
+    align-items: start;
     column-gap: 1.6rem;
     row-gap: 2rem;
   }
@@ -3520,8 +3520,7 @@ section {
   }
 
   .spotify-now-playing-card {
-    align-self: stretch;
-    height: 100%;
+    align-self: start;
   }
 
   .spotify-grid {
