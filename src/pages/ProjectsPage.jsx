@@ -100,7 +100,7 @@ const projects = [
     id: 'project-1',
     image: farmforwardImage,
     alt: 'Screenshot of project FarmForward',
-    label: 'Required project',
+    label: 'Second year / Semester 2',
     title: 'FarmForward',
     details: [
       {
@@ -125,7 +125,7 @@ const projects = [
     id: 'project-2',
     image: fridgemateImage,
     alt: 'Screenshot of project FridgeMate',
-    label: 'Required project',
+    label: 'Second year / Semester 1',
     title: 'FridgeMate',
     details: [
       {
@@ -152,7 +152,7 @@ const projects = [
     id: 'project-3',
     image: vrcadeImage,
     alt: 'Screenshot of project VRCade',
-    label: 'Required project',
+    label: 'First year / Semester 2',
     title: 'VRCade',
     details: [
       {
@@ -179,7 +179,7 @@ const projects = [
     id: 'project-4',
     image: webdesignPortfolioImage,
     alt: 'Screenshot of web design portfolio project',
-    label: 'Required project',
+    label: 'First year / Semester 1',
     title: 'Webdesign Portfolio',
     details: [
       {
