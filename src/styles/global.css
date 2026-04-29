@@ -259,27 +259,204 @@ section {
   flex-wrap: wrap;
 }
 
+.brand-spotify {
+  position: relative;
+}
+
 .brand {
   position: relative;
-  padding-left: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.72rem;
   font-size: 1.2rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-.brand::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 50%;
+.brand-label {
+  position: relative;
+  z-index: 1;
+}
+
+.brand-indicator {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+}
+
+.brand-indicator-core {
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: var(--accent);
-  transform: translateY(-50%);
   box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.32);
   transition: background 0.6s ease, box-shadow 0.6s ease;
+}
+
+.brand-indicator-wave {
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 0.35s ease;
+}
+
+.brand.is-listening .brand-indicator-core {
+  box-shadow:
+    0 0 18px rgba(var(--accent-rgb), 0.48),
+    0 0 28px rgba(var(--accent-rgb), 0.28);
+  animation: brandIndicatorPulse 1.8s ease-in-out infinite;
+}
+
+.brand.is-listening .brand-indicator-wave {
+  opacity: 1;
+  background:
+    radial-gradient(circle at center, transparent 44%, rgba(var(--accent-rgb), 0.88) 45%, transparent 49%),
+    repeating-conic-gradient(
+      from 0deg,
+      rgba(var(--accent-rgb), 0) 0deg 7deg,
+      rgba(var(--accent-rgb), 0.95) 7deg 9deg,
+      rgba(var(--accent-rgb), 0) 9deg 15deg
+    );
+  mask: radial-gradient(circle at center, transparent 0 49%, #000 51% 62%, transparent 64%);
+  -webkit-mask: radial-gradient(circle at center, transparent 0 49%, #000 51% 62%, transparent 64%);
+  filter: drop-shadow(0 0 10px rgba(var(--accent-rgb), 0.28));
+  animation: brandWaveOrbit 3.4s linear infinite;
+}
+
+.brand-spotify:hover .brand-hover-card,
+.brand-spotify:focus-within .brand-hover-card {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.brand-hover-card {
+  position: absolute;
+  top: calc(100% + 1rem);
+  left: -18px;
+  z-index: 40;
+  width: min(360px, calc(100vw - 2rem));
+  padding: 1rem;
+  border: 1px solid rgba(var(--accent-rgb), 0.2);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top right, rgba(var(--accent-rgb), 0.16), transparent 28%),
+    linear-gradient(180deg, rgba(9, 17, 34, 0.94), rgba(7, 12, 25, 0.96));
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.42),
+    0 0 24px rgba(var(--accent-rgb), 0.08);
+  backdrop-filter: blur(20px);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px) scale(0.98);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.brand-hover-card::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 18px;
+  width: 12px;
+  height: 12px;
+  border-top: 1px solid rgba(var(--accent-rgb), 0.18);
+  border-left: 1px solid rgba(var(--accent-rgb), 0.18);
+  background: rgb(8, 14, 29);
+  transform: rotate(45deg);
+  box-shadow: -4px -4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.brand-hover-card-top,
+.brand-hover-card-body {
+  position: relative;
+  z-index: 1;
+}
+
+.brand-hover-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 0.9rem;
+}
+
+.brand-hover-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  padding: 0.38rem 0.68rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.brand-hover-status::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.brand-hover-status.is-active::before {
+  background: #1ed760;
+  box-shadow: 0 0 10px rgba(30, 215, 96, 0.54);
+}
+
+.brand-hover-status.is-error::before {
+  background: #ff7b7b;
+  box-shadow: 0 0 10px rgba(255, 123, 123, 0.42);
+}
+
+.brand-hover-card-body {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: center;
+}
+
+.brand-hover-artwork {
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  object-fit: cover;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+}
+
+.brand-hover-artwork-placeholder {
+  background:
+    radial-gradient(circle at top right, rgba(var(--accent-rgb), 0.16), transparent 34%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  border: 1px solid rgba(var(--accent-rgb), 0.16);
+}
+
+.brand-hover-copy {
+  display: grid;
+  gap: 0.28rem;
+  min-width: 0;
+}
+
+.brand-hover-copy strong {
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.1;
+}
+
+.brand-hover-copy span {
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 .nav-links {
@@ -3237,6 +3414,39 @@ section {
   }
 }
 
+@keyframes brandIndicatorPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes brandWaveOrbit {
+  0% {
+    transform: scale(0.92) rotate(0deg);
+    opacity: 0.8;
+  }
+  25% {
+    transform: scale(1.04) rotate(90deg);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.96) rotate(180deg);
+    opacity: 0.92;
+  }
+  75% {
+    transform: scale(1.08) rotate(270deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.92) rotate(360deg);
+    opacity: 0.8;
+  }
+}
+
 
 @media (min-width: 641px) {
   .cv-paper-stage {
@@ -3366,6 +3576,12 @@ section {
 
   .nav-toggle {
     order: 2;
+  }
+
+  .brand-hover-card {
+    left: -18px;
+    right: auto;
+    width: min(320px, calc(100vw - 1.5rem));
   }
 
   .contact-social-card:hover {
@@ -3529,6 +3745,11 @@ section {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .brand.is-listening .brand-indicator-core,
+  .brand.is-listening .brand-indicator-wave {
+    animation: none !important;
+  }
+
   *,
   *::before,
   *::after {

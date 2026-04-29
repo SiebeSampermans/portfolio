@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import HexGridBackground from '../components/HexGridBackground';
 import greenFavicon from '../assets/favicons/favicon-green.png';
 import blueFavicon from '../assets/favicons/favicon-blue.png';
+import useSpotifyNowPlaying from '../hooks/useSpotifyNowPlaying';
 
 const links = [
   { to: '/', label: 'Home', end: true },
@@ -27,6 +28,9 @@ function MainLayout() {
   const location = useLocation();
   const hasMountedThemeRef = useRef(false);
   const isBlueTheme = preferredBlueTheme;
+  const spotifyNowPlaying = useSpotifyNowPlaying();
+  const navbarTrack = spotifyNowPlaying.track;
+  const isListeningNow = Boolean(navbarTrack?.isPlaying);
 
   useEffect(() => {
     setIsMenuOpen(false);
@@ -115,9 +119,90 @@ function MainLayout() {
       <header className="site-header">
         <nav className="nav">
           <div className="container nav-inner">
-            <Link className="brand" to="/">
-              Siebe
-            </Link>
+            <div className="brand-spotify">
+              <Link
+                className={`brand${isListeningNow ? ' is-listening' : ''}`}
+                to="/"
+                aria-label={isListeningNow ? 'Siebe, currently listening on Spotify' : 'Siebe'}
+              >
+                <span
+                  className={`brand-indicator${isListeningNow ? ' is-listening' : ''}`}
+                  aria-hidden="true"
+                >
+                  <span className="brand-indicator-core"></span>
+                  <span className="brand-indicator-wave"></span>
+                </span>
+                <span className="brand-label">Siebe</span>
+              </Link>
+
+              <div className="brand-hover-card" role="dialog" aria-live="polite">
+                <div className="brand-hover-card-top">
+                  <span className="card-label">Spotify API</span>
+                  <span
+                    className={`brand-hover-status${
+                      spotifyNowPlaying.status === 'error' ? ' is-error' : ''
+                    }${isListeningNow ? ' is-active' : ''}`}
+                  >
+                    {spotifyNowPlaying.status === 'loading'
+                      ? 'Loading'
+                      : spotifyNowPlaying.status === 'error'
+                        ? 'Offline'
+                        : isListeningNow
+                          ? 'Listening now'
+                          : 'Idle'}
+                  </span>
+                </div>
+
+                {spotifyNowPlaying.status === 'ready' && navbarTrack && (
+                  <div className="brand-hover-card-body">
+                    {navbarTrack.albumImageUrl ? (
+                      <img
+                        className="brand-hover-artwork"
+                        src={navbarTrack.albumImageUrl}
+                        alt={`Artwork for ${navbarTrack.title}`}
+                      />
+                    ) : (
+                      <div className="brand-hover-artwork brand-hover-artwork-placeholder"></div>
+                    )}
+                    <div className="brand-hover-copy">
+                      <strong>{navbarTrack.title}</strong>
+                      <span>{navbarTrack.artist}</span>
+                      <span>{navbarTrack.album}</span>
+                    </div>
+                  </div>
+                )}
+
+                {spotifyNowPlaying.status === 'loading' && (
+                  <div className="brand-hover-card-body">
+                    <div className="brand-hover-artwork brand-hover-artwork-placeholder"></div>
+                    <div className="brand-hover-copy">
+                      <strong>Checking Spotify...</strong>
+                      <span>Loading current playback.</span>
+                    </div>
+                  </div>
+                )}
+
+                {spotifyNowPlaying.status === 'error' && (
+                  <div className="brand-hover-card-body">
+                    <div className="brand-hover-artwork brand-hover-artwork-placeholder"></div>
+                    <div className="brand-hover-copy">
+                      <strong>Spotify connection issue</strong>
+                      <span>{spotifyNowPlaying.errorMessage || 'Unable to load current playback.'}</span>
+                    </div>
+                  </div>
+                )}
+
+                {spotifyNowPlaying.status === 'ready' && !navbarTrack?.isPlaying && (
+                  <div className="brand-hover-card-body">
+                    <div className="brand-hover-artwork brand-hover-artwork-placeholder"></div>
+                    <div className="brand-hover-copy">
+                      <strong>Nothing playing right now</strong>
+                      <span>The Spotify API is connected and waiting for the next track.</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
             <button
               type="button"
               className={`nav-toggle${isMenuOpen ? ' is-open' : ''}`}
@@ -146,7 +231,7 @@ function MainLayout() {
         </nav>
       </header>
 
-      <Outlet />
+      <Outlet context={{ spotifyNowPlaying }} />
     </div>
   );
 }

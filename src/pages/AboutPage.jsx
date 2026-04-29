@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import PageFooter from '../components/PageFooter';
 import usePageTitle from '../hooks/usePageTitle';
 import useScrollReveal from '../hooks/useScrollReveal';
@@ -93,12 +94,6 @@ const spotifyPlaylists = [
   },
 ];
 
-const initialNowPlayingState = {
-  status: 'loading',
-  track: null,
-  errorMessage: '',
-};
-
 const formatPlaybackTime = (milliseconds) => {
   const totalSeconds = Math.floor(milliseconds / 1000);
   const minutes = Math.floor(totalSeconds / 60);
@@ -113,53 +108,10 @@ function AboutPage() {
     x: 0,
     y: 0,
   });
-  const [nowPlayingState, setNowPlayingState] = useState(initialNowPlayingState);
+  const { spotifyNowPlaying: nowPlayingState } = useOutletContext();
 
   usePageTitle('Siebe | About me');
   useScrollReveal();
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadNowPlaying = async () => {
-      try {
-        const response = await fetch('/api/spotify-now-playing');
-        const data = await response.json();
-
-        if (!isMounted) {
-          return;
-        }
-
-        if (!response.ok) {
-          throw new Error(data?.error || 'Unable to load Spotify status.');
-        }
-
-        setNowPlayingState({
-          status: 'ready',
-          track: data,
-          errorMessage: '',
-        });
-      } catch (error) {
-        if (!isMounted) {
-          return;
-        }
-
-        setNowPlayingState({
-          status: 'error',
-          track: null,
-          errorMessage: error instanceof Error ? error.message : 'Unable to load Spotify status.',
-        });
-      }
-    };
-
-    loadNowPlaying();
-    const intervalId = window.setInterval(loadNowPlaying, 45000);
-
-    return () => {
-      isMounted = false;
-      window.clearInterval(intervalId);
-    };
-  }, []);
 
   const handlePhotoPointerMove = (event) => {
     const bounds = event.currentTarget.getBoundingClientRect();
