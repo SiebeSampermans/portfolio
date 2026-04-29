@@ -3521,6 +3521,7 @@ section {
 
   .spotify-now-playing-card {
     align-self: start;
+    margin-top: 1.5rem;
   }
 
   .spotify-grid {
