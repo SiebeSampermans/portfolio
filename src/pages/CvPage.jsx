@@ -63,6 +63,7 @@ function CvPage() {
   };
 
   const cvFile = theme === 'green' ? '/CV_groen.pdf' : '/CV_blauw.pdf';
+  const cvDownloadName = 'CV_Siebe_Sampermans.pdf';
   const cvPreviewSrc = `${cvFile}#toolbar=0&navpanes=0&scrollbar=1`;
 
   return (
@@ -77,7 +78,7 @@ function CvPage() {
               it directly or preview it on the page itself.
             </p>
             <div className="hero-actions">
-              <a className="btn btn-primary" href={cvFile} download>
+              <a className="btn btn-primary" href={cvFile} download={cvDownloadName}>
                 Download CV
               </a>
             </div>
