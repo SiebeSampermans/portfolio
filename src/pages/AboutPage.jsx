@@ -72,6 +72,10 @@ function AboutPage() {
     errorMessage: nowPlayingErrorMessage,
   } = nowPlayingState;
   const isTrackPlaying = nowPlayingTrack?.isPlaying;
+  const normalizeTrackText = (value) => (value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const showAlbum =
+    Boolean(nowPlayingTrack?.album) &&
+    normalizeTrackText(nowPlayingTrack.album) !== normalizeTrackText(nowPlayingTrack.title);
   const playbackProgress =
     nowPlayingTrack?.durationMs && nowPlayingTrack?.progressMs != null
       ? Math.min((nowPlayingTrack.progressMs / nowPlayingTrack.durationMs) * 100, 100)
@@ -186,10 +190,14 @@ function AboutPage() {
                     )}
 
                     <div className="spotify-now-playing-copy">
-                      <strong>{nowPlayingTrack.title}</strong>
-                      {nowPlayingTrack.artist && <span>{nowPlayingTrack.artist}</span>}
-                      {nowPlayingTrack.album && (
-                        <span className="spotify-now-playing-album">{nowPlayingTrack.album}</span>
+                      <strong title={nowPlayingTrack.title}>{nowPlayingTrack.title}</strong>
+                      {nowPlayingTrack.artist && (
+                        <span title={nowPlayingTrack.artist}>{nowPlayingTrack.artist}</span>
+                      )}
+                      {showAlbum && (
+                        <span className="spotify-now-playing-album" title={nowPlayingTrack.album}>
+                          {nowPlayingTrack.album}
+                        </span>
                       )}
                     </div>
                   </div>
