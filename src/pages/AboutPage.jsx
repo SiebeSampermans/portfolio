@@ -207,8 +207,10 @@ function AboutPage() {
 
                     <div className="spotify-now-playing-copy">
                       <strong>{nowPlayingTrack.title}</strong>
-                      <span>{nowPlayingTrack.artist}</span>
-                      <span className="spotify-now-playing-album">{nowPlayingTrack.album}</span>
+                      {nowPlayingTrack.artist && <span>{nowPlayingTrack.artist}</span>}
+                      {nowPlayingTrack.album && (
+                        <span className="spotify-now-playing-album">{nowPlayingTrack.album}</span>
+                      )}
                     </div>
                   </div>
 
@@ -235,8 +237,7 @@ function AboutPage() {
                       </>
                     ) : (
                       <p className="spotify-now-playing-idle">
-                        Nothing is currently playing, but this card will update automatically when
-                        Spotify starts.
+                        Updates live when a track starts.
                       </p>
                     )}
                   </div>

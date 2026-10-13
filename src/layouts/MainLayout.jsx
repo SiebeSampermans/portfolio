@@ -253,7 +253,6 @@ function MainLayout() {
                     <div className="brand-hover-artwork brand-hover-artwork-placeholder"></div>
                     <div className="brand-hover-copy">
                       <strong>Nothing playing right now</strong>
-                      <span>The Spotify API is connected and waiting for the next track.</span>
                     </div>
                   </div>
                 )}

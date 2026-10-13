@@ -44,9 +44,9 @@ export default async function handler(_request, response) {
     if (nowPlayingResponse.status === 204) {
       return response.status(200).json({
         isPlaying: false,
-        title: 'Spotify is quiet right now',
-        artist: 'Waiting for the next track',
-        album: 'No active playback',
+        title: 'Nothing playing',
+        artist: '',
+        album: '',
         albumImageUrl: null,
         songUrl: 'https://open.spotify.com/',
         progressMs: 0,
