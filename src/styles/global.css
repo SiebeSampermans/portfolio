@@ -2270,6 +2270,10 @@ section {
   background: var(--cv-paper-frame-bg);
 }
 
+.cv-paper-image {
+  object-fit: contain;
+}
+
 .scroll-reveal {
   opacity: 0;
   transform:
@@ -3225,6 +3229,11 @@ section {
 }
 
 @media (max-width: 640px) {
+  .cv-printer-assembly {
+    /* A4 ratio of the sheet width (viewport - container gutter - stage inset) */
+    --cv-preview-height: calc((100vw - 5.75rem) * 1.4144);
+  }
+
   .cv-paper-stage {
     width: calc(100% - 3.75rem);
   }
