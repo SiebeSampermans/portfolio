@@ -14,8 +14,15 @@ const links = [
 
 ];
 
+// On small or touch screens the brand opens the Spotify card instead of linking home.
+const compactBrandQuery = '(max-width: 640px), (hover: none)';
+
 function MainLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSpotifyCardOpen, setIsSpotifyCardOpen] = useState(false);
+  const [isCompactBrand, setIsCompactBrand] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia(compactBrandQuery).matches,
+  );
   const [themeTransition, setThemeTransition] = useState(null);
   const [preferredBlueTheme, setPreferredBlueTheme] = useState(() => {
     if (typeof window === 'undefined') {
@@ -27,13 +34,57 @@ function MainLayout() {
   });
   const location = useLocation();
   const hasMountedThemeRef = useRef(false);
+  const brandSpotifyRef = useRef(null);
   const isBlueTheme = preferredBlueTheme;
   const spotifyNowPlaying = useSpotifyNowPlaying();
   const navbarTrack = spotifyNowPlaying.track;
   const isListeningNow = Boolean(navbarTrack?.isPlaying);
 
   useEffect(() => {
+    const mediaQuery = window.matchMedia(compactBrandQuery);
+    const handleChange = (event) => {
+      setIsCompactBrand(event.matches);
+      setIsSpotifyCardOpen(false);
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isSpotifyCardOpen) {
+      return undefined;
+    }
+
+    const handlePointerDown = (event) => {
+      if (!brandSpotifyRef.current?.contains(event.target)) {
+        setIsSpotifyCardOpen(false);
+      }
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+    };
+  }, [isSpotifyCardOpen]);
+
+  const handleBrandClick = (event) => {
+    if (!isCompactBrand) {
+      return;
+    }
+
+    event.preventDefault();
     setIsMenuOpen(false);
+    setIsSpotifyCardOpen((current) => !current);
+  };
+
+  useEffect(() => {
+    setIsMenuOpen(false);
+    setIsSpotifyCardOpen(false);
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   }, [location.pathname]);
 
@@ -116,13 +167,18 @@ function MainLayout() {
         </button>
       </label>
 
-      <header className="site-header">
+      <header className={`site-header${isSpotifyCardOpen ? ' is-spotify-open' : ''}`}>
         <nav className="nav">
           <div className="container nav-inner">
-            <div className="brand-spotify">
+            <div
+              className={`brand-spotify${isSpotifyCardOpen ? ' is-open' : ''}`}
+              ref={brandSpotifyRef}
+            >
               <Link
                 className={`brand${isListeningNow ? ' is-listening' : ''}`}
                 to="/"
+                onClick={handleBrandClick}
+                aria-expanded={isCompactBrand ? isSpotifyCardOpen : undefined}
                 aria-label={isListeningNow ? 'Siebe, currently listening on Spotify' : 'Siebe'}
               >
                 <span
@@ -197,7 +253,6 @@ function MainLayout() {
                     <div className="brand-hover-artwork brand-hover-artwork-placeholder"></div>
                     <div className="brand-hover-copy">
                       <strong>Nothing playing right now</strong>
-                      <span>The Spotify API is connected and waiting for the next track.</span>
                     </div>
                   </div>
                 )}
