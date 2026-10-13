@@ -329,8 +329,20 @@ section {
   animation: brandWaveOrbit 3.4s linear infinite;
 }
 
-.brand-spotify:hover .brand-hover-card,
-.brand-spotify:focus-within .brand-hover-card {
+@media (min-width: 641px) and (hover: hover) {
+  .brand-spotify:hover .brand-hover-card,
+  .brand-spotify:focus-within .brand-hover-card {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+}
+
+.site-header.is-spotify-open {
+  z-index: 35;
+}
+
+.brand-spotify.is-open .brand-hover-card {
   opacity: 1;
   transform: translateY(0) scale(1);
   pointer-events: auto;
