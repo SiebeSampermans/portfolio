@@ -4,6 +4,27 @@ import usePageTitle from '../hooks/usePageTitle';
 import useScrollReveal from '../hooks/useScrollReveal';
 
 const PAPER_RETRACT_DURATION_MS = 3200;
+const MOBILE_PREVIEW_QUERY = '(max-width: 640px)';
+
+function useIsMobilePreview() {
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia(MOBILE_PREVIEW_QUERY).matches : false,
+  );
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(MOBILE_PREVIEW_QUERY);
+    const syncMatch = () => setIsMobile(mediaQuery.matches);
+
+    syncMatch();
+    mediaQuery.addEventListener('change', syncMatch);
+
+    return () => {
+      mediaQuery.removeEventListener('change', syncMatch);
+    };
+  }, []);
+
+  return isMobile;
+}
 
 function CvPage() {
   const [isPreviewing, setIsPreviewing] = useState(false);
@@ -11,6 +32,8 @@ function CvPage() {
   const [theme, setTheme] = useState(() =>
     typeof document !== 'undefined' ? document.body.dataset.theme || 'blue' : 'blue',
   );
+
+  const isMobilePreview = useIsMobilePreview();
 
   usePageTitle('Siebe | CV');
   useScrollReveal();
@@ -65,6 +88,8 @@ function CvPage() {
   const cvFile = theme === 'green' ? '/CV_groen.pdf' : '/CV_blauw.pdf';
   const cvDownloadName = 'CV_Siebe_Sampermans.pdf';
   const cvPreviewSrc = `${cvFile}#toolbar=0&navpanes=0&scrollbar=1`;
+  // Mobile browsers crop or refuse inline PDFs, so phones get a full-width image of the page.
+  const cvPreviewImage = cvFile.replace('.pdf', '-preview.jpg');
 
   return (
     <>
@@ -134,11 +159,21 @@ function CvPage() {
                       <span className="cv-paper-dot"></span>
                       <span className="cv-paper-label">CV Preview</span>
                     </div>
-                    <iframe
-                      className="cv-paper-frame"
-                      src={cvPreviewSrc}
-                      title="CV preview"
-                    ></iframe>
+                    {isMobilePreview ? (
+                      <a href={cvFile} target="_blank" rel="noreferrer">
+                        <img
+                          className="cv-paper-frame cv-paper-image"
+                          src={cvPreviewImage}
+                          alt="CV preview"
+                        />
+                      </a>
+                    ) : (
+                      <iframe
+                        className="cv-paper-frame"
+                        src={cvPreviewSrc}
+                        title="CV preview"
+                      ></iframe>
+                    )}
                   </div>
                 </div>
               </div>
