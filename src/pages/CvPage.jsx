@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import PageFooter from '../components/PageFooter';
 import usePageTitle from '../hooks/usePageTitle';
 import useScrollReveal from '../hooks/useScrollReveal';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const PAPER_RETRACT_DURATION_MS = 3200;
 
@@ -12,7 +13,10 @@ function CvPage() {
     typeof document !== 'undefined' ? document.body.dataset.theme || 'blue' : 'blue',
   );
 
-  usePageTitle('Siebe | CV');
+  const { t: translation } = useLanguage();
+  const t = translation.cv;
+
+  usePageTitle(t.title);
   useScrollReveal();
 
   useEffect(() => {
@@ -71,15 +75,12 @@ function CvPage() {
       <main>
         <section className="page-intro">
           <div className="container">
-            <span className="eyebrow">Curriculum Vitae</span>
-            <h1 className="page-title">CV download</h1>
-            <p className="page-text">
-              This page contains a dedicated CV section with a downloadable PDF. You can download
-              it directly or preview it on the page itself.
-            </p>
+            <span className="eyebrow">{t.eyebrow}</span>
+            <h1 className="page-title">{t.heading}</h1>
+            <p className="page-text">{t.intro}</p>
             <div className="hero-actions">
               <a className="btn btn-primary" href={cvFile} download={cvDownloadName}>
-                Download CV
+                {t.download}
               </a>
             </div>
           </div>
@@ -97,7 +98,7 @@ function CvPage() {
                   <button
                     type="button"
                     className={`cv-printer-power${isPreviewing ? ' is-active' : ''}`}
-                    aria-label={isPreviewing ? 'Turn printer off' : 'Turn printer on'}
+                    aria-label={isPreviewing ? t.printerOff : t.printerOn}
                     onClick={handlePowerToggle}
                   >
                     <span className="cv-printer-led" aria-hidden="true"></span>
@@ -109,11 +110,9 @@ function CvPage() {
 
                   <div className="cv-printer-top">
                     <div>
-                      <span className="card-label">Preview Station</span>
-                      <h2>Interactive CV printer</h2>
-                      <p>
-                        Press the power button and watch your CV print out below the slot.
-                      </p>
+                      <span className="card-label">{t.stationLabel}</span>
+                      <h2>{t.printerTitle}</h2>
+                      <p>{t.printerText}</p>
                     </div>
                   </div>
 
@@ -132,12 +131,12 @@ function CvPage() {
                       <span className="cv-paper-dot"></span>
                       <span className="cv-paper-dot"></span>
                       <span className="cv-paper-dot"></span>
-                      <span className="cv-paper-label">CV Preview</span>
+                      <span className="cv-paper-label">{t.previewLabel}</span>
                     </div>
                     <iframe
                       className="cv-paper-frame"
                       src={cvPreviewSrc}
-                      title="CV preview"
+                      title={t.previewTitle}
                     ></iframe>
                   </div>
                 </div>
@@ -147,7 +146,7 @@ function CvPage() {
         </section>
       </main>
 
-      <PageFooter text="(c) 2026 Siebe - CV" linkTo="/" linkLabel="Back to home" />
+      <PageFooter text={t.footer} linkTo="/" linkLabel={t.footerLink} />
     </>
   );
 }

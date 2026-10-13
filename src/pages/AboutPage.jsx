@@ -4,6 +4,7 @@ import PageFooter from '../components/PageFooter';
 import usePageTitle from '../hooks/usePageTitle';
 import useScrollReveal from '../hooks/useScrollReveal';
 import aboutPhoto from '../assets/about-photo.jpg';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const technicalSkills = [
   { name: 'Python', category: 'Programming' },
@@ -45,7 +46,10 @@ function AboutPage() {
   });
   const { spotifyNowPlaying: nowPlayingState } = useOutletContext();
 
-  usePageTitle('Siebe | About me');
+  const { t: translation } = useLanguage();
+  const t = translation.about;
+
+  usePageTitle(t.title);
   useScrollReveal();
 
   const handlePhotoPointerMove = (event) => {
@@ -78,12 +82,9 @@ function AboutPage() {
       <main>
         <section className="page-intro">
           <div className="container">
-            <span className="eyebrow scroll-reveal">About me</span>
-            <h1 className="page-title scroll-reveal">Who I am</h1>
-            <p className="page-text scroll-reveal">
-              On this page, I briefly explain who I am, what motivates me, and where I want to
-              keep growing.
-            </p>
+            <span className="eyebrow scroll-reveal">{t.eyebrow}</span>
+            <h1 className="page-title scroll-reveal">{t.heading}</h1>
+            <p className="page-text scroll-reveal">{t.intro}</p>
           </div>
         </section>
 
@@ -96,7 +97,7 @@ function AboutPage() {
                 onMouseLeave={handlePhotoPointerLeave}
               >
                 <div className="scan-frame"></div>
-                <img className="about-photo-image" src={aboutPhoto} alt="Portrait photo of Siebe" />
+                <img className="about-photo-image" src={aboutPhoto} alt={t.photoAlt} />
                 <div
                   className={`photo-cursor-follow${cursorState.isVisible ? ' is-visible' : ''}`}
                   style={{
@@ -111,23 +112,12 @@ function AboutPage() {
             </div>
 
             <div className="about-content scroll-reveal">
-              <h2 className="section-title scroll-reveal">A short introduction</h2>
-              <p className="scroll-reveal">
-                My name is Siebe and I am a motivated Applied Computer Science student. I am
-                socially minded, naturally curious, and I enjoy working together with others to
-                create strong solutions.
-              </p>
-              <p className="scroll-reveal">
-                Outside school, I spend time on football, beatboxing, gaming, building PCs, and
-                social activities with friends. These hobbies not only show what I enjoy, but also
-                say something about my discipline, creativity, and sense of teamwork.
-              </p>
-              <p className="scroll-reveal">
-                I chose Applied Computer Science because I enjoy working with computers and because
-                this program fits perfectly with the IT and development direction I followed in
-                secondary school. From the moment I noticed I could quickly spot bugs in code, I
-                knew IT was truly the right fit for me.
-              </p>
+              <h2 className="section-title scroll-reveal">{t.introTitle}</h2>
+              {t.paragraphs.map((paragraph) => (
+                <p className="scroll-reveal" key={paragraph}>
+                  {paragraph}
+                </p>
+              ))}
             </div>
           </div>
         </section>
@@ -136,33 +126,26 @@ function AboutPage() {
           <div className="container spotify-layout">
             <div className="spotify-intro scroll-reveal">
               <span className="eyebrow">Spotify</span>
-              <h2>Music is a big part of my lifestyle</h2>
-              <p>
-                I listen to a lot of music, and it is genuinely a big part of how I live day to
-                day. It helps me through thick and thin, keeps me focused, gives me energy, and is
-                always there whether I want to relax, work, or reset my mind.
-              </p>
-              <p>
-                The live block on the right gives a quick snapshot of what is currently setting the
-                tone for my day.
-              </p>
+              <h2>{t.spotifyTitle}</h2>
+              <p>{t.spotifyText1}</p>
+              <p>{t.spotifyText2}</p>
             </div>
 
             <article className="spotify-now-playing-card scroll-reveal">
               <div className="spotify-now-playing-head">
-                <span className="card-label">Live listening</span>
+                <span className="card-label">{t.liveListening}</span>
                 <span
                   className={`spotify-live-pill${
                     isTrackPlaying ? ' is-active' : ''
                   }${nowPlayingStatus === 'error' ? ' is-error' : ''}`}
                 >
                   {nowPlayingStatus === 'loading'
-                    ? 'Loading'
+                    ? t.statusLoading
                     : nowPlayingStatus === 'error'
-                      ? 'Offline'
+                      ? t.statusOffline
                       : isTrackPlaying
-                        ? 'Listening now'
-                        : 'Not playing'}
+                        ? t.statusListening
+                        : t.statusNotPlaying}
                 </span>
               </div>
 
@@ -170,8 +153,8 @@ function AboutPage() {
                 <div className="spotify-now-playing-state" role="status" aria-live="polite">
                   <div className="spotify-now-playing-artwork spotify-now-playing-artwork-placeholder"></div>
                   <div className="spotify-now-playing-copy">
-                    <strong>Checking Spotify...</strong>
-                    <span>Loading the current track.</span>
+                    <strong>{t.checkingSpotify}</strong>
+                    <span>{t.loadingTrack}</span>
                   </div>
                 </div>
               )}
@@ -180,11 +163,8 @@ function AboutPage() {
                 <div className="spotify-now-playing-state spotify-now-playing-state-error">
                   <div className="spotify-now-playing-artwork spotify-now-playing-artwork-placeholder"></div>
                   <div className="spotify-now-playing-copy">
-                    <strong>Spotify connection is not set up yet.</strong>
-                    <span>
-                      Add your Spotify app credentials and refresh token to show live listening
-                      here.
-                    </span>
+                    <strong>{t.notSetUp}</strong>
+                    <span>{t.notSetUpText}</span>
                     {nowPlayingErrorMessage && (
                       <span className="spotify-now-playing-error-detail">{nowPlayingErrorMessage}</span>
                     )}
@@ -199,7 +179,7 @@ function AboutPage() {
                       <img
                         className="spotify-now-playing-artwork"
                         src={nowPlayingTrack.albumImageUrl}
-                        alt={`Artwork for ${nowPlayingTrack.title}`}
+                        alt={t.artworkFor(nowPlayingTrack.title)}
                       />
                     ) : (
                       <div className="spotify-now-playing-artwork spotify-now-playing-artwork-placeholder"></div>
@@ -223,7 +203,7 @@ function AboutPage() {
                           aria-valuemin="0"
                           aria-valuemax={nowPlayingTrack.durationMs || 0}
                           aria-valuenow={nowPlayingTrack.progressMs || 0}
-                          aria-label="Current track progress"
+                          aria-label={t.trackProgress}
                         >
                           <span
                             className="spotify-progress-bar"
@@ -236,9 +216,7 @@ function AboutPage() {
                         </div>
                       </>
                     ) : (
-                      <p className="spotify-now-playing-idle">
-                        Updates live when a track starts.
-                      </p>
+                      <p className="spotify-now-playing-idle">{t.idleText}</p>
                     )}
                   </div>
                 </div>
@@ -250,35 +228,26 @@ function AboutPage() {
         <section className="future-section">
           <div className="container">
             <div className="section-header scroll-reveal">
-              <span className="eyebrow">Future</span>
-              <h2>My dreams and ambitions</h2>
-              <p>
-                In the long term, I want to use technology in a way that is clear and useful for
-                other people. AI interests me the most right now, but application development is
-                definitely still a direction in which I see myself growing.
-              </p>
+              <span className="eyebrow">{t.futureEyebrow}</span>
+              <h2>{t.futureTitle}</h2>
+              <p>{t.futureText}</p>
             </div>
 
             <div className="future-panel scroll-reveal">
               <div className="future-lead scroll-reveal">
-                <span className="card-label">Vision</span>
-                <h3>I want to make technology human and practical.</h3>
-                <p>
-                  For me, a strong IT career is not only technical. I want to build solutions that
-                  are clear, impactful, and socially meaningful as well.
-                </p>
+                <span className="card-label">{t.visionLabel}</span>
+                <h3>{t.visionTitle}</h3>
+                <p>{t.visionText}</p>
               </div>
 
               <div className="future-grid-alt">
                 <div className="info-item future-card scroll-reveal">
-                  <strong>Short term</strong>
-                  <span>Keep growing in AI, application development, and project-based work.</span>
+                  <strong>{t.shortTerm}</strong>
+                  <span>{t.shortTermText}</span>
                 </div>
                 <div className="info-item future-card scroll-reveal">
-                  <strong>Long term</strong>
-                  <span>
-                    Become an IT professional who contributes to society in a clear and human way.
-                  </span>
+                  <strong>{t.longTerm}</strong>
+                  <span>{t.longTermText}</span>
                 </div>
               </div>
             </div>
@@ -289,17 +258,12 @@ function AboutPage() {
           <div className="container">
             <div className="stack-showcase">
               <div className="stack-intro scroll-reveal">
-                <span className="card-label">Tech stack</span>
-                <h3>Tools and technologies I have already worked with</h3>
-                <p>
-                  Throughout my education and projects, I have already built experience with
-                  different languages, frameworks, tools, and platforms. That broad foundation
-                  helps me switch flexibly between front-end, back-end, and technical
-                  infrastructure.
-                </p>
+                <span className="card-label">{t.stackLabel}</span>
+                <h3>{t.stackTitle}</h3>
+                <p>{t.stackText}</p>
               </div>
 
-              <div className="skills-carousel scroll-reveal" aria-label="Technical skills carousel">
+              <div className="skills-carousel scroll-reveal" aria-label={t.skillsCarousel}>
                 <div className="skills-carousel-track">
                   {[0, 1].map((loopIndex) => (
                     <div
@@ -310,7 +274,9 @@ function AboutPage() {
                       {technicalSkills.map((skill) => (
                         <article className="skill-chip" key={`${loopIndex}-${skill.name}`}>
                           <span className="skill-chip-name">{skill.name}</span>
-                          <span className="skill-chip-category">{skill.category}</span>
+                          <span className="skill-chip-category">
+                            {t.skillCategories[skill.category] ?? skill.category}
+                          </span>
                         </article>
                       ))}
                     </div>
@@ -320,46 +286,28 @@ function AboutPage() {
             </div>
 
             <div className="soft-skills-intro scroll-reveal">
-              <span className="card-label">Soft skills</span>
-              <h3>My soft skills make the difference</h3>
-              <p>
-                Besides technical knowledge, it is especially my soft skills that help me stand
-                out. They allow me not only to build a project, but also to present it clearly,
-                think in a human-centered way, and collaborate effectively.
-              </p>
+              <span className="card-label">{t.softSkillsLabel}</span>
+              <h3>{t.softSkillsTitle}</h3>
+              <p>{t.softSkillsText}</p>
             </div>
 
             <div className="pillars-grid soft-skills-grid">
-              <div className="pillar-card scroll-reveal">
-                <span className="card-label">Soft skills</span>
-                <h3>Presenting</h3>
-                <p>
-                  I can communicate information in a structured way and present a project clearly
-                  to others.
-                </p>
-              </div>
-              <div className="pillar-card pillar-card-accent scroll-reveal">
-                <span className="card-label">Soft skills</span>
-                <h3>Empathy and client focus</h3>
-                <p>
-                  I show empathy, think along with people, and can clearly inform a non-technical
-                  client about a project.
-                </p>
-              </div>
-              <div className="pillar-card scroll-reveal">
-                <span className="card-label">Soft skills</span>
-                <h3>Initiative and teamwork</h3>
-                <p>
-                  I take initiative when needed and enjoy working in a team to build a strong
-                  result step by step.
-                </p>
-              </div>
+              {t.softSkills.map((skill, index) => (
+                <div
+                  className={`pillar-card${index === 1 ? ' pillar-card-accent' : ''} scroll-reveal`}
+                  key={index}
+                >
+                  <span className="card-label">{t.softSkillsLabel}</span>
+                  <h3>{skill.title}</h3>
+                  <p>{skill.text}</p>
+                </div>
+              ))}
             </div>
           </div>
         </section>
       </main>
 
-      <PageFooter text="&copy; 2026 Siebe - About me" linkTo="/cv" linkLabel="Go to my CV" />
+      <PageFooter text={t.footer} linkTo="/cv" linkLabel={t.footerLink} />
     </>
   );
 }
