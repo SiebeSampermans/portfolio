@@ -29,6 +29,28 @@ function useScrollReveal(options = {}) {
 
     revealItems.forEach((item) => revealObserver.observe(item));
 
+    // Elements that mount later (e.g. text keyed by its content after a language switch)
+    // also need to be observed, otherwise they stay hidden.
+    const mutationObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType !== Node.ELEMENT_NODE) {
+            return;
+          }
+
+          if (node.matches('.scroll-reveal:not(.is-visible)')) {
+            revealObserver.observe(node);
+          }
+
+          node
+            .querySelectorAll('.scroll-reveal:not(.is-visible)')
+            .forEach((item) => revealObserver.observe(item));
+        });
+      });
+    });
+
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
+
     let cueObserver;
 
     if (withProjectCues) {
@@ -55,6 +77,7 @@ function useScrollReveal(options = {}) {
 
     return () => {
       revealObserver.disconnect();
+      mutationObserver.disconnect();
       if (cueObserver) {
         cueObserver.disconnect();
       }
