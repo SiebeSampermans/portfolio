@@ -517,6 +517,19 @@ section {
   line-height: 1.35;
 }
 
+.brand-hover-copy.is-track strong {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.brand-hover-copy.is-track span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .nav-links {
   display: none;
   width: 100%;

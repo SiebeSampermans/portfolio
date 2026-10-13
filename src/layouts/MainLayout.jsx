@@ -41,6 +41,10 @@ function MainLayout() {
   const spotifyNowPlaying = useSpotifyNowPlaying();
   const navbarTrack = spotifyNowPlaying.track;
   const isListeningNow = Boolean(navbarTrack?.isPlaying);
+  const normalizeTrackText = (value) => (value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const showNavbarAlbum =
+    Boolean(navbarTrack?.album) &&
+    normalizeTrackText(navbarTrack.album) !== normalizeTrackText(navbarTrack.title);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(compactBrandQuery);
@@ -247,10 +251,10 @@ function MainLayout() {
                     ) : (
                       <div className="brand-hover-artwork brand-hover-artwork-placeholder"></div>
                     )}
-                    <div className="brand-hover-copy">
-                      <strong>{navbarTrack.title}</strong>
-                      <span>{navbarTrack.artist}</span>
-                      <span>{navbarTrack.album}</span>
+                    <div className="brand-hover-copy is-track">
+                      <strong title={navbarTrack.title}>{navbarTrack.title}</strong>
+                      {navbarTrack.artist && <span title={navbarTrack.artist}>{navbarTrack.artist}</span>}
+                      {showNavbarAlbum && <span title={navbarTrack.album}>{navbarTrack.album}</span>}
                     </div>
                   </div>
                 )}
