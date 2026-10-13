@@ -3,6 +3,7 @@ import LinkedInQr from '../components/LinkedInQr';
 import PageFooter from '../components/PageFooter';
 import usePageTitle from '../hooks/usePageTitle';
 import useScrollReveal from '../hooks/useScrollReveal';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const LINKEDIN_URL = 'https://www.linkedin.com/in/siebe-sampermans-727a75330/';
 const INSTAGRAM_URL = 'https://www.instagram.com/siebe_sampermans/';
@@ -60,23 +61,17 @@ const SOCIAL_CARDS = [
   {
     label: 'Instagram',
     handle: '@siebe_sampermans',
-    text: 'For behind-the-scenes moments, daily updates, and a more personal side of me.',
     href: INSTAGRAM_URL,
-    cta: 'Open Instagram',
   },
   {
     label: 'Facebook',
     handle: 'Siebe Sampermans',
-    text: 'For personal updates, social connections, and another way to stay in touch with me.',
     href: FACEBOOK_URL,
-    cta: 'Open Facebook',
   },
   {
     label: 'Outlook',
     handle: 'R1058833',
-    text: 'For direct questions, collaborations, or a professional introduction by email.',
     href: `mailto:${OUTLOOK_EMAIL}`,
-    cta: 'Email via Outlook',
   },
 ];
 
@@ -95,7 +90,10 @@ function ContactPage() {
   const progressTimerRef = useRef(null);
   const mountedAtRef = useRef(Date.now());
 
-  usePageTitle('Siebe | Contact');
+  const { t: translation } = useLanguage();
+  const t = translation.contact;
+
+  usePageTitle(t.title);
   useScrollReveal();
 
   useEffect(() => () => {
@@ -125,7 +123,7 @@ function ContactPage() {
       setSendState({
         status: 'error',
         progress: 0,
-        message: 'Sending was blocked. Please try again.',
+        message: t.errors.blocked,
       });
       return;
     }
@@ -134,7 +132,7 @@ function ContactPage() {
       setSendState({
         status: 'error',
         progress: 0,
-        message: 'Please wait a moment and try sending again.',
+        message: t.errors.tooFast,
       });
       return;
     }
@@ -143,7 +141,7 @@ function ContactPage() {
       setSendState({
         status: 'error',
         progress: 0,
-        message: 'Please use a respectful name without offensive language.',
+        message: t.errors.offensiveName,
       });
       return;
     }
@@ -152,7 +150,7 @@ function ContactPage() {
       setSendState({
         status: 'error',
         progress: 0,
-        message: 'Please keep your message respectful and free of offensive language.',
+        message: t.errors.offensiveMessage,
       });
       return;
     }
@@ -161,7 +159,7 @@ function ContactPage() {
       setSendState({
         status: 'error',
         progress: 0,
-        message: 'Please enter a valid email address.',
+        message: t.errors.invalidEmail,
       });
       return;
     }
@@ -170,8 +168,7 @@ function ContactPage() {
       setSendState({
         status: 'error',
         progress: 0,
-        message:
-          'EmailJS is not configured yet. Add VITE_EMAILJS_SERVICE_ID, VITE_EMAILJS_TEMPLATE_ID, and VITE_EMAILJS_PUBLIC_KEY to your .env file.',
+        message: t.errors.notConfigured,
       });
       return;
     }
@@ -179,7 +176,7 @@ function ContactPage() {
     setSendState({
       status: 'sending',
       progress: 8,
-      message: 'Preparing your message...',
+      message: t.preparing,
     });
 
     let currentProgress = 8;
@@ -188,7 +185,7 @@ function ContactPage() {
       setSendState((current) => ({
         ...current,
         progress: currentProgress,
-        message: 'Sending your message...',
+        message: t.sendingMessage,
       }));
     }, 180);
 
@@ -228,7 +225,7 @@ function ContactPage() {
       setSendState({
         status: 'success',
         progress: 100,
-        message: 'Your email was sent successfully.',
+        message: t.sent,
       });
       setFormData({
         name: '',
@@ -244,7 +241,7 @@ function ContactPage() {
       setSendState({
         status: 'error',
         progress: 100,
-        message: 'Sending failed. Please check your EmailJS configuration and try again.',
+        message: t.errors.failed,
       });
     }
   };
@@ -254,24 +251,19 @@ function ContactPage() {
       <main>
         <section className="page-intro">
           <div className="container">
-            <span className="eyebrow scroll-reveal">Contact</span>
-            <h1 className="page-title scroll-reveal">Get in touch</h1>
-            <p className="page-text scroll-reveal">
-              Would you like to contact me for an internship, project, or introduction? Leave a
-              message through the form or scan the QR code to go straight to my LinkedIn profile.
-            </p>
+            <span className="eyebrow scroll-reveal">{t.eyebrow}</span>
+            <h1 className="page-title scroll-reveal">{t.heading}</h1>
+            <p className="page-text scroll-reveal">{t.intro}</p>
           </div>
         </section>
 
         <section>
           <div className="container contact-layout">
             <div className="contact-card contact-form-card scroll-reveal">
-              <span className="card-label">Contact form</span>
-              <h2>Send me a message</h2>
+              <span className="card-label">{t.formLabel}</span>
+              <h2>{t.formTitle}</h2>
               <p>
-                Fill in your message and send it directly through EmailJS. While sending, you will
-                first see a progress bar and then a message telling you whether it worked.
-                Messages from this page are sent to <code>{CONTACT_RECIPIENT}</code>.
+                {t.formText} <code>{CONTACT_RECIPIENT}</code>.
               </p>
 
               <form
@@ -280,7 +272,7 @@ function ContactPage() {
                 aria-busy={sendState.status === 'sending'}
               >
                 <label className="contact-field contact-field-honeypot" aria-hidden="true">
-                  <span>Leave this field empty</span>
+                  <span>{t.honeypot}</span>
                   <input
                     type="text"
                     name="contact_company"
@@ -292,36 +284,36 @@ function ContactPage() {
                 </label>
 
                 <label className="contact-field">
-                  <span>Name</span>
+                  <span>{t.name}</span>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    placeholder="Your name"
+                    placeholder={t.namePlaceholder}
                     required
                   />
                 </label>
 
                 <label className="contact-field">
-                  <span>Email</span>
+                  <span>{t.email}</span>
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="you@email.com"
+                    placeholder={t.emailPlaceholder}
                     required
                   />
                 </label>
 
                 <label className="contact-field">
-                  <span>Message</span>
+                  <span>{t.message}</span>
                   <textarea
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
-                    placeholder="Briefly tell me why you are getting in touch..."
+                    placeholder={t.messagePlaceholder}
                     rows="6"
                     required
                   ></textarea>
@@ -342,7 +334,7 @@ function ContactPage() {
                       aria-live="polite"
                     >
                       <div className="contact-progress-meta">
-                        <span>Sending email</span>
+                        <span>{t.sendingEmail}</span>
                         <span>{Math.round(sendState.progress)}%</span>
                       </div>
                       <div className="contact-progress-track">
@@ -360,7 +352,7 @@ function ContactPage() {
                         }`}
                         role="alert"
                       >
-                        <strong>{sendState.status === 'success' ? 'Success' : 'Error'}</strong>
+                        <strong>{sendState.status === 'success' ? t.success : t.error}</strong>
                         <span>{sendState.message}</span>
                       </div>
                     )}
@@ -372,25 +364,22 @@ function ContactPage() {
                   type="submit"
                   disabled={sendState.status === 'sending'}
                 >
-                  {sendState.status === 'sending' ? 'Sending...' : 'Send message'}
+                  {sendState.status === 'sending' ? t.sending : t.send}
                 </button>
               </form>
             </div>
 
             <aside className="contact-card linkedin-card scroll-reveal">
               <span className="card-label">LinkedIn</span>
-              <h2>Scan my QR code</h2>
-              <p>
-                Scan the code to instantly open my LinkedIn profile, or use the button below to go
-                there directly.
-              </p>
+              <h2>{t.linkedinTitle}</h2>
+              <p>{t.linkedinText}</p>
 
               <div className="linkedin-qr-frame">
                 <LinkedInQr value={LINKEDIN_URL} />
               </div>
 
               <a className="btn btn-secondary" href={LINKEDIN_URL} target="_blank" rel="noreferrer">
-                Open LinkedIn
+                {t.openLinkedin}
               </a>
             </aside>
           </div>
@@ -399,12 +388,9 @@ function ContactPage() {
         <section>
           <div className="container">
             <div className="section-header scroll-reveal">
-              <span className="eyebrow">Socials</span>
-              <h2>Find me here as well</h2>
-              <p>
-                Besides the contact form, you can also reach me directly through these three
-                contact cards.
-              </p>
+              <span className="eyebrow">{t.socialsEyebrow}</span>
+              <h2>{t.socialsTitle}</h2>
+              <p>{t.socialsText}</p>
             </div>
 
             <div className="contact-social-grid">
@@ -415,7 +401,7 @@ function ContactPage() {
                   href={card.href}
                   target={card.href.startsWith('http') ? '_blank' : undefined}
                   rel={card.href.startsWith('http') ? 'noreferrer' : undefined}
-                  aria-label={card.cta}
+                  aria-label={t.socials[card.label].cta}
                 >
                   <div className="contact-social-card-inner">
                     <div className="contact-social-face contact-social-face-front">
@@ -432,8 +418,8 @@ function ContactPage() {
                         <SocialIcon label={card.label} />
                       </span>
                       <strong>{card.handle}</strong>
-                      <p>{card.text}</p>
-                      <span className="contact-social-cta">{card.cta}</span>
+                      <p>{t.socials[card.label].text}</p>
+                      <span className="contact-social-cta">{t.socials[card.label].cta}</span>
                     </div>
                   </div>
                 </a>
@@ -443,7 +429,7 @@ function ContactPage() {
         </section>
       </main>
 
-      <PageFooter text="&copy; 2026 Siebe - Contact" linkTo="/cv" linkLabel="Go to my CV" />
+      <PageFooter text={t.footer} linkTo="/cv" linkLabel={t.footerLink} />
     </>
   );
 }

@@ -177,11 +177,21 @@ section {
   transition: color 0.6s ease;
 }
 
-.theme-switch-floating {
+.floating-controls {
   position: fixed;
   top: 88px;
   right: 16px;
   z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.theme-switch-floating {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 0;
   padding: 0.4rem 0.55rem;
   border: 1px solid rgba(var(--accent-rgb), 0.18);
   border-radius: 999px;
@@ -226,6 +236,42 @@ section {
 
 .theme-switch-track.is-active .theme-switch-thumb {
   transform: translateX(20px);
+  box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.22);
+}
+
+.language-switch-options {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.language-switch-option {
+  min-width: 30px;
+  height: 22px;
+  padding: 0 0.4rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.24s ease, color 0.24s ease, box-shadow 0.24s ease;
+}
+
+.language-switch-option:hover,
+.language-switch-option:focus-visible {
+  color: var(--text);
+}
+
+.language-switch-option.is-active {
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: var(--bg-deep);
   box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.22);
 }
 
@@ -3337,9 +3383,15 @@ section {
     display: none;
   }
 
-  .theme-switch-floating {
+  .floating-controls {
     top: 86px;
     right: 12px;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.4rem;
+  }
+
+  .theme-switch-floating {
     padding: 0.35rem 0.5rem;
   }
 

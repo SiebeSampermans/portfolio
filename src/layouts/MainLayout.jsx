@@ -4,14 +4,14 @@ import HexGridBackground from '../components/HexGridBackground';
 import greenFavicon from '../assets/favicons/favicon-green.png';
 import blueFavicon from '../assets/favicons/favicon-blue.png';
 import useSpotifyNowPlaying from '../hooks/useSpotifyNowPlaying';
+import { languages, translations, useLanguage } from '../i18n/LanguageContext';
 
 const links = [
-  { to: '/', label: 'Home', end: true },
-  { to: '/about', label: 'About' },
-  { to: '/projects', label: 'Projects' },
-  { to: '/cv', label: 'CV' },
-  { to: '/contact', label: 'Contact' },
-
+  { to: '/', key: 'home', end: true },
+  { to: '/about', key: 'about' },
+  { to: '/projects', key: 'projects' },
+  { to: '/cv', key: 'cv' },
+  { to: '/contact', key: 'contact' },
 ];
 
 // On small or touch screens the brand opens the Spotify card instead of linking home.
@@ -33,6 +33,8 @@ function MainLayout() {
     return savedTheme ? savedTheme === 'blue' : true;
   });
   const location = useLocation();
+  const { language, setLanguage, t: translation } = useLanguage();
+  const t = translation.layout;
   const hasMountedThemeRef = useRef(false);
   const brandSpotifyRef = useRef(null);
   const isBlueTheme = preferredBlueTheme;
@@ -154,18 +156,43 @@ function MainLayout() {
           aria-hidden="true"
         ></div>
       )}
-      <label className="theme-switch theme-switch-floating" aria-label="Switch color theme">
-        <span className="theme-switch-label">Theme</span>
-        <button
-          type="button"
-          className={`theme-switch-track${isBlueTheme ? ' is-active' : ''}`}
-          role="switch"
-          aria-checked={isBlueTheme}
-          onClick={() => setPreferredBlueTheme((current) => !current)}
+      <div className="floating-controls">
+        <div
+          className="language-switch theme-switch-floating"
+          role="group"
+          aria-label={t.languageSwitch}
         >
-          <span className="theme-switch-thumb"></span>
-        </button>
-      </label>
+          <span className="theme-switch-label">{t.languageLabel}</span>
+          <div className="language-switch-options">
+            {languages.map((code) => (
+              <button
+                key={code}
+                type="button"
+                className={`language-switch-option${language === code ? ' is-active' : ''}`}
+                aria-pressed={language === code}
+                aria-label={translations[code].languageName}
+                lang={code}
+                onClick={() => setLanguage(code)}
+              >
+                {code.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <label className="theme-switch theme-switch-floating" aria-label={t.themeSwitch}>
+          <span className="theme-switch-label">{t.themeLabel}</span>
+          <button
+            type="button"
+            className={`theme-switch-track${isBlueTheme ? ' is-active' : ''}`}
+            role="switch"
+            aria-checked={isBlueTheme}
+            onClick={() => setPreferredBlueTheme((current) => !current)}
+          >
+            <span className="theme-switch-thumb"></span>
+          </button>
+        </label>
+      </div>
 
       <header className={`site-header${isSpotifyCardOpen ? ' is-spotify-open' : ''}`}>
         <nav className="nav">
@@ -179,7 +206,7 @@ function MainLayout() {
                 to="/"
                 onClick={handleBrandClick}
                 aria-expanded={isCompactBrand ? isSpotifyCardOpen : undefined}
-                aria-label={isListeningNow ? 'Siebe, currently listening on Spotify' : 'Siebe'}
+                aria-label={isListeningNow ? t.brandListening : 'Siebe'}
               >
                 <span
                   className={`brand-indicator${isListeningNow ? ' is-listening' : ''}`}
@@ -200,12 +227,12 @@ function MainLayout() {
                     }${isListeningNow ? ' is-active' : ''}`}
                   >
                     {spotifyNowPlaying.status === 'loading'
-                      ? 'Loading'
+                      ? t.spotifyLoading
                       : spotifyNowPlaying.status === 'error'
-                        ? 'Offline'
+                        ? t.spotifyOffline
                         : isListeningNow
-                          ? 'Listening now'
-                          : 'Idle'}
+                          ? t.spotifyListening
+                          : t.spotifyIdle}
                   </span>
                 </div>
 
@@ -215,7 +242,7 @@ function MainLayout() {
                       <img
                         className="brand-hover-artwork"
                         src={navbarTrack.albumImageUrl}
-                        alt={`Artwork for ${navbarTrack.title}`}
+                        alt={t.artworkFor(navbarTrack.title)}
                       />
                     ) : (
                       <div className="brand-hover-artwork brand-hover-artwork-placeholder"></div>
@@ -232,8 +259,8 @@ function MainLayout() {
                   <div className="brand-hover-card-body">
                     <div className="brand-hover-artwork brand-hover-artwork-placeholder"></div>
                     <div className="brand-hover-copy">
-                      <strong>Checking Spotify...</strong>
-                      <span>Loading current playback.</span>
+                      <strong>{t.checkingSpotify}</strong>
+                      <span>{t.loadingPlayback}</span>
                     </div>
                   </div>
                 )}
@@ -242,8 +269,8 @@ function MainLayout() {
                   <div className="brand-hover-card-body">
                     <div className="brand-hover-artwork brand-hover-artwork-placeholder"></div>
                     <div className="brand-hover-copy">
-                      <strong>Spotify connection issue</strong>
-                      <span>{spotifyNowPlaying.errorMessage || 'Unable to load current playback.'}</span>
+                      <strong>{t.connectionIssue}</strong>
+                      <span>{spotifyNowPlaying.errorMessage || t.unableToLoad}</span>
                     </div>
                   </div>
                 )}
@@ -252,7 +279,7 @@ function MainLayout() {
                   <div className="brand-hover-card-body">
                     <div className="brand-hover-artwork brand-hover-artwork-placeholder"></div>
                     <div className="brand-hover-copy">
-                      <strong>Nothing playing right now</strong>
+                      <strong>{t.nothingPlaying}</strong>
                     </div>
                   </div>
                 )}
@@ -263,7 +290,7 @@ function MainLayout() {
               className={`nav-toggle${isMenuOpen ? ' is-open' : ''}`}
               aria-expanded={isMenuOpen}
               aria-controls="primary-navigation"
-              aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-label={isMenuOpen ? t.closeMenu : t.openMenu}
               onClick={() => setIsMenuOpen((current) => !current)}
             >
               <span></span>
@@ -278,7 +305,7 @@ function MainLayout() {
                   end={link.end}
                   className={({ isActive }) => (isActive ? 'is-active' : undefined)}
                 >
-                  {link.label}
+                  {t.nav[link.key]}
                 </NavLink>
               ))}
             </div>
