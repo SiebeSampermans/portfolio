@@ -1236,13 +1236,26 @@ section {
 .spotify-now-playing-copy strong {
   color: var(--text);
   font-size: clamp(1rem, 2.2vw, 1.5rem);
-  line-height: 1;
+  line-height: 1.1;
 }
 
 .spotify-now-playing-copy span {
   color: var(--muted);
   font-weight: 700;
   font-size: 0.92rem;
+}
+
+.spotify-now-playing-body .spotify-now-playing-copy strong {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.spotify-now-playing-body .spotify-now-playing-copy span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .spotify-now-playing-album {
@@ -3171,6 +3184,10 @@ section {
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
+  }
+
+  .spotify-now-playing-body {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .spotify-now-playing-card {
