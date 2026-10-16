@@ -1,10 +1,9 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import en from './en';
-import fr from './fr';
 import nl from './nl';
 
-export const translations = { en, nl, fr };
-export const languages = ['en', 'nl', 'fr'];
+export const translations = { en, nl };
+export const languages = ['en', 'nl'];
 const DEFAULT_LANGUAGE = 'en';
 
 const LanguageContext = createContext({
