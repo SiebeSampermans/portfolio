@@ -134,6 +134,10 @@ const en = {
       'Front-end': 'Front-end',
       Cloud: 'Cloud',
       Networking: 'Networking',
+      Enterprise: 'Enterprise',
+      'Data & BI': 'Data & BI',
+      'Low-code': 'Low-code',
+      Process: 'Processes',
     },
     softSkillsLabel: 'Soft skills',
     softSkillsTitle: 'My soft skills make the difference',
@@ -141,16 +145,20 @@ const en = {
       'Besides technical knowledge, it is especially my soft skills that help me stand out. They allow me not only to build a project, but also to present it clearly, think in a human-centered way, and collaborate effectively.',
     softSkills: [
       {
-        title: 'Presenting',
-        text: 'I can communicate information in a structured way and present a project clearly to others.',
+        title: 'Presenting and pitching',
+        text: 'As an extrovert I talk to people easily and present projects clearly and with confidence.',
       },
       {
         title: 'Empathy and client focus',
-        text: 'I show empathy, think along with people, and can clearly inform a non-technical client about a project.',
+        text: 'I enjoy explaining how things work to people without a technical background.',
       },
       {
-        title: 'Initiative and teamwork',
-        text: 'I take initiative when needed and enjoy working in a team to build a strong result step by step.',
+        title: 'Analysis and problem solving',
+        text: 'I analyse business processes and customer needs and justify my choices clearly.',
+      },
+      {
+        title: 'Teamwork and ownership',
+        text: 'I take initiative in a team and take responsibility when something is not right or not on time.',
       },
     ],
     footer: '© 2026 Siebe - About me',
