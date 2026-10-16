@@ -808,8 +808,6 @@ section {
   background: linear-gradient(180deg, var(--panel-card-soft-start), var(--panel-card-soft-end));
   box-shadow: var(--shadow);
   clip-path: var(--cut);
-  backdrop-filter: blur(10px) saturate(118%);
-  -webkit-backdrop-filter: blur(10px) saturate(118%);
   transform-origin: center;
   transition:
     transform 0.24s ease,
@@ -1110,8 +1108,6 @@ section {
   box-shadow: var(--shadow);
   clip-path: var(--cut);
   overflow: hidden;
-  backdrop-filter: blur(12px) saturate(120%);
-  -webkit-backdrop-filter: blur(12px) saturate(120%);
 }
 
 .future-panel::before {
@@ -1728,8 +1724,6 @@ section {
   background: linear-gradient(180deg, var(--panel-card-start), var(--panel-card-end));
   box-shadow: var(--shadow);
   clip-path: var(--cut);
-  backdrop-filter: blur(12px) saturate(118%);
-  -webkit-backdrop-filter: blur(12px) saturate(118%);
   transition: border-color 0.75s ease, box-shadow 0.75s ease, background 0.75s ease, color 0.6s ease;
 }
 
@@ -1951,8 +1945,6 @@ section {
   background:
     radial-gradient(circle at top right, rgba(var(--accent-rgb), 0.12), transparent 28%),
     linear-gradient(180deg, var(--panel-card-start), var(--panel-card-end));
-  backdrop-filter: blur(12px) saturate(118%);
-  -webkit-backdrop-filter: blur(12px) saturate(118%);
   transition: background 0.75s ease, border-color 0.75s ease, box-shadow 0.75s ease, color 0.6s ease;
 }
 
@@ -2139,8 +2131,6 @@ section {
     linear-gradient(180deg, var(--panel-card-start), var(--panel-card-end));
   box-shadow: var(--shadow);
   clip-path: var(--cut);
-  backdrop-filter: blur(12px) saturate(120%);
-  -webkit-backdrop-filter: blur(12px) saturate(120%);
 }
 
 .cv-printer-card.is-printing {
