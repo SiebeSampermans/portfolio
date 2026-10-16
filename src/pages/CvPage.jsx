@@ -28,6 +28,8 @@ function useIsMobilePreview() {
 }
 
 function CvPage() {
+  const { t: translation } = useLanguage();
+  const t = translation.cv;
   const [isPreviewing, setIsPreviewing] = useState(false);
   const [isRetracting, setIsRetracting] = useState(false);
   const [theme, setTheme] = useState(() =>
@@ -36,7 +38,7 @@ function CvPage() {
 
   const isMobilePreview = useIsMobilePreview();
 
-  usePageTitle('Siebe | CV');
+  usePageTitle(t.title);
   useScrollReveal();
 
   useEffect(() => {
