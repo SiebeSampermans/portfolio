@@ -4,7 +4,7 @@ import usePageTitle from '../hooks/usePageTitle';
 import useScrollReveal from '../hooks/useScrollReveal';
 import { useLanguage } from '../i18n/LanguageContext';
 
-const PAPER_RETRACT_DURATION_MS = 3200;
+const PAPER_RETRACT_DURATION_MS = 1200;
 const MOBILE_PREVIEW_QUERY = '(max-width: 640px)';
 
 function useIsMobilePreview() {
@@ -32,6 +32,7 @@ function CvPage() {
   const t = translation.cv;
   const [isPreviewing, setIsPreviewing] = useState(false);
   const [isRetracting, setIsRetracting] = useState(false);
+  const [loadedPdf, setLoadedPdf] = useState(null);
   const [theme, setTheme] = useState(() =>
     typeof document !== 'undefined' ? document.body.dataset.theme || 'blue' : 'blue',
   );
@@ -166,11 +167,17 @@ function CvPage() {
                         />
                       </a>
                     ) : (
-                      <iframe
-                        className="cv-paper-frame"
-                        src={cvPreviewSrc}
-                        title="CV preview"
-                      ></iframe>
+                      // The image shows instantly; the PDF viewer fades in over it once it has loaded.
+                      <div className="cv-paper-frame cv-paper-frame-stack">
+                        <img className="cv-paper-image" src={cvPreviewImage} alt="" aria-hidden="true" />
+                        <iframe
+                          key={cvPreviewSrc}
+                          className={`cv-paper-pdf${loadedPdf === cvPreviewSrc ? ' is-loaded' : ''}`}
+                          src={cvPreviewSrc}
+                          title="CV preview"
+                          onLoad={() => setLoadedPdf(cvPreviewSrc)}
+                        ></iframe>
+                      </div>
                     )}
                   </div>
                 </div>
