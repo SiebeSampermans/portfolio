@@ -135,6 +135,10 @@ const nl = {
       'Front-end': 'Front-end',
       Cloud: 'Cloud',
       Networking: 'Netwerken',
+      Enterprise: 'Enterprise',
+      'Data & BI': 'Data & BI',
+      'Low-code': 'Low-code',
+      Process: 'Processen',
     },
     softSkillsLabel: 'Soft skills',
     softSkillsTitle: 'Mijn soft skills maken het verschil',
@@ -142,16 +146,20 @@ const nl = {
       'Naast technische kennis zijn het vooral mijn soft skills die mij doen opvallen. Ze zorgen ervoor dat ik een project niet alleen kan bouwen, maar het ook duidelijk kan presenteren, mensgericht kan denken en vlot kan samenwerken.',
     softSkills: [
       {
-        title: 'Presenteren',
-        text: 'Ik kan informatie gestructureerd overbrengen en een project duidelijk voorstellen aan anderen.',
+        title: 'Presenteren en pitchen',
+        text: 'Als extravert praat ik makkelijk met mensen en stel ik projecten duidelijk en met zelfvertrouwen voor.',
       },
       {
         title: 'Empathie en klantgerichtheid',
-        text: 'Ik toon empathie, denk mee met mensen en kan een niet-technische klant helder informeren over een project.',
+        text: 'Ik leg graag uit hoe dingen werken aan mensen zonder technische achtergrond.',
       },
       {
-        title: 'Initiatief en teamwork',
-        text: 'Ik neem initiatief wanneer nodig en werk graag in team om stap voor stap tot een sterk resultaat te komen.',
+        title: 'Analyse en probleemoplossend denken',
+        text: 'Ik analyseer bedrijfsprocessen en klantnoden en onderbouw mijn keuzes helder.',
+      },
+      {
+        title: 'Teamwork en verantwoordelijkheid',
+        text: 'Ik neem initiatief in een team en neem verantwoordelijkheid wanneer iets niet juist of niet op tijd is.',
       },
     ],
     footer: '© 2026 Siebe - Over mij',
