@@ -944,11 +944,11 @@ section {
 .hero-card-inner {
   max-width: 460px;
   opacity: 0;
-  will-change: transform, box-shadow;
+  will-change: transform;
   transform: translateZ(0);
   animation:
     heroPanelDropIn 0.95s cubic-bezier(0.2, 0.78, 0.2, 1) 3s forwards,
-    heroPanelFloat 9.6s ease-in-out 4.1s infinite;
+    heroPanelFloat 6.4s cubic-bezier(0.37, 0, 0.63, 1) 3.95s infinite;
 }
 
 .scoreboard-top,
@@ -2938,17 +2938,14 @@ section {
 
 @keyframes heroPanelFloat {
   /* Transform only: the panel's clip-path hides any box-shadow, and animating it
-     repainted the panel every frame, which made the card borders flicker. */
+     repainted the panel every frame, which made the card borders flicker.
+     One up-and-down swing with sine easing, so the motion never stalls halfway. */
   0%,
-  50%,
   100% {
     transform: translateY(0);
   }
-  25% {
-    transform: translateY(-14px);
-  }
-  75% {
-    transform: translateY(10px);
+  50% {
+    transform: translateY(-26px);
   }
 }
 
