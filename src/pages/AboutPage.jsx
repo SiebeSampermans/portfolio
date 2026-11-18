@@ -64,7 +64,6 @@ function AboutPage() {
   const {
     status: nowPlayingStatus,
     track: nowPlayingTrack,
-    errorMessage: nowPlayingErrorMessage,
   } = nowPlayingState;
   const isTrackPlaying = nowPlayingTrack?.isPlaying;
   const normalizeTrackText = (value) => (value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -164,9 +163,6 @@ function AboutPage() {
                   <div className="spotify-now-playing-copy">
                     <strong>{t.notSetUp}</strong>
                     <span>{t.notSetUpText}</span>
-                    {nowPlayingErrorMessage && (
-                      <span className="spotify-now-playing-error-detail">{nowPlayingErrorMessage}</span>
-                    )}
                   </div>
                 </div>
               )}
