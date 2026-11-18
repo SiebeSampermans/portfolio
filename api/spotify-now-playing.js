@@ -75,8 +75,10 @@ export default async function handler(_request, response) {
       durationMs: item?.duration_ms || 0,
     });
   } catch (error) {
-    return response.status(500).json({
-      error: error.message || 'Unable to load Spotify status.',
+    // Keep Spotify's raw error (e.g. a revoked refresh token) in the Vercel logs, not on the page.
+    console.error('[spotify-now-playing]', error?.message || error);
+    return response.status(503).json({
+      error: 'Spotify is unavailable right now.',
     });
   }
 }

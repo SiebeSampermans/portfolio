@@ -274,7 +274,7 @@ function MainLayout() {
                     <div className="brand-hover-artwork brand-hover-artwork-placeholder"></div>
                     <div className="brand-hover-copy">
                       <strong>{t.connectionIssue}</strong>
-                      <span>{spotifyNowPlaying.errorMessage || t.unableToLoad}</span>
+                      <span>{t.unableToLoad}</span>
                     </div>
                   </div>
                 )}
