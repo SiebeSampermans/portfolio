@@ -9,18 +9,20 @@ export const RUNNER_COLORS = [
   { id: 'white', value: '#ffffff' },
 ];
 
+export const RUNNER_BODIES = ['hero', 'block'];
 export const RUNNER_FACES = ['letter', 'smile', 'cool', 'robot', 'angry', 'wink'];
 export const RUNNER_HATS = ['none', 'cap', 'crown', 'party', 'headphones', 'beanie'];
 export const RUNNER_TRAILS = ['line', 'squares', 'sparkles', 'rainbow', 'none'];
 export const TRAIL_BITS = 12;
 
-const DEFAULT_STYLE = { color: 'accent', face: 'letter', hat: 'none', trail: 'line' };
+const DEFAULT_STYLE = { body: 'hero', color: 'accent', face: 'letter', hat: 'none', trail: 'line' };
 const STORAGE_KEY = 'runner-style';
 
 const readStyle = () => {
   try {
     const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '{}');
     return {
+      body: RUNNER_BODIES.includes(saved.body) ? saved.body : DEFAULT_STYLE.body,
       color: RUNNER_COLORS.some((c) => c.id === saved.color) ? saved.color : DEFAULT_STYLE.color,
       face: RUNNER_FACES.includes(saved.face) ? saved.face : DEFAULT_STYLE.face,
       hat: RUNNER_HATS.includes(saved.hat) ? saved.hat : DEFAULT_STYLE.hat,
@@ -147,15 +149,140 @@ export function Hat({ hat }) {
   }
 }
 
-/** The block itself; the engine moves it through `ref`. */
+// Pixel hero, 16 × 16, facing right. Legend:
+// H hair, S skin, E eye, A top (the chosen colour), D top in shade, J jeans, W shoe, K sole/outline.
+const HERO_POSES = {
+  idle: [
+    '................',
+    '.....HHHHH......',
+    '....HHHHHHHH....',
+    '....HHHSSES.....',
+    '....HHSSSSSS....',
+    '.....SSSSSS.....',
+    '......SSSS......',
+    '....AAAAAAAA....',
+    '...AAAAAAAAAA...',
+    '..SADAAAAAADAS..',
+    '..S.AAAAAAAA.S..',
+    '....JJJJJJJJ....',
+    '....JJJ..JJJ....',
+    '....JJJ..JJJ....',
+    '...WWWW..WWWW...',
+    '...KKKK..KKKK...',
+  ],
+  'run-a': [
+    '................',
+    '.....HHHHH......',
+    '....HHHHHHHH....',
+    '....HHHSSES.....',
+    '....HHSSSSSS....',
+    '.....SSSSSS.....',
+    '......SSSS......',
+    '....AAAAAAAA....',
+    '...AAAAAAAAAASS.',
+    '..SDAAAAAAAAA...',
+    '.SS.AAAAAAAA....',
+    '....JJJJJJJJ....',
+    '...JJJ....JJJ...',
+    '..JJJ......JJJ..',
+    '.WWWW......WWWW.',
+    '.KKK........KKK.',
+  ],
+  'run-b': [
+    '................',
+    '................',
+    '.....HHHHH......',
+    '....HHHHHHHH....',
+    '....HHHSSES.....',
+    '....HHSSSSSS....',
+    '.....SSSSSS.....',
+    '......SSSS......',
+    '....AAAAAAAA....',
+    '...SAAAAAAAAS...',
+    '....AADAADAA....',
+    '....JJJJJJJJ....',
+    '.....JJJJJJ.....',
+    '.....JJJ.JJJ....',
+    '....WWWWWWWWW...',
+    '....KKKKKKKKK...',
+  ],
+  jump: [
+    '.............SS.',
+    '.....HHHHH...SS.',
+    '....HHHHHHHH.AA.',
+    '....HHHSSES..AA.',
+    '....HHSSSSSS....',
+    '.....SSSSSS.AA..',
+    '......SSSS.AA...',
+    '....AAAAAAAAA...',
+    '..SAAAAAAAAA....',
+    '.SSDAAAAAADA....',
+    '....AAAAAAAA....',
+    '....JJJJJJJJ....',
+    '...JJJJ..JJJJ...',
+    '..WWWW....JJJ...',
+    '..KKKK....WWWW..',
+    '..........KKKK..',
+  ],
+};
+
+const HERO_COLORS = {
+  H: '#3b2414',
+  S: '#f3c39a',
+  E: '#16121f',
+  A: 'var(--runner-color)',
+  D: 'var(--runner-color)',
+  J: '#2f4f9a',
+  W: '#ffffff',
+  K: '#16121f',
+};
+
+function PixelPose({ pose }) {
+  const rects = [];
+  HERO_POSES[pose].forEach((row, y) => {
+    let x = 0;
+    while (x < row.length) {
+      const key = row[x];
+      let end = x;
+      while (end < row.length && row[end] === key) end += 1;
+      if (key !== '.') {
+        rects.push(<rect key={`${x}-${y}`} x={x} y={y} width={end - x} height={1.02} fill={HERO_COLORS[key]} />);
+        if (key === 'D') {
+          rects.push(<rect key={`${x}-${y}-d`} x={x} y={y} width={end - x} height={1.02} fill="#000" opacity="0.3" />);
+        }
+      }
+      x = end;
+    }
+  });
+  return (
+    <svg viewBox="0 0 16 16" className={`hero-pose hero-${pose}`} shapeRendering="crispEdges">
+      {rects}
+    </svg>
+  );
+}
+
+/** The pixel hero: every pose is drawn once, CSS shows the one the engine picks. */
+export function PixelHero() {
+  return (
+    <span className="hero">
+      {Object.keys(HERO_POSES).map((pose) => (
+        <PixelPose key={pose} pose={pose} />
+      ))}
+    </span>
+  );
+}
+
+/** The runner itself (pixel hero or block); the engine moves it through `ref`. */
 export const RunnerBlock = forwardRef(function RunnerBlock({ style, className = '' }, ref) {
+  const isHero = style.body !== 'block';
   return (
     <span
-      className={`runner ${className}`}
+      className={`runner ${isHero ? 'is-sprite' : ''} ${className}`}
       ref={ref}
+      data-pose="idle"
       style={{ '--runner-color': colorValue(style.color) }}
     >
-      <Face face={style.face} />
+      {isHero ? <PixelHero /> : <Face face={style.face} />}
       <Hat hat={style.hat} />
     </span>
   );

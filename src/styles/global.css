@@ -3732,3 +3732,94 @@ body[data-theme='green'] {
   --sky-cv: #2f74c4;
   --sky-contact: #1f8fb8;
 }
+
+/* ---------- Pixel hero: the default player, drawn as 16 × 16 pixel art ---------- */
+
+.runner.is-sprite {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.25));
+}
+
+.hero {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-pose {
+  position: absolute;
+  inset: 0;
+  display: none;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+.runner[data-pose='idle'] .hero-idle,
+.runner[data-pose='run-a'] .hero-run-a,
+.runner[data-pose='run-b'] .hero-run-b,
+.runner[data-pose='jump'] .hero-jump,
+.runner:not([data-pose]) .hero-idle,
+.mini-hero .hero-idle {
+  display: block;
+}
+
+/* Hats sit on the hero's head, which is narrower than the block. */
+.is-sprite .runner-hat {
+  left: 22%;
+  bottom: 84%;
+  width: 56%;
+}
+
+.is-sprite .runner-hat-tall {
+  left: 28%;
+  width: 44%;
+}
+
+.is-sprite .runner-hat-wrap {
+  left: 14%;
+  top: -10%;
+  bottom: auto;
+  width: 72%;
+}
+
+.runner.is-sprite.is-powered {
+  box-shadow: none;
+  filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 8px var(--pink));
+}
+
+.mini-hero {
+  position: relative;
+  display: block;
+  width: 34px;
+  height: 34px;
+}
+
+.mini-hero .hero-pose {
+  display: none;
+}
+
+.mini-hero .hero-idle {
+  display: block;
+}
+
+/* The hero is drawn a little larger than its hitbox, standing on the same ground line. */
+.runner.is-sprite .hero {
+  inset: -22% -11% 0;
+}
+
+.runner-preview.is-sprite {
+  animation-name: hero-hop;
+}
+
+@keyframes hero-hop {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-70px);
+  }
+}

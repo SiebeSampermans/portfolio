@@ -27,9 +27,11 @@ const nl = {
     nothingPlaying: 'Er speelt nu niets',
   },
   garage: {
-    open: 'Pas je blokje aan',
+    open: 'Pas je speler aan',
     title: 'Garage',
-    intro: 'Kies hoe jouw blokje eruitziet. Je keuze wordt onthouden in deze browser.',
+    intro: 'Kies hoe jouw speler eruitziet. Je keuze wordt onthouden in deze browser.',
+    body: 'Figuur',
+    bodies: { hero: 'Pixelheld', block: 'Blokje' },
     color: 'Kleur',
     face: 'Gezicht',
     hat: 'Hoed',

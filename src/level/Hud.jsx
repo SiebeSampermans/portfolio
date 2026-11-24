@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { languages, translations, useLanguage } from '../i18n/LanguageContext';
-import { colorValue, Face } from './Runner';
+import { colorValue, Face, PixelHero } from './Runner';
 import { SECTION_IDS } from './useLevelEngine';
 
 const sameText = (a, b) =>
@@ -188,9 +188,15 @@ function Hud({ refs, activeSection, onNavigate, spotify, theme, runnerStyle, onO
             aria-label={translation.garage.open}
             title={translation.garage.open}
           >
-            <span className="mini-block" style={{ '--runner-color': colorValue(runnerStyle.color) }} aria-hidden="true">
-              <Face face={runnerStyle.face} />
-            </span>
+            {runnerStyle.body === 'block' ? (
+              <span className="mini-block" style={{ '--runner-color': colorValue(runnerStyle.color) }} aria-hidden="true">
+                <Face face={runnerStyle.face} />
+              </span>
+            ) : (
+              <span className="mini-hero" style={{ '--runner-color': colorValue(runnerStyle.color) }} aria-hidden="true">
+                <PixelHero />
+              </span>
+            )}
           </button>
         )}
 

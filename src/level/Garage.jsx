@@ -1,6 +1,17 @@
 import { useLanguage } from '../i18n/LanguageContext';
 import { Modal } from './parts';
-import { colorValue, Face, Hat, RUNNER_COLORS, RUNNER_FACES, RUNNER_HATS, RUNNER_TRAILS, RunnerBlock } from './Runner';
+import {
+  colorValue,
+  Face,
+  Hat,
+  PixelHero,
+  RUNNER_BODIES,
+  RUNNER_COLORS,
+  RUNNER_FACES,
+  RUNNER_HATS,
+  RUNNER_TRAILS,
+  RunnerBlock,
+} from './Runner';
 
 function OptionGroup({ label, children }) {
   return (
@@ -60,6 +71,22 @@ function Garage({ isOpen, onClose, style, update, reset }) {
         </div>
 
         <div className="garage-pickers">
+          <OptionGroup label={t.body}>
+            {RUNNER_BODIES.map((body) => (
+              <Option key={body} isActive={style.body === body} onClick={() => update({ body })} label={t.bodies[body]}>
+                {body === 'hero' ? (
+                  <span className="mini-hero" style={{ '--runner-color': colorValue(style.color) }}>
+                    <PixelHero />
+                  </span>
+                ) : (
+                  <span className="mini-block" style={{ '--runner-color': colorValue(style.color) }}>
+                    <Face face={style.face} />
+                  </span>
+                )}
+              </Option>
+            ))}
+          </OptionGroup>
+
           <OptionGroup label={t.color}>
             {RUNNER_COLORS.map((color) => (
               <Option
@@ -73,6 +100,7 @@ function Garage({ isOpen, onClose, style, update, reset }) {
             ))}
           </OptionGroup>
 
+          {style.body === 'block' && (
           <OptionGroup label={t.face}>
             {RUNNER_FACES.map((face) => (
               <Option key={face} isActive={style.face === face} onClick={() => update({ face })} label={t.faces[face]}>
@@ -82,6 +110,7 @@ function Garage({ isOpen, onClose, style, update, reset }) {
               </Option>
             ))}
           </OptionGroup>
+          )}
 
           <OptionGroup label={t.hat}>
             {RUNNER_HATS.map((hat) => (

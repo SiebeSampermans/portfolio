@@ -51,6 +51,8 @@ function useLevelEngine({ onSectionChange }) {
   const progressRef = useRef(null);
   const percentRef = useRef(null);
   const timerRef = useRef(null);
+  const lastScrollRef = useRef(0);
+  const idleTimerRef = useRef(0);
   const layoutRef = useRef({ obstacles: [], sections: [], maxScroll: 1, portals: [] });
   const activeSectionRef = useRef(null);
   const playRef = useRef(null);
@@ -232,9 +234,27 @@ function useLevelEngine({ onSectionChange }) {
         }, 220);
       };
 
-      if (play && runnerRef.current) {
+      const runner = runnerRef.current;
+      const isSprite = runner?.classList.contains('is-sprite');
+
+      if (play && runner) {
         const offsetX = play.x - scroll - window.innerWidth * RUNNER_SCREEN_X;
-        runnerRef.current.style.transform = `translate3d(${offsetX}px, ${-play.y}px, 0) rotate(${play.rotation}deg)`;
+        if (isSprite) {
+          // The pixel hero doesn't spin: it faces where it runs and picks a pose.
+          if (play.vx > 20) play.facing = 1;
+          if (play.vx < -20) play.facing = -1;
+          const pose = !play.grounded
+            ? 'jump'
+            : Math.abs(play.vx) > 30
+              ? Math.floor(play.x / 26) % 2
+                ? 'run-a'
+                : 'run-b'
+              : 'idle';
+          runner.dataset.pose = pose;
+          runner.style.transform = `translate3d(${offsetX}px, ${-play.y}px, 0) scaleX(${play.facing || 1})`;
+        } else {
+          runner.style.transform = `translate3d(${offsetX}px, ${-play.y}px, 0) rotate(${play.rotation}deg)`;
+        }
         runnerRef.current.classList.toggle('is-airborne', !play.grounded);
         runnerRef.current.classList.toggle('is-powered', Boolean(play.powered));
         runnerRef.current.classList.toggle('is-hurt', (play.hurtUntil || 0) > performance.now());
@@ -263,11 +283,25 @@ function useLevelEngine({ onSectionChange }) {
         }
       }
 
-      if (!play && runnerRef.current) {
-        runnerRef.current.style.transform = `translate3d(0, ${-lift}px, 0) rotate(${
-          completedJumps * 180 + rotation
-        }deg)`;
-        runnerRef.current.classList.toggle('is-airborne', lift > 2);
+      if (!play && runner) {
+        if (isSprite) {
+          runner.style.transform = `translate3d(0, ${-lift}px, 0)`;
+          const moved = Math.abs(scroll - lastScrollRef.current) > 0.5;
+          lastScrollRef.current = scroll;
+          if (lift > 2) {
+            runner.dataset.pose = 'jump';
+          } else if (moved) {
+            runner.dataset.pose = Math.floor(scroll / 26) % 2 ? 'run-a' : 'run-b';
+          }
+          // Stand still once the scrolling stops.
+          window.clearTimeout(idleTimerRef.current);
+          idleTimerRef.current = window.setTimeout(() => {
+            if (!playRef.current && runnerRef.current) runnerRef.current.dataset.pose = 'idle';
+          }, 160);
+        } else {
+          runner.style.transform = `translate3d(0, ${-lift}px, 0) rotate(${completedJumps * 180 + rotation}deg)`;
+        }
+        runner.classList.toggle('is-airborne', lift > 2);
         drawTrail(anchorX, lift);
       }
 
@@ -356,7 +390,7 @@ function useLevelEngine({ onSectionChange }) {
     const startX = () => window.innerWidth * RUNNER_SCREEN_X;
     const freshRunner = (x) => ({
       x, y: 0, vx: 0, vy: 0, rotation: 0, grounded: true, dead: false,
-      powered: false, hurtUntil: 0, jumpHeld: false, jumpCut: true, finished: false, finishedAt: 0,
+      powered: false, hurtUntil: 0, jumpHeld: false, jumpCut: true, finished: false, finishedAt: 0, facing: 1,
     });
     const scoreOf = (taken, flagBonus = 0) =>
       (taken.usedBonus.size + taken.collected.size) * SCORE.bit +

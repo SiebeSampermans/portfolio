@@ -27,9 +27,11 @@ const en = {
     nothingPlaying: 'Nothing playing right now',
   },
   garage: {
-    open: 'Customise your block',
+    open: 'Customise your player',
     title: 'Garage',
-    intro: 'Pick how your block looks. Your choice is remembered in this browser.',
+    intro: 'Pick how your player looks. Your choice is remembered in this browser.',
+    body: 'Character',
+    bodies: { hero: 'Pixel hero', block: 'Block' },
     color: 'Colour',
     face: 'Face',
     hat: 'Hat',
