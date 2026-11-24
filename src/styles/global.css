@@ -11,7 +11,7 @@
 
   --hud-h: 68px;
   --ground-h: clamp(84px, 14vh, 140px);
-  --lane-h: 112px;
+  --lane-h: 150px;
   --runner: 52px;
 
   --white: #ffffff;
@@ -860,12 +860,37 @@ code {
   height: calc(var(--lane-h) + var(--ground-h));
 }
 
-.obstacle {
+.lane-obstacles {
   position: absolute;
+  left: 4%;
+  right: 4%;
   bottom: var(--ground-h);
-  left: 58%;
   display: flex;
   align-items: flex-end;
+  justify-content: center;
+  /* Room to land and jump again between two obstacles. */
+  gap: 140px;
+}
+
+.seg-project .lane-obstacles {
+  left: 110px;
+}
+
+.obstacle {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+}
+
+.ob-col {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+}
+
+.seg-body {
+  position: relative;
+  z-index: 1;
 }
 
 .ob-spike {
@@ -886,6 +911,155 @@ code {
 
 .ob-block-tall {
   height: 92px;
+}
+
+.ob-gap {
+  display: block;
+  width: 1px;
+  height: 80px;
+}
+
+.ob-gap-s {
+  height: 64px;
+}
+
+/* Bonus block: bump it from below for a bit. */
+.ob-bonus {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  background: var(--ink);
+  border: 3px solid var(--yellow);
+  border-radius: 8px;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--yellow) 55%, transparent), inset 0 0 0 5px rgba(255, 216, 77, 0.12);
+}
+
+.ob-bonus::after {
+  content: '</>';
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  font-style: normal;
+  color: var(--yellow);
+  animation: blink 1.2s steps(2) infinite;
+}
+
+.ob-bonus.is-used {
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: none;
+  animation: bonk 0.25s ease-out;
+}
+
+.ob-bonus.is-used::after {
+  content: '';
+}
+
+.ob-bonus.is-used::before {
+  content: '1';
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 30px;
+  margin-left: -13px;
+  background: var(--yellow);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-style: normal;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  animation: bit-pop 0.6s ease-out forwards;
+}
+
+/* Bits to collect */
+.coin {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 30px;
+  background: var(--yellow);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  animation: coin-spin 1.4s ease-in-out infinite;
+}
+
+.coin::after {
+  content: '1';
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.coin.is-collected {
+  animation: bit-pop 0.4s ease-out forwards;
+}
+
+/* Bugs: squash them from above. */
+.bug {
+  position: relative;
+  display: block;
+  width: 46px;
+  height: 34px;
+}
+
+html:not(.is-play-mode) .bug {
+  animation: bug-patrol 2.6s ease-in-out infinite alternate;
+}
+
+.bug-body {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 6px;
+  height: 26px;
+  background: #ff3d5a;
+  border: 3px solid var(--ink);
+  border-radius: 16px 16px 8px 8px;
+  animation: bug-wiggle 0.3s steps(2) infinite;
+}
+
+/* eyes */
+.bug-body::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 6px;
+  width: 7px;
+  height: 7px;
+  background: var(--white);
+  border-radius: 50%;
+  box-shadow: 14px 0 0 var(--white);
+}
+
+/* antennae and legs */
+.bug-body::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: -9px;
+  height: 6px;
+  background: repeating-linear-gradient(90deg, var(--ink) 0 4px, transparent 4px 10px);
+}
+
+.bug::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: -4px;
+  width: 20px;
+  height: 10px;
+  border: 3px solid var(--ink);
+  border-bottom: 0;
+  border-radius: 10px 10px 0 0;
+}
+
+.bug.is-squashed {
+  animation: squash 0.4s ease-out forwards;
 }
 
 .is-beat .obstacle {
@@ -1132,6 +1306,20 @@ kbd {
 
 .play-banner strong {
   color: var(--accent);
+}
+
+.play-banner-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--yellow);
+}
+
+.mini-coin {
+  width: 12px;
+  height: 14px;
+  background: var(--yellow);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
 }
 
 .play-banner-hint {
@@ -2572,7 +2760,7 @@ img.cv-sheet {
 
 @media (max-height: 760px) {
   :root {
-    --lane-h: 96px;
+    --lane-h: 120px;
     --hud-h: 60px;
   }
 
@@ -2955,6 +3143,53 @@ img.cv-sheet {
 @keyframes hover-bob {
   50% {
     transform: translateY(-8px);
+  }
+}
+
+@keyframes bonk {
+  50% {
+    translate: 0 -10px;
+  }
+}
+
+@keyframes bit-pop {
+  0% {
+    translate: 0 0;
+    opacity: 1;
+  }
+  100% {
+    translate: 0 -60px;
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes coin-spin {
+  50% {
+    scale: 0.55 1;
+  }
+}
+
+@keyframes bug-patrol {
+  from {
+    transform: translateX(-70px);
+  }
+  to {
+    transform: translateX(70px);
+  }
+}
+
+@keyframes bug-wiggle {
+  50% {
+    translate: 0 -2px;
+  }
+}
+
+@keyframes squash {
+  to {
+    scale: 1.3 0.2;
+    translate: 0 14px;
+    opacity: 0;
   }
 }
 

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { bugOffset, stepPhysics } from './physics';
 
 // Below this width, on short screens, or when the visitor asks for less motion,
 // the level is laid out vertically and the runner stays still.
@@ -45,7 +46,7 @@ function useLevelEngine({ onSectionChange }) {
   const layoutRef = useRef({ obstacles: [], sections: [], maxScroll: 1, portals: [] });
   const activeSectionRef = useRef(null);
   const playRef = useRef(null);
-  const [playState, setPlayState] = useState({ isPlaying: false, attempts: 1, isDead: false });
+  const [playState, setPlayState] = useState({ isPlaying: false, attempts: 1, isDead: false, bits: 0, bugs: 0 });
   const onSectionChangeRef = useRef(onSectionChange);
   onSectionChangeRef.current = onSectionChange;
 
@@ -97,12 +98,27 @@ function useLevelEngine({ onSectionChange }) {
     }));
 
     // Individual spikes and blocks, for play mode collisions.
-    const parts = Array.from(world.querySelectorAll('.obstacle > i')).map((element) => ({
-      kind: element.classList.contains('ob-spike') ? 'spike' : 'block',
-      ...relative(element),
+    const measureThing = (element, index) => {
+      const box = relative(element);
+      const groundLine = element.closest('.obstacle').getBoundingClientRect().bottom;
+      const base = groundLine - element.getBoundingClientRect().bottom;
+      return { id: index, element, start: box.start, end: box.end, base, top: base + box.height, height: box.height };
+    };
+    const kindOf = (element) =>
+      element.classList.contains('ob-spike') ? 'spike' : element.classList.contains('ob-bonus') ? 'bonus' : 'block';
+    const parts = Array.from(world.querySelectorAll('.obstacle i')).map((element, index) => ({
+      ...measureThing(element, index),
+      kind: kindOf(element),
     }));
+    const coins = Array.from(world.querySelectorAll('.obstacle .coin')).map(measureThing);
+    // Bugs are measured from their spawn point, without the patrol offset.
+    const bugs = Array.from(world.querySelectorAll('.obstacle .bug')).map((element, index) => {
+      // Measure the bug's column: the bug itself may be mid-animation.
+      const spawn = measureThing(element.parentElement, index);
+      return { ...spawn, element, top: spawn.base + element.offsetHeight, phase: index * 1.7 };
+    });
 
-    layoutRef.current = { obstacles, sections, maxScroll, portals, parts, worldWidth };
+    layoutRef.current = { obstacles, sections, maxScroll, portals, parts, coins, bugs, worldWidth };
   }, [isVertical]);
 
   const render = useCallback(() => {
@@ -320,12 +336,21 @@ function useLevelEngine({ onSectionChange }) {
       return action === 'jump' && (tag === 'BUTTON' || tag === 'A') && !playRef.current;
     };
 
+    // Everything taken during an attempt comes back when you start over.
+    const resetTaken = (play) => {
+      play.taken = { usedBonus: new Set(), collected: new Set(), squashed: new Set() };
+      worldRef.current
+        ?.querySelectorAll('.is-used, .is-collected, .is-squashed')
+        .forEach((element) => element.classList.remove('is-used', 'is-collected', 'is-squashed'));
+    };
+
     const respawn = () => {
       const play = playRef.current;
       if (!play) return;
       Object.assign(play, { x: startX(), y: 0, vy: 0, rotation: 0, grounded: true, dead: false });
+      resetTaken(play);
       window.scrollTo({ top: 0, behavior: 'auto' });
-      setPlayState((current) => ({ ...current, isDead: false }));
+      setPlayState((current) => ({ ...current, isDead: false, bits: 0, bugs: 0 }));
       render();
     };
 
@@ -349,57 +374,25 @@ function useLevelEngine({ onSectionChange }) {
       last = time;
 
       if (!play.dead) {
-        const { parts, maxScroll, worldWidth } = layoutRef.current;
-        const size = RUNNER_SIZE;
-        const speed = 460;
-        const prevY = play.y;
-
-        // Horizontal movement, blocked by the sides of blocks.
+        const layout = layoutRef.current;
+        const { maxScroll } = layout;
         const dir = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
-        let x = play.x + dir * speed * dt;
-        x = Math.min(Math.max(x, 0), worldWidth - size);
-        for (const part of parts) {
-          if (part.kind !== 'block' || play.y >= part.height - 1) continue;
-          if (x + size > part.start && x < part.end) {
-            x = dir > 0 ? part.start - size : dir < 0 ? part.end : x;
-          }
-        }
-        play.x = x;
+        const events = stepPhysics(play, { dir, jump: keys.jump }, layout, play.taken, dt, time);
 
-        // Jumping and gravity; blocks can be landed on.
-        if (keys.jump && play.grounded) {
-          play.vy = 880;
-          play.grounded = false;
-        }
-        play.vy -= 2700 * dt;
-        play.y += play.vy * dt;
-
-        let floor = 0;
-        for (const part of parts) {
-          if (part.kind !== 'block') continue;
-          if (play.x + size > part.start + 2 && play.x < part.end - 2 && prevY >= part.height - 1) {
-            floor = Math.max(floor, part.height);
+        layout.bugs.forEach((bug) => {
+          if (!play.taken.squashed.has(bug.id)) {
+            bug.element.style.transform = `translateX(${bugOffset(bug, time)}px)`;
           }
+        });
+        events.bonus.forEach((id) => layout.parts[id]?.element.classList.add('is-used'));
+        events.coins.forEach((id) => layout.coins[id]?.element.classList.add('is-collected'));
+        events.stomped.forEach((id) => layout.bugs[id]?.element.classList.add('is-squashed'));
+        if (events.bonus.length || events.coins.length || events.stomped.length) {
+          const bits = play.taken.usedBonus.size + play.taken.collected.size;
+          const bugs = play.taken.squashed.size;
+          setPlayState((current) => ({ ...current, bits, bugs }));
         }
-        if (play.y <= floor) {
-          play.y = floor;
-          play.vy = 0;
-          if (!play.grounded) play.rotation = Math.round(play.rotation / 90) * 90;
-          play.grounded = true;
-        } else {
-          play.grounded = false;
-          play.rotation += 400 * dt;
-        }
-
-        // Spikes: a forgiving hitbox on the inner part of the triangle.
-        for (const part of parts) {
-          if (part.kind !== 'spike') continue;
-          const inset = (part.end - part.start) * 0.3;
-          if (play.x + size > part.start + inset && play.x < part.end - inset && play.y < part.height * 0.6) {
-            die();
-            break;
-          }
-        }
+        if (events.dead) die();
 
         const target = Math.min(Math.max(play.x - startX(), 0), maxScroll);
         if (Math.abs(target - window.scrollY) > 0.5) {
@@ -416,6 +409,7 @@ function useLevelEngine({ onSectionChange }) {
       const { maxScroll } = layoutRef.current;
       const scroll = Math.min(Math.max(window.scrollY, 0), maxScroll);
       playRef.current = { x: scroll + startX(), y: 0, vy: 0, rotation: 0, grounded: true, dead: false };
+      resetTaken(playRef.current);
       document.documentElement.classList.add('is-play-mode');
       setPlayState((current) => ({ ...current, isPlaying: true }));
       last = 0;
@@ -428,6 +422,9 @@ function useLevelEngine({ onSectionChange }) {
       keys.left = keys.right = keys.jump = false;
       document.documentElement.classList.remove('is-play-mode');
       runnerRef.current?.classList.remove('is-dead');
+      layoutRef.current.bugs?.forEach((bug) => {
+        bug.element.style.transform = '';
+      });
       setPlayState((current) => ({ ...current, isPlaying: false, isDead: false }));
       if (frame) window.cancelAnimationFrame(frame);
       frame = 0;
@@ -459,6 +456,10 @@ function useLevelEngine({ onSectionChange }) {
     window.addEventListener('touchstart', onWheel, { passive: true });
     window.addEventListener('blur', onBlur);
     window.addEventListener('level-exit-play', exitPlay);
+    // `?levelcheck` exposes the measured course so an automated run can prove it is beatable.
+    if (window.location.search.includes('levelcheck')) {
+      window.__level = { layout: () => layoutRef.current, stepPhysics };
+    }
 
     return () => {
       window.removeEventListener('keydown', onKeyDown);

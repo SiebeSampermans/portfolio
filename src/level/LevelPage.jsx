@@ -143,6 +143,13 @@ function LevelPage() {
           <span>
             {t.level.attempt} {playState.attempts}
           </span>
+          <span className="play-banner-score">
+            <span className="mini-coin" aria-hidden="true"></span>
+            {t.level.bits} {playState.bits}
+          </span>
+          <span className="play-banner-score">
+            {t.level.bugs} {playState.bugs}
+          </span>
           <span className="play-banner-hint">{t.level.exitPlay}</span>
         </div>
       )}
