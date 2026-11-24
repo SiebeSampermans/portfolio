@@ -3,7 +3,7 @@ import { Card, Checkpoint, Seg } from '../parts';
 
 const STAT_OBSTACLES = ['spike', 'block', 'spikes', 'stairs'];
 
-function HomeZone({ onNavigate, canPlay, onOpenGarage }) {
+function HomeZone({ onNavigate, canPlay }) {
   const { t: translation } = useLanguage();
   const t = translation.home;
   const level = translation.level;
@@ -44,9 +44,6 @@ function HomeZone({ onNavigate, canPlay, onOpenGarage }) {
                 <strong>{level.playTitle}</strong>
                 {level.playHint}
               </span>
-              <button type="button" className="btn btn-ghost btn-small" onClick={onOpenGarage}>
-                {translation.garage.open}
-              </button>
             </div>
           )}
         </div>

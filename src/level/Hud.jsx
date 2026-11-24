@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { languages, translations, useLanguage } from '../i18n/LanguageContext';
-import { colorValue, Face, PixelHero } from './Runner';
+import logoBlue from '../assets/logo/logo-blue.png';
+import logoGreen from '../assets/logo/logo-green.png';
 import { SECTION_IDS } from './useLevelEngine';
 
 const sameText = (a, b) =>
@@ -91,7 +92,7 @@ function SpotifyBadge({ spotify }) {
   );
 }
 
-function Hud({ refs, activeSection, onNavigate, spotify, theme, runnerStyle, onOpenGarage }) {
+function Hud({ refs, activeSection, onNavigate, spotify, theme }) {
   const { language, setLanguage, t: translation } = useLanguage();
   const t = translation.layout;
   const level = translation.level;
@@ -153,7 +154,9 @@ function Hud({ refs, activeSection, onNavigate, spotify, theme, runnerStyle, onO
             go('home');
           }}
         >
-          <span className="hud-brand-block" aria-hidden="true">S</span>
+          <span className="hud-brand-block" aria-hidden="true">
+            <img src={theme.isBlue ? logoBlue : logoGreen} alt="" width="36" height="36" />
+          </span>
           <span className="hud-brand-text">
             <strong>{level.name}</strong>
             <span>
@@ -179,26 +182,6 @@ function Hud({ refs, activeSection, onNavigate, spotify, theme, runnerStyle, onO
         </div>
 
         <SpotifyBadge spotify={spotify} />
-
-        {onOpenGarage && (
-          <button
-            type="button"
-            className="hud-garage"
-            onClick={onOpenGarage}
-            aria-label={translation.garage.open}
-            title={translation.garage.open}
-          >
-            {runnerStyle.body === 'block' ? (
-              <span className="mini-block" style={{ '--runner-color': colorValue(runnerStyle.color) }} aria-hidden="true">
-                <Face face={runnerStyle.face} />
-              </span>
-            ) : (
-              <span className="mini-hero" style={{ '--runner-color': colorValue(runnerStyle.color) }} aria-hidden="true">
-                <PixelHero />
-              </span>
-            )}
-          </button>
-        )}
 
         <div className="hud-controls">{controls}</div>
 

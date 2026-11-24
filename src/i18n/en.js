@@ -59,7 +59,7 @@ const en = {
     completeText: 'You ran the whole course. Let me hear from you!',
     replay: 'Play again',
     playTitle: 'Or play it yourself',
-    playHint: 'Run with ← → or A D / Q D, jump with ↑, W, Z or space (hold to jump higher). Bump </> blocks for bits, grab a pink + block for a shield, stomp bugs and don\'t fall in a pit. Reach the flag!',
+    playHint: 'Run with ← → or A D / Q D, jump with ↑, W, Z or space (hold to jump higher). Land on the mushrooms, bump </> blocks for bits, grab a pink + block for a shield, stomp bugs and don\'t fall in a pit. Reach the flag!',
     score: 'Score',
     time: 'Time',
     powered: 'Shield',

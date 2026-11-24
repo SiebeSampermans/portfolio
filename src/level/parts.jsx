@@ -31,37 +31,60 @@ export function Seg({ children, className = '', obstacle, lane, width }) {
   );
 }
 
+// The course is a friendly platformer: no spikes, just hills to climb, pits to jump,
+// mushroom platforms to land on, blocks to bump and bugs to stomp.
 const HARD_PATTERNS = {
-  spike: ['spiked-block'],
+  spike: ['hill-step'],
   spikes: ['brick-row'],
   block: ['pit'],
   'block-spike': ['bug-patrol'],
-  stairs: ['stair-pit'],
-  tall: ['sky-bridge'],
+  stairs: ['mushrooms'],
+  tall: ['mushroom-hop'],
 };
 
 // Each obstacle is a row of columns; each column stacks parts from the ground up.
 // `gap` lifts what comes after it into the air; `pit` is a hole in the ground (fall in and it's over);
+// `hill-*` is raised ground; `stem-*` + `mushroom` is a mushroom platform you land on;
 // `brick` breaks when you hit it powered up; `bonus` gives a bit, `power` gives a power chip;
 // `coin` is a bit to grab, `bug` walks and can be squashed.
 const OBSTACLE_COLUMNS = {
-  spike: [['spike']],
-  spikes: [['spike'], ['spike']],
-  triple: [['spike'], ['spike'], ['spike']],
   block: [['block']],
-  'spiked-block': [['spike'], ['block', 'spike'], ['spike']],
-  pit: [['block'], ['pit', 'gap', 'coin'], ['block', 'block']],
-  'brick-row': [['gap', 'brick'], ['gap', 'bonus'], ['gap', 'brick'], ['gap', 'power'], ['gap', 'brick'], ['spike']],
-  'stair-pit': [['block'], ['block', 'block'], ['block', 'block', 'block'], ['pit-w', 'gap', 'gap', 'coin'], ['block', 'block', 'block'], ['block']],
-  climb: [['block'], ['block-tall'], ['block-tall', 'block'], ['spike'], ['spike']],
+  'hill-step': [['hill-1'], ['hill-2', 'gap-s', 'coin'], ['hill-1']],
+  pit: [['hill-1'], ['pit', 'gap', 'coin'], ['hill-1']],
+  'brick-row': [['gap', 'brick'], ['gap', 'bonus'], ['gap', 'brick'], ['gap', 'power'], ['gap', 'brick']],
   'bug-patrol': [['gap-s', 'coin'], ['bug'], ['gap-s', 'coin']],
-  'sky-bridge': [['spike'], ['spike'], ['gap', 'block'], ['pit-w', 'gap', 'gap', 'coin'], ['gap', 'bonus'], ['spike'], ['spike']],
+  mushrooms: [
+    ['stem-s', 'mushroom'],
+    ['pit-w', 'gap', 'gap', 'coin'],
+    ['stem-m', 'mushroom'],
+    ['stem-s', 'mushroom', 'gap-s', 'coin'],
+  ],
+  'mushroom-hop': [
+    ['stem-m', 'mushroom'],
+    ['pit-w'],
+    ['stem-l', 'mushroom', 'gap-s', 'coin'],
+    ['pit'],
+    ['stem-s', 'mushroom'],
+  ],
   'finish-stairs': [['block'], ['block', 'block'], ['block', 'block', 'block'], ['block', 'block', 'block', 'block']],
 };
 
-const PART_WIDTH = { spike: 46, coin: 26, bug: 46, pit: 160, 'pit-w': 220, gap: 0, 'gap-s': 0 };
+const PART_WIDTH = {
+  coin: 26,
+  bug: 46,
+  pit: 160,
+  'pit-w': 220,
+  'hill-1': 156,
+  'hill-2': 156,
+  mushroom: 156,
+  'stem-s': 40,
+  'stem-m': 40,
+  'stem-l': 40,
+  gap: 0,
+  'gap-s': 0,
+};
 const obstacleWidth = (kind) =>
-  (OBSTACLE_COLUMNS[kind] || [['spike']]).reduce(
+  (OBSTACLE_COLUMNS[kind] || [['block']]).reduce(
     (sum, column) => sum + Math.max(...column.map((part) => PART_WIDTH[part] ?? 52)),
     0,
   );
@@ -82,6 +105,13 @@ function ObstaclePart({ part }) {
       );
     case 'power':
       return <i className="ob-bonus ob-power"></i>;
+    case 'stem-s':
+    case 'stem-m':
+    case 'stem-l':
+      return <u className={`ob-stem ob-${part}`}></u>;
+    case 'hill-1':
+    case 'hill-2':
+      return <i className={`ob-hill ob-${part}`}></i>;
     case 'pit-w':
       return <i className="ob-pit ob-pit-w"></i>;
     default:
@@ -89,10 +119,10 @@ function ObstaclePart({ part }) {
   }
 }
 
-export function Obstacle({ kind = 'spike' }) {
+export function Obstacle({ kind = 'block' }) {
   return (
     <span className={`obstacle obstacle-${kind}`}>
-      {(OBSTACLE_COLUMNS[kind] || [['spike']]).map((column, columnIndex) => (
+      {(OBSTACLE_COLUMNS[kind] || [['block']]).map((column, columnIndex) => (
         <span className="ob-col" key={columnIndex}>
           {column.map((part, index) => (
             <ObstaclePart key={index} part={part} />

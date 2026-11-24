@@ -59,7 +59,7 @@ const nl = {
     completeText: 'Je hebt het hele parcours afgelegd. Laat iets van je horen!',
     replay: 'Opnieuw spelen',
     playTitle: 'Of speel zelf',
-    playHint: 'Lopen met ← → of Q D / A D, springen met ↑, Z, W of spatie (hou vast om hoger te springen). Kop tegen </>-blokken voor bits, pak een roze +-blok voor een schild, spring op bugs en val niet in een put. Haal de vlag!',
+    playHint: 'Lopen met ← → of Q D / A D, springen met ↑, Z, W of spatie (hou vast om hoger te springen). Spring op de paddenstoelen, kop tegen </>-blokken voor bits, pak een roze +-blok voor een schild, spring op bugs en val niet in een put. Haal de vlag!',
     score: 'Score',
     time: 'Tijd',
     powered: 'Schild',

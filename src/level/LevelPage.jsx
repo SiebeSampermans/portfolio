@@ -3,9 +3,8 @@ import { useLocation } from 'react-router-dom';
 import useSpotifyNowPlaying from '../hooks/useSpotifyNowPlaying';
 import useTheme from '../hooks/useTheme';
 import { useLanguage } from '../i18n/LanguageContext';
-import Garage from './Garage';
 import Hud from './Hud';
-import { colorValue, RunnerBlock, TRAIL_BITS, useRunnerStyle } from './Runner';
+import { colorValue, RunnerBlock, TRAIL_BITS } from './Runner';
 import useLevelEngine, { SECTION_IDS } from './useLevelEngine';
 import AboutZone from './zones/AboutZone';
 import ContactZone from './zones/ContactZone';
@@ -19,19 +18,26 @@ const sectionFromPath = (pathname) => {
 };
 const pathForSection = (id) => (id === 'home' ? '/' : `/${id}`);
 
+// The player is the pixel hero for now; the garage is switched off.
+const RUNNER_STYLE = { body: 'hero', color: 'accent', hat: 'none', trail: 'line' };
+
 function Backdrop({ parallaxRef }) {
   // Seeded scenery that drifts slower than the course: rolling hills, bushes and clouds.
   const scenery = useMemo(() => {
     const items = [];
     for (let index = 0; index < 48; index += 1) {
       const base = index * 520;
-      const big = index % 3 === 0;
+      // Hills of very different heights: low mounds in front, tall peaks behind.
+      const heights = [130, 300, 180, 380, 110, 240];
+      const height = heights[index % heights.length];
+      const far = height > 220;
       items.push({
-        kind: big ? 'hill hill-far' : 'hill',
+        kind: far ? 'hill hill-far' : 'hill',
         style: {
           left: base + ((index * 137) % 200),
-          width: big ? 420 : 240 + ((index * 61) % 120),
-          height: big ? 210 : 110 + ((index * 41) % 60),
+          width: Math.round(height * (far ? 1.5 : 2.1)),
+          height,
+          zIndex: far ? 0 : 1,
         },
       });
       items.push({
@@ -65,8 +71,6 @@ function LevelPage() {
   const { t } = useLanguage();
   const theme = useTheme();
   const spotify = useSpotifyNowPlaying();
-  const [runnerStyle, updateRunnerStyle, resetRunnerStyle] = useRunnerStyle();
-  const [isGarageOpen, setIsGarageOpen] = useState(false);
   const [activeSection, setActiveSection] = useState(() => sectionFromPath(location.pathname));
   const hasArrivedRef = useRef(false);
   const isPlaying = spotify.status === 'ready' && Boolean(spotify.track?.isPlaying);
@@ -128,15 +132,6 @@ function LevelPage() {
         onNavigate={navigate}
         spotify={spotify}
         theme={theme}
-        runnerStyle={runnerStyle}
-        onOpenGarage={isVertical ? null : () => setIsGarageOpen(true)}
-      />
-      <Garage
-        isOpen={isGarageOpen}
-        onClose={() => setIsGarageOpen(false)}
-        style={runnerStyle}
-        update={updateRunnerStyle}
-        reset={resetRunnerStyle}
       />
 
       {playState.isPlaying && (
@@ -189,8 +184,8 @@ function LevelPage() {
       <div className="track" ref={refs.trackRef}>
         <div className="viewport">
           <div
-            className={`runner-wrap trail-${runnerStyle.trail}`}
-            style={{ '--runner-color': colorValue(runnerStyle.color) }}
+            className={`runner-wrap trail-${RUNNER_STYLE.trail}`}
+            style={{ '--runner-color': colorValue(RUNNER_STYLE.color) }}
             aria-hidden="true"
           >
             <span className="trail" ref={refs.trailRef}>
@@ -198,10 +193,10 @@ function LevelPage() {
                 <i key={index} style={{ '--i': index }}></i>
               ))}
             </span>
-            <RunnerBlock style={runnerStyle} ref={refs.runnerRef} />
+            <RunnerBlock style={RUNNER_STYLE} ref={refs.runnerRef} />
           </div>
           <main className="world" id="level-world" ref={refs.worldRef}>
-            <HomeZone onNavigate={navigate} canPlay={!isVertical} onOpenGarage={() => setIsGarageOpen(true)} />
+            <HomeZone onNavigate={navigate} canPlay={!isVertical} />
             <AboutZone spotify={spotify} />
             <ProjectsZone />
             <CvZone isBlue={theme.isBlue} />
