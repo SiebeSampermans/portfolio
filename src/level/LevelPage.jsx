@@ -72,7 +72,7 @@ function LevelPage() {
     }
   }, []);
 
-  const { isVertical, refs, scrollToSection } = useLevelEngine({ onSectionChange: handleSectionChange });
+  const { isVertical, refs, playState, scrollToSection } = useLevelEngine({ onSectionChange: handleSectionChange });
 
   // Deep links (/about, /projects, ...) start the run at that checkpoint.
   useEffect(() => {
@@ -117,6 +117,25 @@ function LevelPage() {
 
       <Hud refs={refs} activeSection={activeSection} onNavigate={navigate} spotify={spotify} theme={theme} />
 
+      {playState.isPlaying && (
+        <div className="play-banner" role="status">
+          <span className="play-banner-dot" aria-hidden="true"></span>
+          <strong>{t.level.playing}</strong>
+          <span>
+            {t.level.attempt} {playState.attempts}
+          </span>
+          <span className="play-banner-hint">{t.level.exitPlay}</span>
+        </div>
+      )}
+      {playState.isDead && (
+        <div className="death-flash" aria-live="assertive">
+          <strong>
+            {t.level.attempt} {playState.attempts}
+          </strong>
+          <span>{t.level.died}</span>
+        </div>
+      )}
+
       <div className="track" ref={refs.trackRef}>
         <div className="viewport">
           <div className="runner-wrap" aria-hidden="true">
@@ -126,7 +145,7 @@ function LevelPage() {
             </span>
           </div>
           <main className="world" id="level-world" ref={refs.worldRef}>
-            <HomeZone onNavigate={navigate} />
+            <HomeZone onNavigate={navigate} canPlay={!isVertical} />
             <AboutZone spotify={spotify} />
             <ProjectsZone />
             <CvZone isBlue={theme.isBlue} />

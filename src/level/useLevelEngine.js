@@ -40,6 +40,8 @@ function useLevelEngine({ onSectionChange }) {
   const percentRef = useRef(null);
   const layoutRef = useRef({ obstacles: [], sections: [], maxScroll: 1, portals: [] });
   const activeSectionRef = useRef(null);
+  const playRef = useRef(null);
+  const [playState, setPlayState] = useState({ isPlaying: false, attempts: 1, isDead: false });
   const onSectionChangeRef = useRef(onSectionChange);
   onSectionChangeRef.current = onSectionChange;
 
@@ -90,7 +92,13 @@ function useLevelEngine({ onSectionChange }) {
       ...relative(element),
     }));
 
-    layoutRef.current = { obstacles, sections, maxScroll, portals };
+    // Individual spikes and blocks, for play mode collisions.
+    const parts = Array.from(world.querySelectorAll('.obstacle > i')).map((element) => ({
+      kind: element.classList.contains('ob-spike') ? 'spike' : 'block',
+      ...relative(element),
+    }));
+
+    layoutRef.current = { obstacles, sections, maxScroll, portals, parts, worldWidth };
   }, [isVertical]);
 
   const render = useCallback(() => {
@@ -112,7 +120,10 @@ function useLevelEngine({ onSectionChange }) {
     if (isVertical) {
       probe = scroll + window.innerHeight * 0.35;
     } else {
-      const runnerX = scroll + window.innerWidth * RUNNER_SCREEN_X + RUNNER_SIZE / 2;
+      const play = playRef.current;
+      const runnerX = play
+        ? play.x + RUNNER_SIZE / 2
+        : scroll + window.innerWidth * RUNNER_SCREEN_X + RUNNER_SIZE / 2;
       probe = runnerX;
 
       if (worldRef.current) {
@@ -121,6 +132,12 @@ function useLevelEngine({ onSectionChange }) {
 
       if (parallaxRef.current) {
         parallaxRef.current.style.transform = `translate3d(${-scroll * 0.3}px, 0, 0)`;
+      }
+
+      if (play && runnerRef.current) {
+        const offsetX = play.x - scroll - window.innerWidth * RUNNER_SCREEN_X;
+        runnerRef.current.style.transform = `translate3d(${offsetX}px, ${-play.y}px, 0) rotate(${play.rotation}deg)`;
+        runnerRef.current.classList.toggle('is-airborne', !play.grounded);
       }
 
       // Each obstacle gets one jump: it takes off a little before and lands a little after.
@@ -145,7 +162,7 @@ function useLevelEngine({ onSectionChange }) {
         }
       }
 
-      if (runnerRef.current) {
+      if (!play && runnerRef.current) {
         runnerRef.current.style.transform = `translate3d(0, ${-lift}px, 0) rotate(${
           completedJumps * 180 + rotation
         }deg)`;
@@ -215,6 +232,190 @@ function useLevelEngine({ onSectionChange }) {
     };
   }, [measure, render]);
 
+  // Play mode: arrows, WASD or ZQSD steer the block. Spikes kill and send you back to the start.
+  // Scrolling (wheel or touch) hands control back to the automatic runner.
+  useEffect(() => {
+    if (isVertical) {
+      playRef.current = null;
+      setPlayState((current) => ({ ...current, isPlaying: false }));
+      return undefined;
+    }
+
+    const keys = { left: false, right: false, jump: false };
+    let frame = 0;
+    let last = 0;
+
+    const startX = () => window.innerWidth * RUNNER_SCREEN_X;
+
+    const keyAction = (key) => {
+      const k = key.toLowerCase();
+      if (k === 'arrowleft' || k === 'a' || k === 'q') return 'left';
+      if (k === 'arrowright' || k === 'd') return 'right';
+      if (k === 'arrowup' || k === 'w' || k === 'z' || k === ' ') return 'jump';
+      return null;
+    };
+
+    const ignoreTarget = (target, action) => {
+      if (document.documentElement.classList.contains('has-modal')) return true;
+      const tag = target?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target?.isContentEditable) return true;
+      // Space on a focused button or link should still press it.
+      return action === 'jump' && (tag === 'BUTTON' || tag === 'A') && !playRef.current;
+    };
+
+    const respawn = () => {
+      const play = playRef.current;
+      if (!play) return;
+      Object.assign(play, { x: startX(), y: 0, vy: 0, rotation: 0, grounded: true, dead: false });
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      setPlayState((current) => ({ ...current, isDead: false }));
+      render();
+    };
+
+    const die = () => {
+      const play = playRef.current;
+      if (!play || play.dead) return;
+      play.dead = true;
+      runnerRef.current?.classList.add('is-dead');
+      setPlayState((current) => ({ ...current, isDead: true, attempts: current.attempts + 1 }));
+      window.setTimeout(() => {
+        runnerRef.current?.classList.remove('is-dead');
+        respawn();
+      }, 700);
+    };
+
+    const step = (time) => {
+      frame = 0;
+      const play = playRef.current;
+      if (!play) return;
+      const dt = Math.min((time - (last || time)) / 1000, 1 / 30);
+      last = time;
+
+      if (!play.dead) {
+        const { parts, maxScroll, worldWidth } = layoutRef.current;
+        const size = RUNNER_SIZE;
+        const speed = 460;
+        const prevY = play.y;
+
+        // Horizontal movement, blocked by the sides of blocks.
+        const dir = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+        let x = play.x + dir * speed * dt;
+        x = Math.min(Math.max(x, 0), worldWidth - size);
+        for (const part of parts) {
+          if (part.kind !== 'block' || play.y >= part.height - 1) continue;
+          if (x + size > part.start && x < part.end) {
+            x = dir > 0 ? part.start - size : dir < 0 ? part.end : x;
+          }
+        }
+        play.x = x;
+
+        // Jumping and gravity; blocks can be landed on.
+        if (keys.jump && play.grounded) {
+          play.vy = 880;
+          play.grounded = false;
+        }
+        play.vy -= 2700 * dt;
+        play.y += play.vy * dt;
+
+        let floor = 0;
+        for (const part of parts) {
+          if (part.kind !== 'block') continue;
+          if (play.x + size > part.start + 2 && play.x < part.end - 2 && prevY >= part.height - 1) {
+            floor = Math.max(floor, part.height);
+          }
+        }
+        if (play.y <= floor) {
+          play.y = floor;
+          play.vy = 0;
+          if (!play.grounded) play.rotation = Math.round(play.rotation / 90) * 90;
+          play.grounded = true;
+        } else {
+          play.grounded = false;
+          play.rotation += 400 * dt;
+        }
+
+        // Spikes: a forgiving hitbox on the inner part of the triangle.
+        for (const part of parts) {
+          if (part.kind !== 'spike') continue;
+          const inset = (part.end - part.start) * 0.3;
+          if (play.x + size > part.start + inset && play.x < part.end - inset && play.y < part.height * 0.6) {
+            die();
+            break;
+          }
+        }
+
+        const target = Math.min(Math.max(play.x - startX(), 0), maxScroll);
+        if (Math.abs(target - window.scrollY) > 0.5) {
+          window.scrollTo({ top: target, behavior: 'auto' });
+        }
+      }
+
+      render();
+      frame = window.requestAnimationFrame(step);
+    };
+
+    const enterPlay = () => {
+      if (playRef.current) return;
+      const { maxScroll } = layoutRef.current;
+      const scroll = Math.min(Math.max(window.scrollY, 0), maxScroll);
+      playRef.current = { x: scroll + startX(), y: 0, vy: 0, rotation: 0, grounded: true, dead: false };
+      document.documentElement.classList.add('is-play-mode');
+      setPlayState((current) => ({ ...current, isPlaying: true }));
+      last = 0;
+      frame = window.requestAnimationFrame(step);
+    };
+
+    const exitPlay = () => {
+      if (!playRef.current) return;
+      playRef.current = null;
+      keys.left = keys.right = keys.jump = false;
+      document.documentElement.classList.remove('is-play-mode');
+      runnerRef.current?.classList.remove('is-dead');
+      setPlayState((current) => ({ ...current, isPlaying: false, isDead: false }));
+      if (frame) window.cancelAnimationFrame(frame);
+      frame = 0;
+      render();
+    };
+
+    const onKeyDown = (event) => {
+      const action = keyAction(event.key);
+      if (!action || event.ctrlKey || event.metaKey || event.altKey) return;
+      if (ignoreTarget(event.target, action)) return;
+      event.preventDefault();
+      keys[action] = true;
+      enterPlay();
+    };
+
+    const onKeyUp = (event) => {
+      const action = keyAction(event.key);
+      if (action) keys[action] = false;
+    };
+
+    const onWheel = () => exitPlay();
+    const onBlur = () => {
+      keys.left = keys.right = keys.jump = false;
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
+    window.addEventListener('wheel', onWheel, { passive: true });
+    window.addEventListener('touchstart', onWheel, { passive: true });
+    window.addEventListener('blur', onBlur);
+    window.addEventListener('level-exit-play', exitPlay);
+
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('keyup', onKeyUp);
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('touchstart', onWheel);
+      window.removeEventListener('blur', onBlur);
+      window.removeEventListener('level-exit-play', exitPlay);
+      if (frame) window.cancelAnimationFrame(frame);
+      playRef.current = null;
+      document.documentElement.classList.remove('is-play-mode');
+    };
+  }, [isVertical, render]);
+
   // Keyboard users: when focus lands on something off-screen, run the course to it
   // instead of letting the browser shift the clipped viewport sideways.
   useEffect(() => {
@@ -236,6 +437,7 @@ function useLevelEngine({ onSectionChange }) {
 
   const scrollToSection = useCallback(
     (id, behavior = 'smooth') => {
+      window.dispatchEvent(new Event('level-exit-play'));
       measure();
       const section = layoutRef.current.sections.find((item) => item.id === id);
 
@@ -246,7 +448,7 @@ function useLevelEngine({ onSectionChange }) {
       const top = isVertical
         ? section.start + (worldRef.current?.getBoundingClientRect().top ?? 0) + window.scrollY - 72
         : section.start;
-      window.scrollTo({ top: Math.max(top, 0), behavior });
+      window.scrollTo({ top: id === SECTION_IDS[0] ? 0 : Math.max(top, 0), behavior });
     },
     [isVertical, measure],
   );
@@ -254,6 +456,7 @@ function useLevelEngine({ onSectionChange }) {
   return {
     isVertical,
     refs: { trackRef, worldRef, parallaxRef, runnerRef, progressRef, percentRef },
+    playState,
     scrollToSection,
   };
 }

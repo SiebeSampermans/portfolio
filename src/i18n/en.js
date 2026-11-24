@@ -41,6 +41,12 @@ const en = {
     complete: 'Level complete',
     completeText: 'You ran the whole course. Let me hear from you!',
     replay: 'Play again',
+    playTitle: 'Or play it yourself',
+    playHint: 'Move with ← → or A D / Q D, jump with ↑, W, Z or space. Avoid the spikes!',
+    playing: 'Play mode',
+    attempt: 'Attempt',
+    exitPlay: 'Scroll to stop',
+    died: 'Ouch! Back to the start',
     menu: 'Checkpoints',
     sections: {
       home: 'Start',

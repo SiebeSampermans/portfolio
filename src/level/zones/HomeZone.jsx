@@ -3,7 +3,7 @@ import { Card, Checkpoint, Seg } from '../parts';
 
 const STAT_OBSTACLES = ['spike', 'block', 'spikes', 'stairs'];
 
-function HomeZone({ onNavigate }) {
+function HomeZone({ onNavigate, canPlay }) {
   const { t: translation } = useLanguage();
   const t = translation.home;
   const level = translation.level;
@@ -33,6 +33,19 @@ function HomeZone({ onNavigate }) {
               {level.skipTo} →
             </button>
           </div>
+          {canPlay && (
+            <div className="play-hint">
+              <span className="keys" aria-hidden="true">
+                <kbd>←</kbd>
+                <kbd>↑</kbd>
+                <kbd>→</kbd>
+              </span>
+              <span>
+                <strong>{level.playTitle}</strong>
+                {level.playHint}
+              </span>
+            </div>
+          )}
         </div>
       </Seg>
 

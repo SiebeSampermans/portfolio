@@ -41,6 +41,12 @@ const nl = {
     complete: 'Level voltooid',
     completeText: 'Je hebt het hele parcours afgelegd. Laat iets van je horen!',
     replay: 'Opnieuw spelen',
+    playTitle: 'Of speel zelf',
+    playHint: 'Lopen met ← → of Q D / A D, springen met ↑, Z, W of spatie. Raak geen spikes!',
+    playing: 'Speelmodus',
+    attempt: 'Poging',
+    exitPlay: 'Scroll om te stoppen',
+    died: 'Au! Terug naar de start',
     menu: 'Checkpoints',
     sections: {
       home: 'Start',
