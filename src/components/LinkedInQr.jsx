@@ -22,8 +22,8 @@ function LinkedInQr({ value }) {
   }, []);
 
   const isBlueTheme = theme === 'blue';
-  const accent = isBlueTheme ? '#78a8ff' : '#76ff8b';
-  const accentStrong = isBlueTheme ? '#4f7dff' : '#effff2';
+  const accent = isBlueTheme ? '#5ef1ff' : '#c6ff3d';
+  const accentStrong = '#ffffff';
 
   useEffect(() => {
     if (!qrRef.current) {
@@ -32,8 +32,8 @@ function LinkedInQr({ value }) {
 
     if (!qrCodeRef.current) {
       qrCodeRef.current = new QRCodeStyling({
-        width: 180,
-        height: 180,
+        width: 168,
+        height: 168,
         data: value,
         type: 'svg',
         margin: 0,

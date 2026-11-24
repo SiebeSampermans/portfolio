@@ -1,0 +1,141 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import useSpotifyNowPlaying from '../hooks/useSpotifyNowPlaying';
+import useTheme from '../hooks/useTheme';
+import { useLanguage } from '../i18n/LanguageContext';
+import Hud from './Hud';
+import useLevelEngine, { SECTION_IDS } from './useLevelEngine';
+import AboutZone from './zones/AboutZone';
+import ContactZone from './zones/ContactZone';
+import CvZone from './zones/CvZone';
+import HomeZone from './zones/HomeZone';
+import ProjectsZone from './zones/ProjectsZone';
+
+const sectionFromPath = (pathname) => {
+  const slug = pathname.replace(/^\/+/, '').replace(/\.html$/, '').replace(/\/+$/, '');
+  return SECTION_IDS.includes(slug) ? slug : 'home';
+};
+const pathForSection = (id) => (id === 'home' ? '/' : `/${id}`);
+
+const SHAPES = ['square', 'diamond', 'ring', 'tri', 'square', 'ring', 'diamond', 'bar'];
+
+function Backdrop({ parallaxRef }) {
+  // A fixed, seeded scatter of outlined shapes that drift slower than the course.
+  const shapes = useMemo(
+    () =>
+      Array.from({ length: 64 }, (_, index) => ({
+        kind: SHAPES[index % SHAPES.length],
+        left: index * 420 + ((index * 137) % 260),
+        top: 8 + ((index * 53) % 52),
+        size: 50 + ((index * 71) % 120),
+        spin: (index * 29) % 90,
+      })),
+    [],
+  );
+
+  return (
+    <div className="backdrop" aria-hidden="true">
+      <div className="backdrop-grid"></div>
+      <div className="backdrop-shapes" ref={parallaxRef}>
+        {shapes.map((shape, index) => (
+          <span
+            key={index}
+            className={`shape shape-${shape.kind}`}
+            style={{
+              left: `${shape.left}px`,
+              top: `${shape.top}%`,
+              width: `${shape.size}px`,
+              height: `${shape.size}px`,
+              '--spin': `${shape.spin}deg`,
+            }}
+          ></span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function LevelPage() {
+  const location = useLocation();
+  const { t } = useLanguage();
+  const theme = useTheme();
+  const spotify = useSpotifyNowPlaying();
+  const [activeSection, setActiveSection] = useState(() => sectionFromPath(location.pathname));
+  const hasArrivedRef = useRef(false);
+  const isPlaying = spotify.status === 'ready' && Boolean(spotify.track?.isPlaying);
+
+  const handleSectionChange = useCallback((id) => {
+    setActiveSection(id);
+    // Keep the address bar in step with the checkpoint, without a router navigation.
+    if (hasArrivedRef.current && window.location.pathname !== pathForSection(id)) {
+      window.history.replaceState(window.history.state, '', pathForSection(id));
+    }
+  }, []);
+
+  const { isVertical, refs, scrollToSection } = useLevelEngine({ onSectionChange: handleSectionChange });
+
+  // Deep links (/about, /projects, ...) start the run at that checkpoint.
+  useEffect(() => {
+    const target = sectionFromPath(location.pathname);
+    const frame = window.requestAnimationFrame(() => {
+      scrollToSection(target, 'auto');
+      hasArrivedRef.current = true;
+    });
+    return () => window.cancelAnimationFrame(frame);
+    // Only on first arrival; later moves go through navigate().
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const onPopState = () => scrollToSection(sectionFromPath(window.location.pathname));
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, [scrollToSection]);
+
+  useEffect(() => {
+    document.title = t[activeSection]?.title ?? 'Siebe | Portfolio';
+  }, [activeSection, t]);
+
+  const navigate = useCallback(
+    (id) => {
+      window.history.pushState(null, '', pathForSection(id));
+      scrollToSection(id);
+    },
+    [scrollToSection],
+  );
+
+  return (
+    <div
+      className={`level${isVertical ? ' is-vertical' : ' is-horizontal'}${isPlaying ? ' is-beat' : ''}`}
+      data-section={activeSection}
+    >
+      <a className="skip-link" href="#level-world">
+        {t.level.runHint}
+      </a>
+      <Backdrop parallaxRef={refs.parallaxRef} />
+      {theme.transition && <div className={`theme-flash theme-flash-${theme.transition}`} aria-hidden="true"></div>}
+
+      <Hud refs={refs} activeSection={activeSection} onNavigate={navigate} spotify={spotify} theme={theme} />
+
+      <div className="track" ref={refs.trackRef}>
+        <div className="viewport">
+          <div className="runner-wrap" aria-hidden="true">
+            <span className="runner-trail"></span>
+            <span className="runner" ref={refs.runnerRef}>
+              S
+            </span>
+          </div>
+          <main className="world" id="level-world" ref={refs.worldRef}>
+            <HomeZone onNavigate={navigate} />
+            <AboutZone spotify={spotify} />
+            <ProjectsZone />
+            <CvZone isBlue={theme.isBlue} />
+            <ContactZone onReplay={() => navigate('home')} />
+          </main>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default LevelPage;
