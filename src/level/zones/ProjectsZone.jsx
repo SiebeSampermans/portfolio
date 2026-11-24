@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react';
 import { useLanguage } from '../../i18n/LanguageContext';
-import farmforwardImage from '../../assets/projects/farmforward.png';
-import fridgemateImage from '../../assets/projects/fridgemate.png';
-import vrcadeImage from '../../assets/projects/vrcade.png';
-import webdesignPortfolioImage from '../../assets/projects/webdesignportfolio.png';
-import skilSemesterOneImage from '../../assets/projects/skil-semester-1.png';
-import poutrelImage from '../../assets/projects/poutrel.png';
-import tsnuffeltjeImage from '../../assets/projects/tsnuffeltje.png';
+import farmforwardImage from '../../assets/projects/farmforward.webp';
+import fridgemateImage from '../../assets/projects/fridgemate.webp';
+import vrcadeImage from '../../assets/projects/vrcade.webp';
+import webdesignPortfolioImage from '../../assets/projects/webdesignportfolio.webp';
+import skilSemesterOneImage from '../../assets/projects/skil-semester-1.webp';
+import poutrelImage from '../../assets/projects/poutrel.webp';
+import tsnuffeltjeImage from '../../assets/projects/tsnuffeltje.webp';
 import { Card, Checkpoint, Modal, Seg } from '../parts';
 
 const projects = [

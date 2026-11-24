@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { buildAutoPath, sampleAutoPath } from './autoPath';
 import { bugOffset, HURT_TIME, newTaken, stepPhysics } from './physics';
 
 // Below this width, on short screens, or when the visitor asks for less motion,
@@ -148,6 +149,7 @@ function useLevelEngine({ onSectionChange }) {
     });
 
     layoutRef.current = { obstacles, sections, maxScroll, portals, parts, coins, bugs, pits, flag, worldWidth };
+    layoutRef.current.autoPath = buildAutoPath(layoutRef.current);
   }, [isVertical]);
 
   const render = useCallback(() => {
@@ -283,12 +285,20 @@ function useLevelEngine({ onSectionChange }) {
         }
       }
 
+      if (!play && runner && isSprite) {
+        // The hero follows the terrain: walks up hills, drops off ledges, jumps pits and bugs.
+        const spot = sampleAutoPath(layoutRef.current.autoPath, anchorX);
+        lift = spot.y;
+        if (spot.air) lift = Math.max(lift, 0.01);
+        runner.dataset.air = spot.air ? '1' : '';
+      }
+
       if (!play && runner) {
         if (isSprite) {
           runner.style.transform = `translate3d(0, ${-lift}px, 0)`;
           const moved = Math.abs(scroll - lastScrollRef.current) > 0.5;
           lastScrollRef.current = scroll;
-          if (lift > 2) {
+          if (runner.dataset.air) {
             runner.dataset.pose = 'jump';
           } else if (moved) {
             runner.dataset.pose = Math.floor(scroll / 26) % 2 ? 'run-a' : 'run-b';
@@ -301,7 +311,7 @@ function useLevelEngine({ onSectionChange }) {
         } else {
           runner.style.transform = `translate3d(0, ${-lift}px, 0) rotate(${completedJumps * 180 + rotation}deg)`;
         }
-        runner.classList.toggle('is-airborne', lift > 2);
+        runner.classList.toggle('is-airborne', isSprite ? Boolean(runner.dataset.air) : lift > 2);
         drawTrail(anchorX, lift);
       }
 
