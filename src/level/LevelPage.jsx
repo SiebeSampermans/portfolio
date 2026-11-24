@@ -3,7 +3,9 @@ import { useLocation } from 'react-router-dom';
 import useSpotifyNowPlaying from '../hooks/useSpotifyNowPlaying';
 import useTheme from '../hooks/useTheme';
 import { useLanguage } from '../i18n/LanguageContext';
+import Garage from './Garage';
 import Hud from './Hud';
+import { colorValue, RunnerBlock, TRAIL_BITS, useRunnerStyle } from './Runner';
 import useLevelEngine, { SECTION_IDS } from './useLevelEngine';
 import AboutZone from './zones/AboutZone';
 import ContactZone from './zones/ContactZone';
@@ -60,6 +62,8 @@ function LevelPage() {
   const { t } = useLanguage();
   const theme = useTheme();
   const spotify = useSpotifyNowPlaying();
+  const [runnerStyle, updateRunnerStyle, resetRunnerStyle] = useRunnerStyle();
+  const [isGarageOpen, setIsGarageOpen] = useState(false);
   const [activeSection, setActiveSection] = useState(() => sectionFromPath(location.pathname));
   const hasArrivedRef = useRef(false);
   const isPlaying = spotify.status === 'ready' && Boolean(spotify.track?.isPlaying);
@@ -115,7 +119,22 @@ function LevelPage() {
       <Backdrop parallaxRef={refs.parallaxRef} />
       {theme.transition && <div className={`theme-flash theme-flash-${theme.transition}`} aria-hidden="true"></div>}
 
-      <Hud refs={refs} activeSection={activeSection} onNavigate={navigate} spotify={spotify} theme={theme} />
+      <Hud
+        refs={refs}
+        activeSection={activeSection}
+        onNavigate={navigate}
+        spotify={spotify}
+        theme={theme}
+        runnerStyle={runnerStyle}
+        onOpenGarage={isVertical ? null : () => setIsGarageOpen(true)}
+      />
+      <Garage
+        isOpen={isGarageOpen}
+        onClose={() => setIsGarageOpen(false)}
+        style={runnerStyle}
+        update={updateRunnerStyle}
+        reset={resetRunnerStyle}
+      />
 
       {playState.isPlaying && (
         <div className="play-banner" role="status">
@@ -138,14 +157,20 @@ function LevelPage() {
 
       <div className="track" ref={refs.trackRef}>
         <div className="viewport">
-          <div className="runner-wrap" aria-hidden="true">
-            <span className="runner-trail"></span>
-            <span className="runner" ref={refs.runnerRef}>
-              S
+          <div
+            className={`runner-wrap trail-${runnerStyle.trail}`}
+            style={{ '--runner-color': colorValue(runnerStyle.color) }}
+            aria-hidden="true"
+          >
+            <span className="trail" ref={refs.trailRef}>
+              {Array.from({ length: TRAIL_BITS }, (_, index) => (
+                <i key={index} style={{ '--i': index }}></i>
+              ))}
             </span>
+            <RunnerBlock style={runnerStyle} ref={refs.runnerRef} />
           </div>
           <main className="world" id="level-world" ref={refs.worldRef}>
-            <HomeZone onNavigate={navigate} canPlay={!isVertical} />
+            <HomeZone onNavigate={navigate} canPlay={!isVertical} onOpenGarage={() => setIsGarageOpen(true)} />
             <AboutZone spotify={spotify} />
             <ProjectsZone />
             <CvZone isBlue={theme.isBlue} />

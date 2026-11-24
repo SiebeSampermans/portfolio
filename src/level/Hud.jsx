@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { languages, translations, useLanguage } from '../i18n/LanguageContext';
+import { colorValue, Face } from './Runner';
 import { SECTION_IDS } from './useLevelEngine';
 
 const sameText = (a, b) =>
@@ -90,7 +91,7 @@ function SpotifyBadge({ spotify }) {
   );
 }
 
-function Hud({ refs, activeSection, onNavigate, spotify, theme }) {
+function Hud({ refs, activeSection, onNavigate, spotify, theme, runnerStyle, onOpenGarage }) {
   const { language, setLanguage, t: translation } = useLanguage();
   const t = translation.layout;
   const level = translation.level;
@@ -178,6 +179,20 @@ function Hud({ refs, activeSection, onNavigate, spotify, theme }) {
         </div>
 
         <SpotifyBadge spotify={spotify} />
+
+        {onOpenGarage && (
+          <button
+            type="button"
+            className="hud-garage"
+            onClick={onOpenGarage}
+            aria-label={translation.garage.open}
+            title={translation.garage.open}
+          >
+            <span className="mini-block" style={{ '--runner-color': colorValue(runnerStyle.color) }} aria-hidden="true">
+              <Face face={runnerStyle.face} />
+            </span>
+          </button>
+        )}
 
         <div className="hud-controls">{controls}</div>
 

@@ -949,29 +949,117 @@ code {
 }
 
 .runner {
+  position: relative;
   display: grid;
   place-items: center;
   width: 100%;
   height: 100%;
-  background: var(--accent);
+  background: var(--runner-color, var(--accent));
   color: var(--accent-ink);
   border: 4px solid var(--ink);
   border-radius: 12px;
   font-family: var(--font-display);
   font-size: 22px;
-  box-shadow: 0 0 26px color-mix(in srgb, var(--accent) 70%, transparent);
+  box-shadow: 0 0 26px color-mix(in srgb, var(--runner-color, var(--accent)) 70%, transparent);
   will-change: transform;
 }
 
-.runner-trail {
+.runner-letter {
+  line-height: 1;
+}
+
+.runner-face {
+  width: 100%;
+  height: 100%;
+}
+
+.runner-hat {
   position: absolute;
-  right: 60%;
-  bottom: 10px;
-  width: 140px;
-  height: 8px;
+  left: 4%;
+  bottom: 86%;
+  width: 92%;
+  height: auto;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.runner-hat-tall {
+  bottom: 84%;
+  left: 14%;
+  width: 72%;
+}
+
+.runner-hat-wrap {
+  left: -16%;
+  bottom: auto;
+  top: -22%;
+  width: 132%;
+}
+
+/* Trail: bits follow the block's recent path (positioned by useLevelEngine). */
+.trail {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.trail i {
+  position: absolute;
+  left: calc(50% - 6px);
+  bottom: calc(50% - 6px);
+  width: 12px;
+  height: 12px;
   border-radius: 999px;
-  background: linear-gradient(90deg, transparent, var(--accent));
-  opacity: 0.55;
+  background: var(--runner-color, var(--accent));
+  opacity: 0;
+  transition: opacity 0.25s ease-out;
+  scale: calc(1 - var(--i) * 0.06);
+}
+
+.trail-line .trail i {
+  left: calc(50% - 14px);
+  width: 28px;
+  height: 10px;
+  bottom: calc(50% - 5px);
+  box-shadow: 0 0 12px var(--runner-color, var(--accent));
+}
+
+.trail-squares .trail i {
+  left: calc(50% - 16px);
+  bottom: calc(50% - 16px);
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: transparent;
+  border: 3px solid var(--runner-color, var(--accent));
+}
+
+.trail-sparkles .trail i {
+  left: calc(50% - 9px);
+  bottom: calc(50% - 9px);
+  width: 18px;
+  height: 18px;
+  border-radius: 0;
+  background: var(--white);
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  rotate: calc(var(--i) * 37deg);
+}
+
+.trail-sparkles .trail i:nth-child(even) {
+  background: var(--runner-color, var(--accent));
+}
+
+.trail-rainbow .trail i {
+  left: calc(50% - 16px);
+  width: 32px;
+  height: 14px;
+  bottom: calc(50% - 7px);
+  border-radius: 4px;
+  background: hsl(calc(var(--i) * 30deg) 95% 62%);
+}
+
+.trail-none .trail {
+  display: none;
 }
 
 /* Play mode */
@@ -2022,6 +2110,320 @@ kbd {
   border: 3px solid var(--white);
 }
 
+/* ---------- Garage (block customiser) ---------- */
+
+.btn-small {
+  min-height: 36px;
+  padding: 0 12px;
+  font-size: 11px;
+  flex: none;
+}
+
+.hud-garage {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 38px;
+  padding: 0;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 12px;
+  background: rgba(3, 6, 18, 0.45);
+  cursor: pointer;
+  flex: none;
+  transition: border-color 0.2s, transform 0.15s var(--ease-out);
+}
+
+.hud-garage:hover {
+  border-color: var(--white);
+  transform: rotate(-8deg);
+}
+
+.mini-block {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  background: var(--runner-color, var(--accent));
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  color: var(--accent-ink);
+  font-family: var(--font-display);
+  font-size: 12px;
+}
+
+.mini-block svg {
+  width: 100%;
+  height: 100%;
+}
+
+.modal-garage {
+  width: min(980px, 100%);
+}
+
+.garage {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 28px;
+  padding: 28px;
+  clear: both;
+}
+
+.garage-stage {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.garage-stage h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.garage-stage p {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.garage-preview {
+  position: relative;
+  height: 220px;
+  margin: 8px 0;
+  border: 3px solid var(--white);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(3, 6, 18, 0.6), transparent),
+    color-mix(in srgb, var(--accent) 22%, var(--ink));
+  overflow: hidden;
+}
+
+.garage-preview-ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 44px;
+  background: var(--ink);
+  border-top: 4px solid var(--accent);
+}
+
+.runner.runner-preview {
+  position: absolute;
+  left: calc(50% - 40px);
+  bottom: 62px;
+  width: 80px;
+  height: 80px;
+  border-width: 5px;
+  font-size: 34px;
+  animation: garage-hop 1.3s cubic-bezier(0.3, 0, 0.7, 1) infinite;
+}
+
+.garage-preview-trail {
+  position: absolute;
+  left: calc(50% - 40px);
+  bottom: 62px;
+  width: 80px;
+  height: 80px;
+  animation: garage-hop 1.3s cubic-bezier(0.3, 0, 0.7, 1) infinite;
+  animation-delay: -0.08s;
+}
+
+.garage-preview-trail i {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + var(--i) * 18px);
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  border-radius: 999px;
+  background: var(--runner-color, var(--accent));
+  opacity: calc(1 - var(--i) * 0.15);
+}
+
+.garage-preview .garage-preview-trail {
+  --runner-color: inherit;
+}
+
+.trail-squares .garage-preview-trail i {
+  width: 26px;
+  height: 26px;
+  margin-top: -13px;
+  border-radius: 5px;
+  background: transparent;
+  border: 3px solid var(--runner-color, var(--accent));
+  right: calc(100% + var(--i) * 26px);
+}
+
+.trail-sparkles .garage-preview-trail i {
+  width: 18px;
+  height: 18px;
+  border-radius: 0;
+  background: var(--white);
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+}
+
+.trail-rainbow .garage-preview-trail i {
+  width: 22px;
+  border-radius: 4px;
+  background: hsl(calc(var(--i) * 40deg) 95% 62%);
+}
+
+.trail-none .garage-preview-trail {
+  display: none;
+}
+
+.garage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.garage-pickers {
+  display: grid;
+  gap: 18px;
+}
+
+.garage-group {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.garage-group legend {
+  margin-bottom: 8px;
+  padding: 0;
+}
+
+.garage-options {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.garage-option {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 10px 4px 8px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  background: var(--ink-2);
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s var(--ease-out);
+}
+
+.garage-option:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: translateY(-2px);
+}
+
+.garage-option.is-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent), 4px 4px 0 rgba(0, 0, 0, 0.35);
+}
+
+.garage-option-art {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 40px;
+}
+
+.garage-option-art .mini-block {
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+}
+
+.garage-option-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: center;
+  line-height: 1.2;
+  color: var(--muted);
+}
+
+.garage-option.is-active .garage-option-label {
+  color: var(--white);
+}
+
+.swatch {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+}
+
+.mini-hat {
+  display: block;
+  width: 44px;
+}
+
+.mini-hat .runner-hat {
+  position: static;
+  width: 100%;
+}
+
+.none-mark {
+  font-size: 24px;
+  color: var(--muted);
+}
+
+.mini-trail {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 22px;
+  color: var(--muted);
+}
+
+.mini-trail i {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--runner-color, var(--accent));
+  opacity: calc(1 - var(--i) * 0.2);
+}
+
+.mini-trail.trail-line i {
+  width: 12px;
+  height: 5px;
+}
+
+.mini-trail.trail-squares i {
+  border-radius: 2px;
+  background: transparent;
+  border: 2px solid var(--runner-color, var(--accent));
+}
+
+.mini-trail.trail-sparkles i {
+  border-radius: 0;
+  background: var(--white);
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+}
+
+.mini-trail.trail-rainbow i {
+  border-radius: 2px;
+  background: hsl(calc(var(--i) * 60deg) 95% 62%);
+}
+
+@media (max-width: 820px) {
+  .garage {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+
+  .garage-options {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 /* ---------- Modal ---------- */
 
 .modal-backdrop {
@@ -2553,6 +2955,16 @@ img.cv-sheet {
 @keyframes hover-bob {
   50% {
     transform: translateY(-8px);
+  }
+}
+
+@keyframes garage-hop {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-70px) rotate(180deg);
   }
 }
 

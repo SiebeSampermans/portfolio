@@ -36,6 +36,10 @@ function useLevelEngine({ onSectionChange }) {
   const worldRef = useRef(null);
   const parallaxRef = useRef(null);
   const runnerRef = useRef(null);
+  const trailRef = useRef(null);
+  const trailHistoryRef = useRef([]);
+  const trailFadeRef = useRef(0);
+  const trailFadedRef = useRef(false);
   const progressRef = useRef(null);
   const percentRef = useRef(null);
   const layoutRef = useRef({ obstacles: [], sections: [], maxScroll: 1, portals: [] });
@@ -134,10 +138,62 @@ function useLevelEngine({ onSectionChange }) {
         parallaxRef.current.style.transform = `translate3d(${-scroll * 0.3}px, 0, 0)`;
       }
 
+      const anchorX = scroll + window.innerWidth * RUNNER_SCREEN_X;
+      const drawTrail = (worldX, height) => {
+        const trail = trailRef.current;
+        if (!trail) return;
+        const history = trailHistoryRef.current;
+        const lastPoint = history[history.length - 1];
+        const moved = !lastPoint || Math.hypot(worldX - lastPoint.x, height - lastPoint.y) > 5;
+        if (moved) {
+          history.push({ x: worldX, y: height });
+          if (history.length > 80) history.shift();
+        }
+        if (!moved && trailFadedRef.current) return;
+        trailFadedRef.current = false;
+        const bits = trail.children;
+        // Walk back along the recorded path and drop a bit every `spacing` pixels,
+        // so the trail looks the same whether you scroll fast or slow.
+        const spacing = 14;
+        let bitIndex = 0;
+        let walked = 0;
+        let target = spacing;
+        for (let k = history.length - 1; k > 0 && bitIndex < bits.length; k -= 1) {
+          const a = history[k];
+          const b = history[k - 1];
+          const length = Math.hypot(a.x - b.x, a.y - b.y);
+          while (bitIndex < bits.length && walked + length >= target) {
+            const t = length ? (target - walked) / length : 0;
+            const x = a.x + (b.x - a.x) * t;
+            const y = a.y + (b.y - a.y) * t;
+            const bit = bits[bitIndex];
+            bit.style.opacity = String(1 - bitIndex / bits.length);
+            bit.style.transform = `translate3d(${x - anchorX}px, ${-y}px, 0)`;
+            bitIndex += 1;
+            target += spacing;
+          }
+          walked += length;
+        }
+        for (; bitIndex < bits.length; bitIndex += 1) {
+          bits[bitIndex].style.opacity = '0';
+        }
+        // Once the block stops moving, let the trail catch up and fade away.
+        if (!moved) return;
+        window.clearTimeout(trailFadeRef.current);
+        trailFadeRef.current = window.setTimeout(() => {
+          trailHistoryRef.current = trailHistoryRef.current.slice(-1);
+          trailFadedRef.current = true;
+          Array.from(bits).forEach((bit) => {
+            bit.style.opacity = '0';
+          });
+        }, 220);
+      };
+
       if (play && runnerRef.current) {
         const offsetX = play.x - scroll - window.innerWidth * RUNNER_SCREEN_X;
         runnerRef.current.style.transform = `translate3d(${offsetX}px, ${-play.y}px, 0) rotate(${play.rotation}deg)`;
         runnerRef.current.classList.toggle('is-airborne', !play.grounded);
+        drawTrail(play.x, play.y);
       }
 
       // Each obstacle gets one jump: it takes off a little before and lands a little after.
@@ -167,6 +223,7 @@ function useLevelEngine({ onSectionChange }) {
           completedJumps * 180 + rotation
         }deg)`;
         runnerRef.current.classList.toggle('is-airborne', lift > 2);
+        drawTrail(anchorX, lift);
       }
 
       portals.forEach((portal) => {
@@ -455,7 +512,7 @@ function useLevelEngine({ onSectionChange }) {
 
   return {
     isVertical,
-    refs: { trackRef, worldRef, parallaxRef, runnerRef, progressRef, percentRef },
+    refs: { trackRef, worldRef, parallaxRef, runnerRef, trailRef, progressRef, percentRef },
     playState,
     scrollToSection,
   };
