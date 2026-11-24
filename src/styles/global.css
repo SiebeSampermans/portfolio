@@ -874,9 +874,6 @@ code {
   gap: 140px;
 }
 
-.seg-project .lane-obstacles {
-  left: 110px;
-}
 
 .obstacle {
   position: relative;
@@ -3743,7 +3740,7 @@ body[data-theme='green'] {
   filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.25));
 }
 
-.hero {
+.pixel-hero {
   position: absolute;
   inset: 0;
 }
@@ -3806,7 +3803,7 @@ body[data-theme='green'] {
 }
 
 /* The hero is drawn a little larger than its hitbox, standing on the same ground line. */
-.runner.is-sprite .hero {
+.runner.is-sprite .pixel-hero {
   inset: -22% -11% 0;
 }
 
@@ -3967,4 +3964,28 @@ body[data-theme='green'] {
   background: #a6dcc0;
   border-color: #6fb391;
   opacity: 0.8;
+}
+
+/* Big titles get a dark outline so they stay readable where they cross a white cloud. */
+.is-horizontal .world h2,
+.is-horizontal .hero-name {
+  paint-order: stroke fill;
+  -webkit-text-stroke: 6px var(--ink);
+}
+
+/* On phones the page scrolls normally; scenery fixed behind the text only gets in the way. */
+.is-vertical .scenery {
+  display: none;
+}
+
+/* Text that sits straight on the sky keeps a soft dark edge, so it reads over clouds and hills. */
+.is-horizontal .seg-body > :not(.card) p,
+.is-horizontal .seg-body > :not(.card) .mono-label,
+.is-horizontal .checkpoint-sign {
+  text-shadow: 0 1px 2px rgba(3, 6, 18, 0.7), 0 0 10px rgba(3, 6, 18, 0.35);
+}
+
+.cloud {
+  transform: scale(0.85);
+  transform-origin: top left;
 }

@@ -20,7 +20,6 @@ const projects = [
 ];
 
 const detailKeys = ['context', 'did', 'result', 'learned'];
-const PORTAL_COLORS = ['pink', 'cyan', 'yellow', 'pink', 'cyan', 'yellow', 'pink'];
 
 function ProjectsZone() {
   const { t: translation } = useLanguage();
@@ -51,11 +50,6 @@ function ProjectsZone() {
           key={project.id}
           className="seg-project"
           obstacle={index % 2 ? 'spikes' : 'block'}
-          lane={
-            <span className={`portal portal-${PORTAL_COLORS[index]}`}>
-              <i></i>
-            </span>
-          }
         >
           <Card as="article" className="card-project" id={project.id}>
             <div className="project-media">

@@ -46,7 +46,7 @@ function Backdrop({ parallaxRef }) {
       });
       items.push({
         kind: 'cloud',
-        style: { left: base + 260 + ((index * 97) % 160), top: `${12 + ((index * 53) % 26)}%`, width: 110 + ((index * 31) % 90) },
+        style: { left: base + 260 + ((index * 97) % 160), top: `${7 + ((index * 53) % 7)}%`, width: 110 + ((index * 31) % 90) },
       });
       if (index % 2) {
         items.push({

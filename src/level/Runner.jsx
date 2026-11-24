@@ -264,7 +264,7 @@ function PixelPose({ pose }) {
 /** The pixel hero: every pose is drawn once, CSS shows the one the engine picks. */
 export function PixelHero() {
   return (
-    <span className="hero">
+    <span className="pixel-hero">
       {Object.keys(HERO_POSES).map((pose) => (
         <PixelPose key={pose} pose={pose} />
       ))}
