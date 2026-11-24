@@ -3564,3 +3564,171 @@ img.cv-sheet {
 .is-horizontal .seg {
   min-width: var(--lane-min, 0px);
 }
+
+/* ==========================================================================
+   Classic sunny platformer landscape: grass and dirt ground, earthy blocks,
+   bricks, golden bonus blocks, green hills and white clouds.
+   The runner, spikes and HUD keep the neon look.
+   ========================================================================== */
+
+:root {
+  --grass: #5fd23f;
+  --grass-dark: #2c8a1c;
+  --dirt: #b9662b;
+  --dirt-dark: #6e3511;
+  --stone: #dd8b3c;
+  --brick: #c9532a;
+  --gold: #ffc52e;
+  --outline: #2a1406;
+}
+
+.backdrop::before {
+  background: linear-gradient(180deg, rgba(3, 6, 18, 0.45) 0%, rgba(3, 6, 18, 0.1) 45%, rgba(3, 6, 18, 0) 100%);
+}
+
+.backdrop-grid {
+  display: none;
+}
+
+/* Ground: a strip of grass on top of tiled dirt. */
+.world::before {
+  border-top: 0;
+  box-shadow: none;
+  background: linear-gradient(180deg, var(--grass) 0 14px, var(--grass-dark) 14px 20px, transparent 20px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.2) 3px, transparent 3px) 0 20px / 52px 52px,
+    linear-gradient(180deg, rgba(0, 0, 0, 0.2) 3px, transparent 3px) 0 20px / 52px 52px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.12) 3px, transparent 4px) 14px 34px / 52px 52px,
+    var(--dirt);
+}
+
+/* Pits cut through grass and dirt. */
+.ob-pit {
+  background: linear-gradient(180deg, #000 0%, #1a0c04 100%);
+  border-left: 5px solid var(--dirt-dark);
+  border-right: 5px solid var(--dirt-dark);
+  box-shadow: inset 0 22px 26px -12px rgba(0, 0, 0, 0.95);
+}
+
+.ob-pit::before {
+  inset: 0 -5px auto;
+  height: 0;
+}
+
+.ob-pit::after {
+  display: none;
+}
+
+/* Solid blocks: bevelled, earthy stone. */
+.ob-block,
+.ob-block-tall {
+  background: var(--stone);
+  border: 3px solid var(--outline);
+  box-shadow: inset 5px 5px 0 rgba(255, 255, 255, 0.35), inset -5px -5px 0 rgba(0, 0, 0, 0.28);
+}
+
+/* Bricks with mortar lines. */
+.ob-brick {
+  background: linear-gradient(180deg, transparent 22px, var(--outline) 22px 25px, transparent 25px) 0 0 / 100% 100%,
+    linear-gradient(90deg, transparent 22px, var(--outline) 22px 25px, transparent 25px) 0 0 / 100% 23px no-repeat,
+    linear-gradient(90deg, transparent 9px, var(--outline) 9px 12px, transparent 12px 35px, var(--outline) 35px 38px, transparent 38px) 0 25px / 100% 27px no-repeat,
+    var(--brick);
+  border: 3px solid var(--outline);
+  box-shadow: inset 0 4px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* Golden bonus blocks with corner rivets. */
+.ob-bonus {
+  background: radial-gradient(circle, var(--outline) 2px, transparent 3px) 4px 4px / 38px 38px, var(--gold);
+  border: 3px solid var(--outline);
+  border-radius: 6px;
+  box-shadow: inset 4px 4px 0 rgba(255, 255, 255, 0.45), inset -4px -4px 0 rgba(150, 80, 0, 0.45), 0 0 16px rgba(255, 197, 46, 0.5);
+}
+
+.ob-bonus::after {
+  color: var(--outline);
+}
+
+.ob-power::after {
+  color: #e8288f;
+}
+
+.ob-bonus.is-used {
+  background: var(--dirt-dark);
+  border-color: var(--outline);
+  box-shadow: inset 4px 4px 0 rgba(255, 255, 255, 0.12);
+}
+
+/* Scenery */
+.hill {
+  background: var(--grass);
+  border: 4px solid var(--grass-dark);
+  border-bottom: 0;
+}
+
+.hill::after {
+  background: radial-gradient(circle, var(--grass-dark) 4px, transparent 5px) 0 0 / 22px 10px space no-repeat;
+}
+
+.hill-far {
+  background: #8ee26d;
+  border-color: #4fa83a;
+  opacity: 0.75;
+}
+
+.cloud,
+.cloud::before,
+.cloud::after {
+  background: #ffffff;
+  border-color: #cfe3ff;
+}
+
+.cloud::before,
+.cloud::after {
+  bottom: 26px;
+  border-bottom: 0;
+}
+
+.bush {
+  background: #46c034;
+  border: 4px solid var(--grass-dark);
+  border-bottom: 0;
+}
+
+/* Flagpole: green ball on top and a stone block at the foot. */
+.flagpole::before {
+  background: var(--grass);
+  border-color: var(--grass-dark);
+  border-radius: 50%;
+  transform: none;
+}
+
+.flagpole::after {
+  background: var(--stone);
+  border-color: var(--outline);
+}
+
+/* Rivets in the four corners of a bonus block, clear of the glyph. */
+.ob-bonus {
+  background: radial-gradient(circle at 7px 7px, var(--outline) 2.5px, transparent 3.5px),
+    radial-gradient(circle at calc(100% - 7px) 7px, var(--outline) 2.5px, transparent 3.5px),
+    radial-gradient(circle at 7px calc(100% - 7px), var(--outline) 2.5px, transparent 3.5px),
+    radial-gradient(circle at calc(100% - 7px) calc(100% - 7px), var(--outline) 2.5px, transparent 3.5px), var(--gold);
+}
+
+/* Daytime skies for the landscape. */
+body[data-theme='blue'],
+body:not([data-theme]) {
+  --sky-home: #3478ee;
+  --sky-about: #3c6ae8;
+  --sky-projects: #2a82e0;
+  --sky-cv: #4762e6;
+  --sky-contact: #3478ee;
+}
+
+body[data-theme='green'] {
+  --sky-home: #1f8fb8;
+  --sky-about: #2a7fc0;
+  --sky-projects: #1b95aa;
+  --sky-cv: #2f74c4;
+  --sky-contact: #1f8fb8;
+}
