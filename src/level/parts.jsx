@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 /**
@@ -6,7 +6,12 @@ import { createPortal } from 'react-dom';
  * Each named obstacle is swapped for a harder pattern from HARD_PATTERNS.
  */
 export function Seg({ children, className = '', obstacle, lane, width }) {
-  const kinds = obstacle ? HARD_PATTERNS[obstacle] || [obstacle] : [];
+  // Each obstacle name has a few variants; the segment's stable id picks one, so the course
+  // looks the same on every visit but repeats less.
+  const id = useId();
+  const variants = obstacle ? HARD_PATTERNS[obstacle] || [obstacle] : [];
+  const hash = Array.from(id).reduce((sum, char) => (sum * 31 + char.charCodeAt(0)) % 9973, 7);
+  const kinds = variants.length ? [variants[hash % variants.length]] : [];
   // Make sure the segment is wide enough for its obstacles plus room to land on either side.
   const laneWidth = kinds.reduce((sum, kind) => sum + obstacleWidth(kind), 0) + (kinds.length - 1) * 140;
   const style = {
@@ -34,9 +39,9 @@ export function Seg({ children, className = '', obstacle, lane, width }) {
 // The course is a friendly platformer: no spikes, just hills to climb, pits to jump,
 // mushroom platforms to land on, blocks to bump and bugs to stomp.
 const HARD_PATTERNS = {
-  spike: ['hill-step'],
-  spikes: ['brick-row'],
-  block: ['pit'],
+  spike: ['hill-step', 'hill-climb', 'hill-valley', 'hill-hump'],
+  spikes: ['brick-row', 'hill-bricks'],
+  block: ['pit', 'pit-hills', 'pit-plateau'],
   'block-spike': ['bug-patrol'],
   stairs: ['mushrooms'],
   tall: ['mushroom-hop'],
@@ -50,6 +55,12 @@ const HARD_PATTERNS = {
 const OBSTACLE_COLUMNS = {
   block: [['block']],
   'hill-step': [['hill-1'], ['hill-2', 'gap-s', 'coin'], ['hill-1']],
+  'hill-climb': [['hill-1'], ['hill-2'], ['hill-3', 'gap-s', 'coin'], ['hill-2n'], ['hill-1n']],
+  'hill-valley': [['hill-2'], ['hill-1w', 'gap', 'coin'], ['hill-3n'], ['hill-1']],
+  'hill-hump': [['hill-1n'], ['hill-2w', 'gap-s', 'coin'], ['hill-1n']],
+  'hill-bricks': [['hill-1w'], ['hill-1', 'gap', 'brick'], ['hill-1', 'gap', 'bonus'], ['hill-1w']],
+  'pit-hills': [['hill-2'], ['pit', 'gap', 'gap', 'coin'], ['hill-2']],
+  'pit-plateau': [['hill-1n'], ['pit'], ['hill-2w', 'gap-s', 'coin'], ['pit'], ['hill-1n']],
   pit: [['hill-1'], ['pit', 'gap', 'coin'], ['hill-1']],
   'brick-row': [['gap', 'brick'], ['gap', 'bonus'], ['gap', 'brick'], ['gap', 'power'], ['gap', 'brick']],
   'bug-patrol': [['gap-s', 'coin'], ['bug'], ['gap-s', 'coin']],
@@ -76,6 +87,12 @@ const PART_WIDTH = {
   'pit-w': 220,
   'hill-1': 156,
   'hill-2': 156,
+  'hill-3': 156,
+  'hill-1n': 104,
+  'hill-2n': 104,
+  'hill-3n': 104,
+  'hill-1w': 260,
+  'hill-2w': 260,
   mushroom: 156,
   'stem-s': 40,
   'stem-m': 40,
@@ -111,7 +128,13 @@ function ObstaclePart({ part }) {
       return <u className={`ob-stem ob-${part}`}></u>;
     case 'hill-1':
     case 'hill-2':
-      return <i className={`ob-hill ob-${part}`}></i>;
+    case 'hill-3':
+    case 'hill-1n':
+    case 'hill-2n':
+    case 'hill-3n':
+    case 'hill-1w':
+    case 'hill-2w':
+      return <i className={`ob-hill ob-hill-${part.slice(5, 6)} ob-${part}`}></i>;
     case 'pit-w':
       return <i className="ob-pit ob-pit-w"></i>;
     default:

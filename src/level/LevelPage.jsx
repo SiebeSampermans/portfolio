@@ -27,17 +27,21 @@ function Backdrop({ parallaxRef }) {
     const items = [];
     for (let index = 0; index < 48; index += 1) {
       const base = index * 520;
-      // Hills of very different heights: low mounds in front, tall peaks behind.
-      const heights = [130, 300, 180, 380, 110, 240];
+      // Hills of very different heights and shapes: low mounds in front, tall peaks and misty
+      // ranges behind, flat-topped plateaus, twin hills and stepped hills.
+      const heights = [130, 300, 180, 420, 110, 240, 160, 340];
+      const shapes = ['', 'hill-peak', 'hill-twin', 'hill-plateau', '', 'hill-step', 'hill-twin', 'hill-peak'];
       const height = heights[index % heights.length];
-      const far = height > 220;
+      const shape = shapes[(index * 3) % shapes.length];
+      const layer = height > 320 ? 'hill-mist' : height > 220 ? 'hill-far' : index % 4 === 1 ? 'hill-dark' : '';
+      const widthFactor = shape === 'hill-peak' ? 1.1 : shape === 'hill-plateau' ? 2.4 : shape === 'hill-twin' ? 1.6 : 1.9;
       items.push({
-        kind: far ? 'hill hill-far' : 'hill',
+        kind: ['hill', shape, layer].filter(Boolean).join(' '),
         style: {
           left: base + ((index * 137) % 200),
-          width: Math.round(height * (far ? 1.5 : 2.1)),
-          height,
-          zIndex: far ? 0 : 1,
+          width: Math.round(height * widthFactor),
+          height: shape === 'hill-step' ? Math.round(height * 0.65) : height,
+          zIndex: height > 320 ? 0 : height > 220 ? 1 : 2,
         },
       });
       items.push({
