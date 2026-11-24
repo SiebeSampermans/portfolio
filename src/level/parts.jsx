@@ -7,9 +7,15 @@ import { createPortal } from 'react-dom';
  */
 export function Seg({ children, className = '', obstacle, lane, width }) {
   const kinds = obstacle ? HARD_PATTERNS[obstacle] || [obstacle] : [];
+  // Make sure the segment is wide enough for its obstacles plus room to land on either side.
+  const laneWidth = kinds.reduce((sum, kind) => sum + obstacleWidth(kind), 0) + (kinds.length - 1) * 140;
+  const style = {
+    ...(width ? { '--seg-w': width } : {}),
+    ...(kinds.length ? { '--lane-min': `${Math.ceil(laneWidth / 0.92) + 220}px` } : {}),
+  };
 
   return (
-    <div className={`seg ${className}`} style={width ? { '--seg-w': width } : undefined}>
+    <div className={`seg ${className}`} style={style}>
       <div className="seg-body">{children}</div>
       <div className="seg-lane" aria-hidden="true">
         {lane}
@@ -27,27 +33,38 @@ export function Seg({ children, className = '', obstacle, lane, width }) {
 
 const HARD_PATTERNS = {
   spike: ['spiked-block'],
-  spikes: ['bonus-run'],
+  spikes: ['brick-row'],
   block: ['pit'],
   'block-spike': ['bug-patrol'],
-  stairs: ['climb'],
+  stairs: ['stair-pit'],
   tall: ['sky-bridge'],
 };
 
 // Each obstacle is a row of columns; each column stacks parts from the ground up.
-// `gap` lifts what comes after it into the air; `coin` is a bit to grab, `bug` walks and can be squashed.
+// `gap` lifts what comes after it into the air; `pit` is a hole in the ground (fall in and it's over);
+// `brick` breaks when you hit it powered up; `bonus` gives a bit, `power` gives a power chip;
+// `coin` is a bit to grab, `bug` walks and can be squashed.
 const OBSTACLE_COLUMNS = {
   spike: [['spike']],
   spikes: [['spike'], ['spike']],
   triple: [['spike'], ['spike'], ['spike']],
   block: [['block']],
   'spiked-block': [['spike'], ['block', 'spike'], ['spike']],
-  pit: [['block'], ['spike'], ['spike'], ['spike'], ['block', 'gap-s', 'coin']],
+  pit: [['block'], ['pit', 'gap', 'coin'], ['block', 'block']],
+  'brick-row': [['gap', 'brick'], ['gap', 'bonus'], ['gap', 'brick'], ['gap', 'power'], ['gap', 'brick'], ['spike']],
+  'stair-pit': [['block'], ['block', 'block'], ['block', 'block', 'block'], ['pit-w', 'gap', 'gap', 'coin'], ['block', 'block', 'block'], ['block']],
   climb: [['block'], ['block-tall'], ['block-tall', 'block'], ['spike'], ['spike']],
-  'bonus-run': [['gap', 'bonus'], ['spike'], ['spike'], ['gap-s', 'coin'], ['gap', 'bonus']],
   'bug-patrol': [['gap-s', 'coin'], ['bug'], ['gap-s', 'coin']],
-  'sky-bridge': [['spike'], ['spike'], ['gap', 'block'], ['spike'], ['spike'], ['gap', 'bonus'], ['spike'], ['spike']],
+  'sky-bridge': [['spike'], ['spike'], ['gap', 'block'], ['pit-w', 'gap', 'gap', 'coin'], ['gap', 'bonus'], ['spike'], ['spike']],
+  'finish-stairs': [['block'], ['block', 'block'], ['block', 'block', 'block'], ['block', 'block', 'block', 'block']],
 };
+
+const PART_WIDTH = { spike: 46, coin: 26, bug: 46, pit: 160, 'pit-w': 220, gap: 0, 'gap-s': 0 };
+const obstacleWidth = (kind) =>
+  (OBSTACLE_COLUMNS[kind] || [['spike']]).reduce(
+    (sum, column) => sum + Math.max(...column.map((part) => PART_WIDTH[part] ?? 52)),
+    0,
+  );
 
 function ObstaclePart({ part }) {
   switch (part) {
@@ -63,6 +80,10 @@ function ObstaclePart({ part }) {
           <span className="bug-body"></span>
         </b>
       );
+    case 'power':
+      return <i className="ob-bonus ob-power"></i>;
+    case 'pit-w':
+      return <i className="ob-pit ob-pit-w"></i>;
     default:
       return <i className={`ob-${part}`}></i>;
   }

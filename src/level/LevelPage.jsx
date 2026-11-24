@@ -19,38 +19,41 @@ const sectionFromPath = (pathname) => {
 };
 const pathForSection = (id) => (id === 'home' ? '/' : `/${id}`);
 
-const SHAPES = ['square', 'diamond', 'ring', 'tri', 'square', 'ring', 'diamond', 'bar'];
-
 function Backdrop({ parallaxRef }) {
-  // A fixed, seeded scatter of outlined shapes that drift slower than the course.
-  const shapes = useMemo(
-    () =>
-      Array.from({ length: 64 }, (_, index) => ({
-        kind: SHAPES[index % SHAPES.length],
-        left: index * 420 + ((index * 137) % 260),
-        top: 8 + ((index * 53) % 52),
-        size: 50 + ((index * 71) % 120),
-        spin: (index * 29) % 90,
-      })),
-    [],
-  );
+  // Seeded scenery that drifts slower than the course: rolling hills, bushes and clouds.
+  const scenery = useMemo(() => {
+    const items = [];
+    for (let index = 0; index < 48; index += 1) {
+      const base = index * 520;
+      const big = index % 3 === 0;
+      items.push({
+        kind: big ? 'hill hill-far' : 'hill',
+        style: {
+          left: base + ((index * 137) % 200),
+          width: big ? 420 : 240 + ((index * 61) % 120),
+          height: big ? 210 : 110 + ((index * 41) % 60),
+        },
+      });
+      items.push({
+        kind: 'cloud',
+        style: { left: base + 260 + ((index * 97) % 160), top: `${12 + ((index * 53) % 26)}%`, width: 110 + ((index * 31) % 90) },
+      });
+      if (index % 2) {
+        items.push({
+          kind: 'bush',
+          style: { left: base + 380 + ((index * 43) % 100), width: 80 + ((index * 23) % 60) },
+        });
+      }
+    }
+    return items;
+  }, []);
 
   return (
     <div className="backdrop" aria-hidden="true">
       <div className="backdrop-grid"></div>
-      <div className="backdrop-shapes" ref={parallaxRef}>
-        {shapes.map((shape, index) => (
-          <span
-            key={index}
-            className={`shape shape-${shape.kind}`}
-            style={{
-              left: `${shape.left}px`,
-              top: `${shape.top}%`,
-              width: `${shape.size}px`,
-              height: `${shape.size}px`,
-              '--spin': `${shape.spin}deg`,
-            }}
-          ></span>
+      <div className="backdrop-shapes scenery" ref={parallaxRef}>
+        {scenery.map((item, index) => (
+          <span key={index} className={item.kind} style={item.style}></span>
         ))}
       </div>
     </div>
@@ -144,13 +147,34 @@ function LevelPage() {
             {t.level.attempt} {playState.attempts}
           </span>
           <span className="play-banner-score">
-            <span className="mini-coin" aria-hidden="true"></span>
-            {t.level.bits} {playState.bits}
+            {t.level.score} {String(playState.score).padStart(6, '0')}
           </span>
           <span className="play-banner-score">
-            {t.level.bugs} {playState.bugs}
+            <span className="mini-coin" aria-hidden="true"></span>× {playState.bits}
           </span>
+          <span className="play-banner-time" ref={refs.timerRef}>
+            0:00
+          </span>
+          {playState.isPowered && <span className="play-banner-power">◆ {t.level.powered}</span>}
           <span className="play-banner-hint">{t.level.exitPlay}</span>
+        </div>
+      )}
+      {playState.finish && (
+        <div className="clear-card" role="status">
+          <strong>{t.level.cleared}</strong>
+          <dl>
+            <dt>{t.level.bits}</dt>
+            <dd>{playState.bits}</dd>
+            <dt>{t.level.bugs}</dt>
+            <dd>{playState.bugs}</dd>
+            <dt>{t.level.flagBonus}</dt>
+            <dd>{playState.finish.flagBonus}</dd>
+            <dt>{t.level.time}</dt>
+            <dd>{playState.finish.time}</dd>
+            <dt className="clear-total">{t.level.score}</dt>
+            <dd className="clear-total">{playState.finish.score}</dd>
+          </dl>
+          <small>{t.level.playAgain}</small>
         </div>
       )}
       {playState.isDead && (

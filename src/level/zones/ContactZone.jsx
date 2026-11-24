@@ -359,7 +359,17 @@ function ContactZone({ onReplay }) {
         </div>
       </Seg>
 
-      <Seg className="seg-finish" lane={<span className="finish-line"></span>}>
+      <Seg
+        className="seg-flag"
+        obstacle="finish-stairs"
+        lane={
+          <span className="flagpole">
+            <i></i>
+          </span>
+        }
+      ></Seg>
+
+      <Seg className="seg-finish">
         <div className="finish">
           <span className="mono-label">100%</span>
           <h2>{level.complete}</h2>
