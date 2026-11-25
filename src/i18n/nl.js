@@ -5,6 +5,7 @@ const nl = {
     languageSwitch: 'Kies taal',
     themeLabel: 'Thema',
     themeSwitch: 'Wissel tussen dag en nacht',
+    soundSwitch: 'Muziek en geluid aan of uit',
     nav: {
       home: 'Home',
       about: 'Over mij',

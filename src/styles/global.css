@@ -4350,3 +4350,238 @@ body[data-theme='green'] .ob-bonus {
 body[data-theme='green'] .coin {
   filter: drop-shadow(0 0 6px rgba(255, 204, 51, 0.7));
 }
+
+/* ---------- Sound toggle ---------- */
+.hud-sound {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, transform 0.2s var(--ease-out);
+}
+.hud-sound svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+.hud-sound .hud-sound-off {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+}
+.hud-sound.is-on {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.hud-sound.is-on .hud-sound-waves {
+  animation: sound-wave 0.9s steps(2) infinite;
+}
+.hud-sound:hover {
+  transform: translateY(-1px);
+}
+@keyframes sound-wave {
+  50% { opacity: 0.35; }
+}
+
+/* ---------- Ground details: flowers, grass tufts, rocks and fences ---------- */
+.world > .ground-decor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--ground-h);
+  height: 0;
+  pointer-events: none;
+}
+.decor {
+  position: absolute;
+  bottom: -2px;
+  background: no-repeat center bottom / 100% 100%;
+  image-rendering: pixelated;
+}
+.decor-flower,
+.decor-flower-b,
+.decor-flower-c {
+  transform-origin: 50% 100%;
+  animation: flower-sway 3s ease-in-out infinite;
+}
+@keyframes flower-sway {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(4deg); }
+}
+
+.decor-flower {
+  width: 22px;
+  height: 30px;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 11' shape-rendering='crispEdges'><rect x='2' y='0' width='2' height='1' fill='%231a1a2e'/><rect x='5' y='0' width='2' height='1' fill='%231a1a2e'/><rect x='1' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='2' y='1' width='2' height='1' fill='%23ff5a5a'/><rect x='4' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='5' y='1' width='2' height='1' fill='%23ff5a5a'/><rect x='7' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='2' width='1' height='1' fill='%231a1a2e'/><rect x='2' y='2' width='2' height='1' fill='%23ff5a5a'/><rect x='4' y='2' width='1' height='1' fill='%23ffd23d'/><rect x='5' y='2' width='2' height='1' fill='%23ff5a5a'/><rect x='7' y='2' width='1' height='1' fill='%231a1a2e'/><rect x='2' y='3' width='1' height='1' fill='%231a1a2e'/><rect x='3' y='3' width='2' height='1' fill='%23ff5a5a'/><rect x='5' y='3' width='1' height='1' fill='%23c23a3a'/><rect x='6' y='3' width='1' height='1' fill='%231a1a2e'/><rect x='3' y='4' width='1' height='1' fill='%231a1a2e'/><rect x='4' y='4' width='1' height='1' fill='%232f9e3a'/><rect x='5' y='4' width='1' height='1' fill='%231a1a2e'/><rect x='4' y='5' width='1' height='1' fill='%232f9e3a'/><rect x='5' y='5' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='6' width='2' height='1' fill='%231a1a2e'/><rect x='4' y='6' width='1' height='1' fill='%232f9e3a'/><rect x='0' y='7' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='7' width='1' height='1' fill='%232f9e3a'/><rect x='2' y='7' width='1' height='1' fill='%231f6e2a'/><rect x='3' y='7' width='1' height='1' fill='%231a1a2e'/><rect x='4' y='7' width='1' height='1' fill='%232f9e3a'/><rect x='1' y='8' width='1' height='1' fill='%231a1a2e'/><rect x='2' y='8' width='1' height='1' fill='%232f9e3a'/><rect x='3' y='8' width='1' height='1' fill='%231f6e2a'/><rect x='4' y='8' width='1' height='1' fill='%232f9e3a'/><rect x='2' y='9' width='1' height='1' fill='%231a1a2e'/><rect x='3' y='9' width='2' height='1' fill='%232f9e3a'/><rect x='3' y='10' width='1' height='1' fill='%232f9e3a'/></svg>");
+}
+.decor-flower-b {
+  width: 22px;
+  height: 30px;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 11' shape-rendering='crispEdges'><rect x='2' y='0' width='2' height='1' fill='%231a1a2e'/><rect x='5' y='0' width='2' height='1' fill='%231a1a2e'/><rect x='1' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='2' y='1' width='2' height='1' fill='%23ffffff'/><rect x='4' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='5' y='1' width='2' height='1' fill='%23ffffff'/><rect x='7' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='2' width='1' height='1' fill='%231a1a2e'/><rect x='2' y='2' width='2' height='1' fill='%23ffffff'/><rect x='4' y='2' width='1' height='1' fill='%23ffd23d'/><rect x='5' y='2' width='2' height='1' fill='%23ffffff'/><rect x='7' y='2' width='1' height='1' fill='%231a1a2e'/><rect x='2' y='3' width='1' height='1' fill='%231a1a2e'/><rect x='3' y='3' width='2' height='1' fill='%23ffffff'/><rect x='5' y='3' width='1' height='1' fill='%23c9d4e8'/><rect x='6' y='3' width='1' height='1' fill='%231a1a2e'/><rect x='3' y='4' width='1' height='1' fill='%231a1a2e'/><rect x='4' y='4' width='1' height='1' fill='%232f9e3a'/><rect x='5' y='4' width='1' height='1' fill='%231a1a2e'/><rect x='4' y='5' width='1' height='1' fill='%232f9e3a'/><rect x='5' y='5' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='6' width='2' height='1' fill='%231a1a2e'/><rect x='4' y='6' width='1' height='1' fill='%232f9e3a'/><rect x='0' y='7' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='7' width='1' height='1' fill='%232f9e3a'/><rect x='2' y='7' width='1' height='1' fill='%231f6e2a'/><rect x='3' y='7' width='1' height='1' fill='%231a1a2e'/><rect x='4' y='7' width='1' height='1' fill='%232f9e3a'/><rect x='1' y='8' width='1' height='1' fill='%231a1a2e'/><rect x='2' y='8' width='1' height='1' fill='%232f9e3a'/><rect x='3' y='8' width='1' height='1' fill='%231f6e2a'/><rect x='4' y='8' width='1' height='1' fill='%232f9e3a'/><rect x='2' y='9' width='1' height='1' fill='%231a1a2e'/><rect x='3' y='9' width='2' height='1' fill='%232f9e3a'/><rect x='3' y='10' width='1' height='1' fill='%232f9e3a'/></svg>");
+}
+.decor-flower-c {
+  width: 22px;
+  height: 30px;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 11' shape-rendering='crispEdges'><rect x='2' y='0' width='2' height='1' fill='%231a1a2e'/><rect x='5' y='0' width='2' height='1' fill='%231a1a2e'/><rect x='1' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='2' y='1' width='2' height='1' fill='%23ffd23d'/><rect x='4' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='5' y='1' width='2' height='1' fill='%23ffd23d'/><rect x='7' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='2' width='1' height='1' fill='%231a1a2e'/><rect x='2' y='2' width='2' height='1' fill='%23ffd23d'/><rect x='4' y='2' width='1' height='1' fill='%23ffd23d'/><rect x='5' y='2' width='2' height='1' fill='%23ffd23d'/><rect x='7' y='2' width='1' height='1' fill='%231a1a2e'/><rect x='2' y='3' width='1' height='1' fill='%231a1a2e'/><rect x='3' y='3' width='2' height='1' fill='%23ffd23d'/><rect x='5' y='3' width='1' height='1' fill='%23d99a1a'/><rect x='6' y='3' width='1' height='1' fill='%231a1a2e'/><rect x='3' y='4' width='1' height='1' fill='%231a1a2e'/><rect x='4' y='4' width='1' height='1' fill='%232f9e3a'/><rect x='5' y='4' width='1' height='1' fill='%231a1a2e'/><rect x='4' y='5' width='1' height='1' fill='%232f9e3a'/><rect x='5' y='5' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='6' width='2' height='1' fill='%231a1a2e'/><rect x='4' y='6' width='1' height='1' fill='%232f9e3a'/><rect x='0' y='7' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='7' width='1' height='1' fill='%232f9e3a'/><rect x='2' y='7' width='1' height='1' fill='%231f6e2a'/><rect x='3' y='7' width='1' height='1' fill='%231a1a2e'/><rect x='4' y='7' width='1' height='1' fill='%232f9e3a'/><rect x='1' y='8' width='1' height='1' fill='%231a1a2e'/><rect x='2' y='8' width='1' height='1' fill='%232f9e3a'/><rect x='3' y='8' width='1' height='1' fill='%231f6e2a'/><rect x='4' y='8' width='1' height='1' fill='%232f9e3a'/><rect x='2' y='9' width='1' height='1' fill='%231a1a2e'/><rect x='3' y='9' width='2' height='1' fill='%232f9e3a'/><rect x='3' y='10' width='1' height='1' fill='%232f9e3a'/></svg>");
+}
+.decor-tuft {
+  width: 24px;
+  height: 12px;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 4' shape-rendering='crispEdges'><rect x='2' y='0' width='1' height='1' fill='%231a1a2e'/><rect x='6' y='0' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='2' y='1' width='1' height='1' fill='%232f9e3a'/><rect x='3' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='5' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='6' y='1' width='1' height='1' fill='%232f9e3a'/><rect x='7' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='0' y='2' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='2' width='2' height='1' fill='%232f9e3a'/><rect x='3' y='2' width='2' height='1' fill='%231a1a2e'/><rect x='5' y='2' width='1' height='1' fill='%232f9e3a'/><rect x='6' y='2' width='1' height='1' fill='%231f6e2a'/><rect x='7' y='2' width='1' height='1' fill='%231a1a2e'/><rect x='0' y='3' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='3' width='1' height='1' fill='%232f9e3a'/><rect x='2' y='3' width='1' height='1' fill='%231f6e2a'/><rect x='3' y='3' width='2' height='1' fill='%232f9e3a'/><rect x='5' y='3' width='1' height='1' fill='%231f6e2a'/><rect x='6' y='3' width='1' height='1' fill='%232f9e3a'/><rect x='7' y='3' width='1' height='1' fill='%231a1a2e'/></svg>");
+}
+.decor-tuft-b {
+  width: 24px;
+  height: 12px;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 4' shape-rendering='crispEdges'><rect x='0' y='0' width='1' height='1' fill='%231a1a2e'/><rect x='3' y='0' width='1' height='1' fill='%231a1a2e'/><rect x='6' y='0' width='1' height='1' fill='%231a1a2e'/><rect x='0' y='1' width='1' height='1' fill='%232f9e3a'/><rect x='1' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='3' y='1' width='1' height='1' fill='%232f9e3a'/><rect x='4' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='6' y='1' width='1' height='1' fill='%232f9e3a'/><rect x='7' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='0' y='2' width='2' height='1' fill='%232f9e3a'/><rect x='2' y='2' width='1' height='1' fill='%231a1a2e'/><rect x='3' y='2' width='2' height='1' fill='%232f9e3a'/><rect x='5' y='2' width='1' height='1' fill='%231a1a2e'/><rect x='6' y='2' width='1' height='1' fill='%232f9e3a'/><rect x='7' y='2' width='1' height='1' fill='%231a1a2e'/><rect x='0' y='3' width='1' height='1' fill='%232f9e3a'/><rect x='1' y='3' width='1' height='1' fill='%231f6e2a'/><rect x='2' y='3' width='2' height='1' fill='%232f9e3a'/><rect x='4' y='3' width='1' height='1' fill='%231f6e2a'/><rect x='5' y='3' width='2' height='1' fill='%232f9e3a'/><rect x='7' y='3' width='1' height='1' fill='%231a1a2e'/></svg>");
+}
+.decor-rock {
+  width: 34px;
+  height: 18px;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 6' shape-rendering='crispEdges'><rect x='3' y='0' width='5' height='1' fill='%231a1a2e'/><rect x='2' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='3' y='1' width='2' height='1' fill='%23d9dce6'/><rect x='5' y='1' width='3' height='1' fill='%23a3a9bb'/><rect x='8' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='2' width='1' height='1' fill='%231a1a2e'/><rect x='2' y='2' width='2' height='1' fill='%23d9dce6'/><rect x='4' y='2' width='5' height='1' fill='%23a3a9bb'/><rect x='9' y='2' width='1' height='1' fill='%231a1a2e'/><rect x='0' y='3' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='3' width='1' height='1' fill='%23d9dce6'/><rect x='2' y='3' width='5' height='1' fill='%23a3a9bb'/><rect x='7' y='3' width='1' height='1' fill='%237b8197'/><rect x='8' y='3' width='2' height='1' fill='%23a3a9bb'/><rect x='10' y='3' width='1' height='1' fill='%231a1a2e'/><rect x='0' y='4' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='4' width='5' height='1' fill='%23a3a9bb'/><rect x='6' y='4' width='2' height='1' fill='%237b8197'/><rect x='8' y='4' width='1' height='1' fill='%23a3a9bb'/><rect x='9' y='4' width='1' height='1' fill='%237b8197'/><rect x='10' y='4' width='1' height='1' fill='%231a1a2e'/><rect x='0' y='5' width='11' height='1' fill='%231a1a2e'/></svg>");
+}
+.decor-fence {
+  width: 96px;
+  height: 36px;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 9' shape-rendering='crispEdges'><rect x='1' y='0' width='3' height='1' fill='%231a1a2e'/><rect x='12' y='0' width='3' height='1' fill='%231a1a2e'/><rect x='23' y='0' width='1' height='1' fill='%231a1a2e'/><rect x='0' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='1' width='2' height='1' fill='%23d9a066'/><rect x='3' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='11' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='12' y='1' width='2' height='1' fill='%23d9a066'/><rect x='14' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='22' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='0' y='2' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='2' width='1' height='1' fill='%23d9a066'/><rect x='2' y='2' width='1' height='1' fill='%23a86b3c'/><rect x='3' y='2' width='9' height='1' fill='%231a1a2e'/><rect x='12' y='2' width='1' height='1' fill='%23d9a066'/><rect x='13' y='2' width='1' height='1' fill='%23a86b3c'/><rect x='14' y='2' width='10' height='1' fill='%231a1a2e'/><rect x='0' y='3' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='3' width='1' height='1' fill='%23d9a066'/><rect x='2' y='3' width='1' height='1' fill='%23a86b3c'/><rect x='3' y='3' width='8' height='1' fill='%23d9a066'/><rect x='11' y='3' width='1' height='1' fill='%231a1a2e'/><rect x='12' y='3' width='1' height='1' fill='%23d9a066'/><rect x='13' y='3' width='1' height='1' fill='%23a86b3c'/><rect x='14' y='3' width='9' height='1' fill='%23d9a066'/><rect x='23' y='3' width='1' height='1' fill='%231a1a2e'/><rect x='0' y='4' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='4' width='1' height='1' fill='%23d9a066'/><rect x='2' y='4' width='1' height='1' fill='%23a86b3c'/><rect x='3' y='4' width='10' height='1' fill='%231a1a2e'/><rect x='13' y='4' width='1' height='1' fill='%23d9a066'/><rect x='14' y='4' width='1' height='1' fill='%23a86b3c'/><rect x='15' y='4' width='9' height='1' fill='%231a1a2e'/><rect x='0' y='5' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='5' width='1' height='1' fill='%23d9a066'/><rect x='2' y='5' width='1' height='1' fill='%23a86b3c'/><rect x='3' y='5' width='1' height='1' fill='%231a1a2e'/><rect x='11' y='5' width='1' height='1' fill='%231a1a2e'/><rect x='12' y='5' width='1' height='1' fill='%23d9a066'/><rect x='13' y='5' width='1' height='1' fill='%23a86b3c'/><rect x='14' y='5' width='1' height='1' fill='%231a1a2e'/><rect x='22' y='5' width='1' height='1' fill='%231a1a2e'/><rect x='0' y='6' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='6' width='1' height='1' fill='%23d9a066'/><rect x='2' y='6' width='1' height='1' fill='%23a86b3c'/><rect x='3' y='6' width='9' height='1' fill='%231a1a2e'/><rect x='12' y='6' width='1' height='1' fill='%23d9a066'/><rect x='13' y='6' width='1' height='1' fill='%23a86b3c'/><rect x='14' y='6' width='10' height='1' fill='%231a1a2e'/><rect x='0' y='7' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='7' width='1' height='1' fill='%23d9a066'/><rect x='2' y='7' width='1' height='1' fill='%23a86b3c'/><rect x='3' y='7' width='8' height='1' fill='%23d9a066'/><rect x='11' y='7' width='1' height='1' fill='%231a1a2e'/><rect x='12' y='7' width='1' height='1' fill='%23d9a066'/><rect x='13' y='7' width='1' height='1' fill='%23a86b3c'/><rect x='14' y='7' width='9' height='1' fill='%23d9a066'/><rect x='23' y='7' width='1' height='1' fill='%231a1a2e'/><rect x='0' y='8' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='8' width='1' height='1' fill='%23d9a066'/><rect x='2' y='8' width='1' height='1' fill='%23a86b3c'/><rect x='3' y='8' width='1' height='1' fill='%231a1a2e'/><rect x='11' y='8' width='1' height='1' fill='%231a1a2e'/><rect x='12' y='8' width='1' height='1' fill='%23d9a066'/><rect x='13' y='8' width='1' height='1' fill='%23a86b3c'/><rect x='14' y='8' width='1' height='1' fill='%231a1a2e'/><rect x='22' y='8' width='1' height='1' fill='%231a1a2e'/></svg>");
+}
+
+body[data-theme='green'] .decor {
+  filter: brightness(0.62) saturate(0.75);
+}
+.is-vertical .ground-decor,
+.is-vertical .critters {
+  display: none;
+}
+
+/* ---------- Drifting clouds ---------- */
+.scenery .cloud {
+  animation: cloud-drift 46s ease-in-out infinite alternate;
+}
+.scenery .cloud:nth-child(3n) {
+  animation-duration: 62s;
+  animation-delay: -20s;
+}
+.scenery .cloud:nth-child(3n + 1) {
+  animation-duration: 38s;
+  animation-delay: -9s;
+}
+@keyframes cloud-drift {
+  from { transform: translateX(-40px); }
+  to { transform: translateX(90px); }
+}
+
+/* ---------- Butterflies by day, fireflies at night ---------- */
+.critters {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.critter {
+  position: absolute;
+  width: 28px;
+  height: 20px;
+  animation: critter-fly var(--drift, 11s) ease-in-out var(--delay, 0s) infinite alternate;
+}
+.critter i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 7' shape-rendering='crispEdges'><rect x='0' y='0' width='1' height='1' fill='%231a1a2e'/><rect x='3' y='0' width='1' height='1' fill='%231a1a2e'/><rect x='6' y='0' width='1' height='1' fill='%231a1a2e'/><rect x='9' y='0' width='1' height='1' fill='%231a1a2e'/><rect x='0' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='1' width='2' height='1' fill='%23ff8ad8'/><rect x='3' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='6' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='7' y='1' width='2' height='1' fill='%23ff8ad8'/><rect x='9' y='1' width='1' height='1' fill='%231a1a2e'/><rect x='0' y='2' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='2' width='1' height='1' fill='%23ff8ad8'/><rect x='2' y='2' width='1' height='1' fill='%23ffd23d'/><rect x='3' y='2' width='1' height='1' fill='%23ff8ad8'/><rect x='4' y='2' width='2' height='1' fill='%231a1a2e'/><rect x='6' y='2' width='1' height='1' fill='%23ff8ad8'/><rect x='7' y='2' width='1' height='1' fill='%23ffd23d'/><rect x='8' y='2' width='1' height='1' fill='%23ff8ad8'/><rect x='9' y='2' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='3' width='1' height='1' fill='%231a1a2e'/><rect x='2' y='3' width='2' height='1' fill='%23ff8ad8'/><rect x='4' y='3' width='2' height='1' fill='%231a1a2e'/><rect x='6' y='3' width='2' height='1' fill='%23ff8ad8'/><rect x='8' y='3' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='4' width='1' height='1' fill='%231a1a2e'/><rect x='2' y='4' width='2' height='1' fill='%23ffd23d'/><rect x='4' y='4' width='2' height='1' fill='%231a1a2e'/><rect x='6' y='4' width='2' height='1' fill='%23ffd23d'/><rect x='8' y='4' width='1' height='1' fill='%231a1a2e'/><rect x='0' y='5' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='5' width='2' height='1' fill='%23ffd23d'/><rect x='3' y='5' width='1' height='1' fill='%231a1a2e'/><rect x='6' y='5' width='1' height='1' fill='%231a1a2e'/><rect x='7' y='5' width='2' height='1' fill='%23ffd23d'/><rect x='9' y='5' width='1' height='1' fill='%231a1a2e'/><rect x='1' y='6' width='2' height='1' fill='%231a1a2e'/><rect x='7' y='6' width='2' height='1' fill='%231a1a2e'/></svg>") no-repeat center / contain;
+  image-rendering: pixelated;
+  animation: critter-flap 0.28s steps(2) infinite;
+}
+@keyframes critter-fly {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(calc(var(--path, 1) * 60px), -40px); }
+  50% { transform: translate(calc(var(--path, 1) * 130px), 10px); }
+  75% { transform: translate(calc(var(--path, 1) * 80px), -70px); }
+  100% { transform: translate(calc(var(--path, 1) * 170px), -20px); }
+}
+@keyframes critter-flap {
+  50% { transform: scaleX(0.35); }
+}
+body[data-theme='green'] .critter {
+  width: 6px;
+  height: 6px;
+}
+body[data-theme='green'] .critter i {
+  background: #e9ff7a;
+  box-shadow: 0 0 8px 3px rgba(220, 255, 110, 0.7);
+  animation: firefly-glow 2.4s ease-in-out var(--delay, 0s) infinite;
+}
+@keyframes firefly-glow {
+  0%, 100% { opacity: 0.15; }
+  45%, 60% { opacity: 1; }
+}
+
+/* ---------- Play-mode effects: landing dust and score popups ---------- */
+.world > .fx-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+}
+.fx-dust,
+.fx-score {
+  position: absolute;
+  bottom: calc(var(--ground-h) + var(--y, 0px));
+}
+.fx-dust::before,
+.fx-dust::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 12px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 0 2px rgba(26, 26, 46, 0.35);
+  animation: dust-left 0.42s ease-out forwards;
+}
+.fx-dust::after {
+  animation-name: dust-right;
+}
+@keyframes dust-left {
+  from { transform: translate(-14px, 0) scale(1); opacity: 1; }
+  to { transform: translate(-40px, -10px) scale(0.3); opacity: 0; }
+}
+@keyframes dust-right {
+  from { transform: translate(2px, 0) scale(1); opacity: 1; }
+  to { transform: translate(28px, -10px) scale(0.3); opacity: 0; }
+}
+.fx-dust {
+  animation: fx-life 0.45s linear forwards;
+}
+@keyframes fx-life {
+  to { opacity: 1; }
+}
+.fx-score {
+  transform: translateX(-50%);
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: #fff;
+  -webkit-text-stroke: 4px #1a1a2e;
+  paint-order: stroke fill;
+  white-space: nowrap;
+  animation: score-rise 0.85s ease-out forwards;
+}
+@keyframes score-rise {
+  0% { transform: translate(-50%, 0); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translate(-50%, -64px); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .decor,
+  .scenery .cloud,
+  .critter,
+  .critter i,
+  .hud-sound .hud-sound-waves {
+    animation: none;
+  }
+}

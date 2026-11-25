@@ -21,6 +21,14 @@ const pathForSection = (id) => (id === 'home' ? '/' : `/${id}`);
 // The player is the pixel hero for now; the garage is switched off.
 const RUNNER_STYLE = { body: 'hero', color: 'accent', hat: 'none', trail: 'line' };
 
+const CRITTERS = Array.from({ length: 9 }, (_, index) => ({
+  left: `${6 + ((index * 37) % 88)}%`,
+  bottom: `calc(var(--ground-h) + ${30 + ((index * 53) % 170)}px)`,
+  '--drift': `${9 + ((index * 7) % 8)}s`,
+  '--delay': `${-((index * 1.9) % 9).toFixed(1)}s`,
+  '--path': `${index % 2 ? -1 : 1}`,
+}));
+
 function Backdrop({ parallaxRef }) {
   // Seeded scenery that drifts slower than the course: rolling hills, bushes and clouds.
   const scenery = useMemo(() => {
@@ -62,6 +70,14 @@ function Backdrop({ parallaxRef }) {
     <div className="backdrop" aria-hidden="true">
       <div className="backdrop-grid"></div>
       <div className="sky-body"></div>
+      {/* Butterflies by day, fireflies at night. */}
+      <div className="critters">
+        {CRITTERS.map((style, index) => (
+          <span key={index} className="critter" style={style}>
+            <i></i>
+          </span>
+        ))}
+      </div>
       <div className="backdrop-shapes scenery" ref={parallaxRef}>
         {scenery.map((item, index) => (
           <span key={index} className={item.kind} style={item.style}></span>

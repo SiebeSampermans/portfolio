@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { buildAutoPath, sampleAutoPath } from './autoPath';
-import { bugOffset, HURT_TIME, newTaken, stepPhysics } from './physics';
+import { sfx } from './audio';
+import { bugOffset, HURT_TIME, newTaken, RUNNER_SIZE, stepPhysics } from './physics';
 
 // Below this width, on short screens, or when the visitor asks for less motion,
 // the level is laid out vertically and the runner stays still.
@@ -8,7 +9,41 @@ const VERTICAL_QUERY = '(max-width: 820px), (max-height: 560px), (prefers-reduce
 
 // Where the runner sits on screen, as a share of the viewport width.
 const RUNNER_SCREEN_X = 0.2;
-const RUNNER_SIZE = 52;
+
+// Flowers, grass tufts, rocks and bits of fence along the ground. Seeded, so they stay put between
+// visits, and kept away from pits and from anything standing on the ground.
+const DECOR = ['flower', 'flower-b', 'flower-c', 'tuft', 'tuft', 'tuft-b', 'rock', 'fence', 'tuft', 'flower'];
+const DECOR_WIDTH = { fence: 96, rock: 34 };
+function placeGroundDecor(world, worldWidth, pits, parts) {
+  let layer = world.querySelector(':scope > .ground-decor');
+  if (!layer) {
+    layer = document.createElement('div');
+    layer.className = 'ground-decor';
+    layer.setAttribute('aria-hidden', 'true');
+    world.prepend(layer);
+  }
+  const grounded = parts.filter((part) => part.kind !== 'wall' && part.base <= 1);
+  const blocked = (start, end) =>
+    pits.some((pit) => end > pit.start - 70 && start < pit.end + 70) ||
+    grounded.some((part) => end > part.start - 8 && start < part.end + 8);
+  let seed = 7;
+  const random = () => {
+    seed = (seed * 16807) % 2147483647;
+    return seed / 2147483647;
+  };
+  const fragment = document.createDocumentFragment();
+  for (let x = 120; x < worldWidth - 200; x += 70 + random() * 190) {
+    const kind = DECOR[Math.floor(random() * DECOR.length)];
+    const width = DECOR_WIDTH[kind] || 22;
+    if (blocked(x, x + width)) continue;
+    const item = document.createElement('i');
+    item.className = `decor decor-${kind}`;
+    item.style.left = `${Math.round(x)}px`;
+    if (kind.startsWith('flower')) item.style.animationDelay = `${(-random() * 3).toFixed(2)}s`;
+    fragment.append(item);
+  }
+  layer.replaceChildren(fragment);
+}
 
 export const SECTION_IDS = ['home', 'about', 'projects', 'cv', 'contact'];
 
@@ -83,6 +118,7 @@ function useLevelEngine({ onSectionChange }) {
     });
 
     if (isVertical) {
+      world.querySelector(':scope > .ground-decor')?.remove();
       track.style.height = '';
       layoutRef.current = {
         obstacles: [],
@@ -149,6 +185,7 @@ function useLevelEngine({ onSectionChange }) {
     });
 
     layoutRef.current = { obstacles, sections, maxScroll, portals, parts, coins, bugs, pits, flag, worldWidth };
+    placeGroundDecor(world, worldWidth, pits, parts);
     layoutRef.current.autoPath = buildAutoPath(layoutRef.current);
   }, [isVertical]);
 
@@ -447,12 +484,46 @@ function useLevelEngine({ onSectionChange }) {
       const play = playRef.current;
       if (!play || play.dead) return;
       play.dead = true;
+      sfx('die');
       runnerRef.current?.classList.add('is-dead');
       setPlayState((current) => ({ ...current, isDead: true, attempts: current.attempts + 1 }));
       window.setTimeout(() => {
         runnerRef.current?.classList.remove('is-dead');
         respawn();
       }, 700);
+    };
+
+    // Short-lived effects drawn in world coordinates: a dust puff on landing, "+100" when you score.
+    const fxLayer = () => {
+      const world = worldRef.current;
+      if (!world) return null;
+      let layer = world.querySelector(':scope > .fx-layer');
+      if (!layer) {
+        layer = document.createElement('div');
+        layer.className = 'fx-layer';
+        layer.setAttribute('aria-hidden', 'true');
+        world.append(layer);
+      }
+      return layer;
+    };
+    const spawn = (className, x, y, text = '') => {
+      const layer = fxLayer();
+      if (!layer) return;
+      const element = document.createElement('span');
+      element.className = className;
+      element.textContent = text;
+      element.style.left = `${Math.round(x)}px`;
+      element.style.setProperty('--y', `${Math.round(y)}px`);
+      element.addEventListener('animationend', () => element.remove(), { once: true });
+      window.setTimeout(() => element.remove(), 1500);
+      layer.append(element);
+    };
+    const puff = (x, y) => spawn('fx-dust', x, y);
+    const popup = (item, points, fromBelow = false, shift = 0) => {
+      if (!item) return;
+      const x = (item.start + item.end) / 2 + shift;
+      const y = fromBelow ? (item.top ?? 0) : (item.top ?? item.base ?? 0);
+      spawn('fx-score', x, y + 6, `+${points}`);
     };
 
     const step = (time) => {
@@ -467,7 +538,23 @@ function useLevelEngine({ onSectionChange }) {
         const { maxScroll } = layout;
         const dir = play.finished ? 0 : (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
         const jump = play.finished ? false : keys.jump;
+        const wasGrounded = play.grounded;
+        const fallSpeed = play.vy;
         const events = stepPhysics(play, { dir, jump }, layout, play.taken, dt, time);
+
+        // Sounds and little effects for what just happened.
+        if (wasGrounded && !play.grounded && play.vy > 0) sfx('jump');
+        if (!wasGrounded && play.grounded && fallSpeed < -500) puff(play.x + RUNNER_SIZE / 2, play.y);
+        if (events.bump && !events.bonus.length && !events.broken.length) sfx('bump');
+        if (events.coins.length || (events.bonus.length && !events.power)) sfx('coin');
+        if (events.power) sfx('power');
+        if (events.stomped.length) sfx('stomp');
+        if (events.broken.length) sfx('brick');
+        if (events.hurt) sfx('hurt');
+        events.coins.forEach((id) => popup(layout.coins[id], SCORE.bit));
+        events.bonus.forEach((id) => popup(layout.parts[id], SCORE.bit, true));
+        events.stomped.forEach((id) => popup(layout.bugs[id], SCORE.bug, false, bugOffset(layout.bugs[id], time)));
+        events.broken.forEach((id) => popup(layout.parts[id], SCORE.brick));
 
         layout.bugs.forEach((bug) => {
           if (!play.taken.squashed.has(bug.id)) {
@@ -482,6 +569,7 @@ function useLevelEngine({ onSectionChange }) {
           events.bonus.forEach((id) => layout.parts[id]?.element.classList.add('is-grabbed'));
         }
         if (events.finish) {
+          sfx('flag');
           play.finishedAt = time;
           const flagBonus = Math.round((100 + events.finish.height * (SCORE.flag - 100)) / 100) * 100;
           worldRef.current?.querySelector('.flagpole')?.classList.add('is-grabbed');

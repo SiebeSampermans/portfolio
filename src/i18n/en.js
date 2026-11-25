@@ -5,6 +5,7 @@ const en = {
     languageSwitch: 'Choose language',
     themeLabel: 'Theme',
     themeSwitch: 'Switch between day and night',
+    soundSwitch: 'Music and sound on or off',
     nav: {
       home: 'Home',
       about: 'About',

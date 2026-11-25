@@ -36,7 +36,9 @@ export const newTaken = () => ({
 export function stepPhysics(play, input, layout, state, dt, time) {
   const { parts, coins = [], bugs = [], pits = [], flag = null, worldWidth } = layout;
   const size = RUNNER_SIZE;
-  const events = { dead: false, hurt: false, power: false, bonus: [], coins: [], stomped: [], broken: [], finish: null };
+  const events = {
+    dead: false, hurt: false, power: false, bump: false, bonus: [], coins: [], stomped: [], broken: [], finish: null,
+  };
   const isSolid = (part) =>
     (part.kind === 'block' || part.kind === 'bonus' || part.kind === 'brick' || part.kind === 'wall') &&
     !state.broken.has(part.id);
@@ -85,6 +87,7 @@ export function stepPhysics(play, input, layout, state, dt, time) {
         play.y = part.base - size;
         play.vy = 0;
         play.jumpCut = true;
+        events.bump = true;
         if (part.kind === 'bonus' && !state.usedBonus.has(part.id)) {
           state.usedBonus.add(part.id);
           events.bonus.push(part.id);

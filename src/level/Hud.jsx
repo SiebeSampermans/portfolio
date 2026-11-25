@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { languages, translations, useLanguage } from '../i18n/LanguageContext';
 import logoBlue from '../assets/logo/logo-blue.png';
 import logoGreen from '../assets/logo/logo-green.png';
+import { isSoundOn, onSoundChange, setSound, wantsSound } from './audio';
 import { SECTION_IDS } from './useLevelEngine';
 
 const sameText = (a, b) =>
@@ -92,6 +93,49 @@ function SpotifyBadge({ spotify }) {
   );
 }
 
+/** Music on/off. Off by default; a visitor who turned it on before gets it back on their first click or key. */
+function SoundButton({ label }) {
+  const [isOn, setIsOn] = useState(isSoundOn);
+
+  useEffect(() => {
+    const unsubscribe = onSoundChange(setIsOn);
+    if (!wantsSound() || isSoundOn()) return unsubscribe;
+    const resume = (event) => {
+      if (event.target?.closest?.('.hud-sound')) return;
+      setSound(true);
+      window.removeEventListener('pointerdown', resume);
+      window.removeEventListener('keydown', resume);
+    };
+    window.addEventListener('pointerdown', resume);
+    window.addEventListener('keydown', resume);
+    return () => {
+      unsubscribe();
+      window.removeEventListener('pointerdown', resume);
+      window.removeEventListener('keydown', resume);
+    };
+  }, []);
+
+  return (
+    <button
+      type="button"
+      className={`hud-sound${isOn ? ' is-on' : ''}`}
+      aria-pressed={isOn}
+      aria-label={label}
+      title={label}
+      onClick={() => setSound(!isSoundOn())}
+    >
+      <svg viewBox="0 0 16 16" shapeRendering="crispEdges" aria-hidden="true">
+        <path d="M2 6h3l4-3h1v10h-1l-4-3h-3z" />
+        {isOn ? (
+          <path className="hud-sound-waves" d="M11 6h1v4h-1zM13 4h1v1h1v6h-1v1h-1v-1h1v-6h-1z" />
+        ) : (
+          <path className="hud-sound-off" d="M11 5l4 6M15 5l-4 6" />
+        )}
+      </svg>
+    </button>
+  );
+}
+
 function Hud({ refs, activeSection, onNavigate, spotify, theme }) {
   const { language, setLanguage, t: translation } = useLanguage();
   const t = translation.layout;
@@ -153,6 +197,7 @@ function Hud({ refs, activeSection, onNavigate, spotify, theme }) {
           </svg>
         </span>
       </button>
+      <SoundButton label={t.soundSwitch} />
     </>
   );
 
