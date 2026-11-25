@@ -4,7 +4,7 @@ const nl = {
     languageLabel: 'Taal',
     languageSwitch: 'Kies taal',
     themeLabel: 'Thema',
-    themeSwitch: 'Wissel kleurthema',
+    themeSwitch: 'Wissel tussen dag en nacht',
     nav: {
       home: 'Home',
       about: 'Over mij',

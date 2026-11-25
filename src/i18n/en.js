@@ -4,7 +4,7 @@ const en = {
     languageLabel: 'Language',
     languageSwitch: 'Choose language',
     themeLabel: 'Theme',
-    themeSwitch: 'Switch color theme',
+    themeSwitch: 'Switch between day and night',
     nav: {
       home: 'Home',
       about: 'About',

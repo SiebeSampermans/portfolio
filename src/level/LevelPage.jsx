@@ -61,6 +61,7 @@ function Backdrop({ parallaxRef }) {
   return (
     <div className="backdrop" aria-hidden="true">
       <div className="backdrop-grid"></div>
+      <div className="sky-body"></div>
       <div className="backdrop-shapes scenery" ref={parallaxRef}>
         {scenery.map((item, index) => (
           <span key={index} className={item.kind} style={item.style}></span>

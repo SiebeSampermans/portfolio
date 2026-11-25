@@ -137,8 +137,21 @@ function Hud({ refs, activeSection, onNavigate, spotify, theme }) {
         title={t.themeSwitch}
         onClick={theme.toggle}
       >
-        <span className="hud-theme-dot hud-theme-green"></span>
-        <span className="hud-theme-dot hud-theme-blue"></span>
+        {/* Day is the blue theme (blue logo and CV), night the green one. */}
+        <span className="hud-theme-dot hud-theme-day" aria-hidden="true">
+          <svg viewBox="0 0 16 16" shapeRendering="crispEdges">
+            <rect x="6" y="1" width="4" height="2" />
+            <rect x="6" y="13" width="4" height="2" />
+            <rect x="1" y="6" width="2" height="4" />
+            <rect x="13" y="6" width="2" height="4" />
+            <rect x="4" y="4" width="8" height="8" />
+          </svg>
+        </span>
+        <span className="hud-theme-dot hud-theme-night" aria-hidden="true">
+          <svg viewBox="0 0 16 16" shapeRendering="crispEdges">
+            <path d="M6 2h5v1h-3v1h-1v1h-1v6h1v1h1v1h3v1h-5v-1h-2v-1h-1v-2h-1v-4h1v-2h1v-1h2z" />
+          </svg>
+        </span>
       </button>
     </>
   );
