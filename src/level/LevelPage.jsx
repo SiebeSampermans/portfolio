@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import useSpotifyNowPlaying from '../hooks/useSpotifyNowPlaying';
 import useTheme from '../hooks/useTheme';
 import { useLanguage } from '../i18n/LanguageContext';
+import { isSoundOn, onSoundChange } from './audio';
 import Hud from './Hud';
 import { useLeaderboard } from './leaderboard';
 import { ClearCard } from './Leaderboard';
@@ -98,6 +99,10 @@ function LevelPage() {
   const [activeSection, setActiveSection] = useState(() => sectionFromPath(location.pathname));
   const hasArrivedRef = useRef(false);
   const isPlaying = spotify.status === 'ready' && Boolean(spotify.track?.isPlaying);
+  // The hero dances while standing still when there is music: the site's own tune or Spotify.
+  const [soundOn, setSoundOn] = useState(isSoundOn);
+  useEffect(() => onSoundChange(setSoundOn), []);
+  const isMusic = soundOn || isPlaying;
 
   const handleSectionChange = useCallback((id) => {
     setActiveSection(id);
@@ -141,7 +146,7 @@ function LevelPage() {
 
   return (
     <div
-      className={`level${isVertical ? ' is-vertical' : ' is-horizontal'}${isPlaying ? ' is-beat' : ''}`}
+      className={`level${isVertical ? ' is-vertical' : ' is-horizontal'}${isPlaying ? ' is-beat' : ''}${isMusic ? ' is-music' : ''}${soundOn ? ' is-own-music' : ''}`}
       data-section={activeSection}
     >
       <a className="skip-link" href="#level-world">

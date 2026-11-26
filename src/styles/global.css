@@ -1061,9 +1061,6 @@ html:not(.is-play-mode) .bug {
   animation: squash 0.4s ease-out forwards;
 }
 
-.is-beat .obstacle {
-  animation: beat-y 0.5s ease-out infinite;
-}
 
 /* Checkpoint flag + sign */
 .checkpoint {
@@ -4809,4 +4806,71 @@ body[data-theme='green'] .critter i {
 
 .play-banner-flags.is-complete {
   color: #7dff6b;
+}
+
+/* ---------- Idle hero: breathes and looks around; dances to the music ---------- */
+.runner.is-sprite .pixel-hero {
+  transform-origin: 50% 100%;
+}
+
+.runner.is-sprite[data-pose='idle'] .pixel-hero {
+  animation: hero-idle 4.8s steps(1) infinite;
+}
+
+/* Breathe in and out, and now and then glance back the other way. */
+@keyframes hero-idle {
+  0%, 20%, 40%, 100% {
+    transform: scale(1, 1);
+  }
+  10%, 30%, 50% {
+    transform: scale(1.02, 0.96);
+  }
+  60%, 70% {
+    transform: scale(-1, 1);
+  }
+  65% {
+    transform: scale(-1.02, 0.96);
+  }
+  80% {
+    transform: scale(1, 1);
+  }
+  90% {
+    transform: scale(1.02, 0.96);
+  }
+}
+
+/* With music on, standing still turns into a little pixel dance: one move per beat. */
+.level.is-music {
+  --beat: 0.5s;
+}
+
+.level.is-own-music {
+  --beat: calc(60s / 132);
+}
+
+body[data-theme='green'] .level.is-own-music {
+  --beat: calc(60s / 96);
+}
+
+.level.is-music .runner.is-sprite[data-pose='idle'] .pixel-hero {
+  animation: hero-dance calc(var(--beat) * 8) steps(1) infinite;
+}
+
+@keyframes hero-dance {
+  0% { transform: translateY(0) rotate(-8deg); }
+  12.5% { transform: translateY(-8px) rotate(0deg); }
+  25% { transform: translateY(0) rotate(8deg); }
+  37.5% { transform: translateY(-8px) rotate(0deg); }
+  50% { transform: translateY(0) scale(-1, 1) rotate(-8deg); }
+  62.5% { transform: translateY(-10px) scale(-1, 1); }
+  75% { transform: translateY(0) scale(-1, 1) rotate(8deg); }
+  87.5% { transform: translateY(-3px) scale(1.05, 0.9); }
+  100% { transform: translateY(0) rotate(-8deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .runner.is-sprite[data-pose='idle'] .pixel-hero,
+  .level.is-music .runner.is-sprite[data-pose='idle'] .pixel-hero {
+    animation: none;
+  }
 }
