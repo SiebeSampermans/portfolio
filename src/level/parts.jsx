@@ -77,6 +77,23 @@ const OBSTACLE_COLUMNS = {
     ['pit'],
     ['stem-s', 'mushroom'],
   ],
+  // The playground after the flag: no pits and no bugs, just things to climb and bump.
+  'play-mushrooms': [
+    ['stem-s', 'mushroom'],
+    ['stem-m', 'mushroom', 'gap-s', 'coin'],
+    ['stem-l', 'mushroom', 'gap-s', 'coin'],
+    ['stem-m', 'mushroom'],
+    ['stem-s', 'mushroom'],
+  ],
+  'play-tower': [
+    ['block'],
+    ['block', 'block'],
+    ['block', 'block', 'block', 'gap-s', 'coin'],
+    ['gap', 'gap', 'gap', 'bonus'],
+    ['block', 'block', 'block', 'gap-s', 'coin'],
+    ['block', 'block'],
+    ['block'],
+  ],
   'finish-stairs': [['block'], ['block', 'block'], ['block', 'block', 'block'], ['block', 'block', 'block', 'block']],
 };
 
