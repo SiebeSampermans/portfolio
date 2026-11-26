@@ -67,6 +67,7 @@ const nl = {
     cleared: 'Level gehaald!',
     flagBonus: 'Vlagbonus',
     playAgain: 'Druk op een toets om opnieuw te spelen',
+    missedCheckpoints: (hit, total) => `Je raakte ${hit} van de ${total} checkpoints. Start bij de eerste vlag en ren langs alle vlaggen om op het bord te komen.`,
     backToStart: 'Terug naar start',
     again: 'Opnieuw',
     leaderboard: 'Snelste tijden',

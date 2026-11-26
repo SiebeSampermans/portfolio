@@ -174,6 +174,11 @@ function useLevelEngine({ onSectionChange }) {
       ...part,
       id: index,
     }));
+    // Checkpoint flags: in play mode you have to run past every one of them for your time to count.
+    const checkpoints = Array.from(world.querySelectorAll('.checkpoint')).map((element) => {
+      const pole = element.querySelector('.checkpoint-flag');
+      return { id: element.dataset.section, element, x: relative(pole || element).start };
+    });
     const flagElement = world.querySelector('.flagpole');
     const flag = flagElement ? { element: flagElement, ...relative(flagElement) } : null;
     const coins = Array.from(world.querySelectorAll('.obstacle .coin')).map(measureThing);
@@ -184,7 +189,7 @@ function useLevelEngine({ onSectionChange }) {
       return { ...spawn, element, top: spawn.base + element.offsetHeight, phase: index * 1.7 };
     });
 
-    layoutRef.current = { obstacles, sections, maxScroll, portals, parts, coins, bugs, pits, flag, worldWidth };
+    layoutRef.current = { obstacles, sections, maxScroll, portals, parts, coins, bugs, pits, flag, checkpoints, worldWidth };
     placeGroundDecor(world, worldWidth, pits, parts);
     layoutRef.current.autoPath = buildAutoPath(layoutRef.current);
   }, [isVertical]);
@@ -223,6 +228,15 @@ function useLevelEngine({ onSectionChange }) {
       }
 
       const anchorX = scroll + window.innerWidth * RUNNER_SCREEN_X;
+
+      // Flags go up once the runner is past them. In play mode only the ones you actually ran past this attempt.
+      (layoutRef.current.checkpoints || []).forEach((checkpoint) => {
+        const raised = play ? play.checkpoints?.has(checkpoint.id) : anchorX + RUNNER_SIZE >= checkpoint.x;
+        if (checkpoint.element.classList.contains('is-raised') !== Boolean(raised)) {
+          checkpoint.element.classList.toggle('is-raised', Boolean(raised));
+        }
+      });
+
       const drawTrail = (worldX, height) => {
         const trail = trailRef.current;
         if (!trail) return;
@@ -465,6 +479,12 @@ function useLevelEngine({ onSectionChange }) {
     // Everything taken during an attempt comes back when you start over.
     const resetTaken = (play) => {
       play.taken = newTaken();
+      // Spawning right at a flag (like the start flag) counts as passing it; flags further back don't.
+      play.checkpoints = new Set(
+        (layoutRef.current.checkpoints || [])
+          .filter((checkpoint) => checkpoint.x <= play.x + RUNNER_SIZE && checkpoint.x >= play.x - 80)
+          .map((checkpoint) => checkpoint.id),
+      );
       play.startedAt = performance.now();
       worldRef.current
         ?.querySelectorAll('.is-used, .is-collected, .is-squashed, .is-broken, .is-grabbed')
@@ -539,9 +559,21 @@ function useLevelEngine({ onSectionChange }) {
         const { maxScroll } = layout;
         const dir = play.finished ? 0 : (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
         const jump = play.finished ? false : keys.jump;
+        const prevRight = play.x + RUNNER_SIZE;
         const wasGrounded = play.grounded;
         const fallSpeed = play.vy;
         const events = stepPhysics(play, { dir, jump }, layout, play.taken, dt, time);
+
+        // Checkpoints you run past this attempt (crossing the pole, not just being somewhere after it).
+        (layout.checkpoints || []).forEach((checkpoint) => {
+          if (!play.checkpoints.has(checkpoint.id) && prevRight < checkpoint.x && play.x + RUNNER_SIZE >= checkpoint.x) {
+            play.checkpoints.add(checkpoint.id);
+            if (play.checkpoints.size > 1) {
+              sfx('checkpoint');
+              spawn('fx-score fx-checkpoint', checkpoint.x + 30, 230, `${play.checkpoints.size}/${layout.checkpoints.length}`);
+            }
+          }
+        });
 
         // Sounds and little effects for what just happened.
         if (wasGrounded && !play.grounded && play.vy > 0) sfx('jump');
@@ -576,6 +608,8 @@ function useLevelEngine({ onSectionChange }) {
           worldRef.current?.querySelector('.flagpole')?.classList.add('is-grabbed');
           const finish = {
             ms: Math.round(performance.now() - play.startedAt),
+            checkpoints: play.checkpoints.size,
+            totalCheckpoints: layout.checkpoints?.length || 0,
             flagBonus,
             time: formatTime(performance.now() - play.startedAt),
             score: scoreOf(play.taken, flagBonus),

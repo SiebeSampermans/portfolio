@@ -8,6 +8,7 @@ const KEEP = 50;
 const SHOW = 10;
 const MIN_MS = 45000; // running flat out without stopping still takes about 55 seconds
 const MAX_MS = 60 * 60 * 1000;
+const CHECKPOINTS = 5; // a run only counts when every checkpoint flag was raised
 
 const redisConfig = () => {
   // Vercel names the variables after the prefix chosen when connecting the database (KV_ by default).
@@ -80,7 +81,7 @@ export default async function handler(request, response) {
     const name = cleanName(body.name);
     const ms = Math.round(Number(body.ms));
     const score = Math.max(0, Math.min(Math.round(Number(body.score) || 0), 1000000));
-    if (!name || !Number.isFinite(ms) || ms < MIN_MS || ms > MAX_MS) {
+    if (!name || !Number.isFinite(ms) || ms < MIN_MS || ms > MAX_MS || !(Number(body.checkpoints) >= CHECKPOINTS)) {
       response.status(400).json({ error: 'Invalid entry' });
       return;
     }

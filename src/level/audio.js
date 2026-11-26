@@ -141,6 +141,7 @@ const EFFECTS = {
   bump: (t) => tone(150, t, 0.09, { wave: 'triangle', gain: 0.14 }),
   brick: (t) => noise(t, 0.18, { gain: 0.1, highpass: 400 }),
   power: (t) => [60, 64, 67, 72, 76, 79].forEach((n, i) => tone(midi(n + 12), t + i * 0.05, 0.08, { gain: 0.05 })),
+  checkpoint: (t) => [72, 79, 84].forEach((n, i) => tone(midi(n), t + i * 0.07, i === 2 ? 0.22 : 0.08, { gain: 0.05 })),
   hurt: (t) => tone(500, t, 0.3, { slideTo: 150, gain: 0.06 }),
   die: (t) => [72, 67, 64, 60].forEach((n, i) => tone(midi(n), t + i * 0.12, 0.14, { gain: 0.06 })),
   flag: (t) =>

@@ -93,7 +93,7 @@ export function useLeaderboard() {
     refresh();
   }, [refresh]);
 
-  const submit = useCallback(async ({ name, ms, score }) => {
+  const submit = useCallback(async ({ name, ms, score, checkpoints }) => {
     const id = `local-${Date.now().toString(36)}`;
     const entry = { id, name, ms, score, at: new Date().toISOString() };
     rememberName(name);
@@ -104,7 +104,7 @@ export function useLeaderboard() {
       const data = await fetchJson({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, ms, score }),
+        body: JSON.stringify({ name, ms, score, checkpoints }),
       });
       if (data.configured) {
         setIsShared(true);

@@ -47,7 +47,7 @@ export function ClearCard({ finish, stats, board, text, onAgain, onHome }) {
     const clean = name.trim().slice(0, 12);
     if (!clean || status !== 'idle') return;
     setStatus('saving');
-    const result = await board.submit({ name: clean, ms: finish.ms, score: finish.score });
+    const result = await board.submit({ name: clean, ms: finish.ms, score: finish.score, checkpoints: finish.checkpoints });
     setRank(result.rank);
     setStatus('saved');
   };
@@ -70,7 +70,9 @@ export function ClearCard({ finish, stats, board, text, onAgain, onHome }) {
         <dd className="clear-total">{finish.score}</dd>
       </dl>
 
-      {status === 'saved' ? (
+      {finish.checkpoints < finish.totalCheckpoints ? (
+        <p className="clear-missed">{text.missedCheckpoints(finish.checkpoints, finish.totalCheckpoints)}</p>
+      ) : status === 'saved' ? (
         <p className="clear-saved">{rank ? text.yourRank(rank) : text.saved}</p>
       ) : (
         <form className="clear-form" onSubmit={save}>

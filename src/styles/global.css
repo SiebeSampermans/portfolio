@@ -4773,3 +4773,30 @@ body[data-theme='green'] .critter i {
 .is-vertical .finish .leaderboard {
   display: none;
 }
+
+/* Checkpoint flags are hoisted up the pole once you have run past them. */
+.checkpoint-flag i {
+  transition: top 0.9s var(--ease-out), filter 0.4s ease;
+}
+
+.is-horizontal .checkpoint:not(.is-raised) .checkpoint-flag i {
+  top: calc(100% - 40px);
+  filter: grayscale(0.85) brightness(0.8);
+  animation-play-state: paused;
+}
+
+.fx-checkpoint {
+  color: #7dff6b;
+  font-size: 22px;
+}
+
+.clear-missed {
+  margin: 0;
+  padding: 10px 12px;
+  border: 2px dashed #ff8a8a;
+  border-radius: 10px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.45;
+  color: #ffb3b3;
+}

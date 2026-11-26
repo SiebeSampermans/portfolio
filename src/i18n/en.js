@@ -67,6 +67,7 @@ const en = {
     cleared: 'Level clear!',
     flagBonus: 'Flag bonus',
     playAgain: 'Press any key to play again',
+    missedCheckpoints: (hit, total) => `You hit ${hit} of the ${total} checkpoints. Start at the first flag and run past every flag to get on the board.`,
     backToStart: 'Back to start',
     again: 'Again',
     leaderboard: 'Fastest times',
