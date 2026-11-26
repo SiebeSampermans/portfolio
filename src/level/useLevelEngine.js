@@ -47,7 +47,9 @@ function placeGroundDecor(world, worldWidth, pits, parts) {
 
 export const SECTION_IDS = ['home', 'about', 'projects', 'cv', 'contact'];
 
-const EMPTY_PLAY = { isPlaying: false, attempts: 1, isDead: false, bits: 0, bugs: 0, score: 0, isPowered: false, finish: null };
+const EMPTY_PLAY = {
+  isPlaying: false, attempts: 1, isDead: false, bits: 0, bugs: 0, score: 0, isPowered: false, finish: null, checkpoints: 0,
+};
 const SCORE = { bit: 100, bug: 200, brick: 50, flag: 5000 };
 const formatTime = (ms) => {
   const seconds = Math.floor(ms / 1000);
@@ -486,6 +488,7 @@ function useLevelEngine({ onSectionChange }) {
           .map((checkpoint) => checkpoint.id),
       );
       play.startedAt = performance.now();
+      setPlayState((current) => ({ ...current, checkpoints: play.checkpoints.size }));
       worldRef.current
         ?.querySelectorAll('.is-used, .is-collected, .is-squashed, .is-broken, .is-grabbed')
         .forEach((element) => element.classList.remove('is-used', 'is-collected', 'is-squashed', 'is-broken', 'is-grabbed'));
@@ -568,6 +571,7 @@ function useLevelEngine({ onSectionChange }) {
         (layout.checkpoints || []).forEach((checkpoint) => {
           if (!play.checkpoints.has(checkpoint.id) && prevRight < checkpoint.x && play.x + RUNNER_SIZE >= checkpoint.x) {
             play.checkpoints.add(checkpoint.id);
+            setPlayState((current) => ({ ...current, checkpoints: play.checkpoints.size }));
             if (play.checkpoints.size > 1) {
               sfx('checkpoint');
               spawn('fx-score fx-checkpoint', checkpoint.x + 30, 230, `${play.checkpoints.size}/${layout.checkpoints.length}`);
@@ -673,6 +677,11 @@ function useLevelEngine({ onSectionChange }) {
 
     const onKeyDown = (event) => {
       const action = keyAction(event.key);
+      // Escape leaves play mode (unless a dialog or field wants it).
+      if (event.key === 'Escape' && playRef.current && !document.documentElement.classList.contains('has-modal')) {
+        if (event.target?.tagName !== 'INPUT') exitPlay();
+        return;
+      }
       if (!action || event.ctrlKey || event.metaKey || event.altKey) return;
       if (ignoreTarget(event.target, action)) return;
       event.preventDefault();

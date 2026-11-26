@@ -48,7 +48,7 @@ const en = {
     name: 'Level Siebe',
     start: 'Scroll to start',
     startShort: 'Tap or scroll to start',
-    runHint: 'Keep scrolling to keep running',
+    runHint: 'Scroll down to explore',
     checkpoint: 'Checkpoint',
     progress: 'Level progress',
     skipTo: 'Skip to projects',
@@ -83,7 +83,8 @@ const en = {
     bugs: 'Bugs squashed',
     playing: 'Play mode',
     attempt: 'Attempt',
-    exitPlay: 'Scroll to stop',
+    exitPlay: 'Esc or scroll to stop',
+    checkpointsTitle: 'Checkpoints hit this attempt',
     died: 'Ouch! Back to the start',
     menu: 'Checkpoints',
     sections: {

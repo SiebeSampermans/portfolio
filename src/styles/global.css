@@ -3669,9 +3669,9 @@ img.cv-sheet {
 }
 
 .hill-far {
-  background: #8ee26d;
-  border-color: #4fa83a;
-  opacity: 0.75;
+  background: #4fa64a;
+  border-color: #3f8a3b;
+  opacity: 0.8;
 }
 
 .cloud,
@@ -3963,9 +3963,10 @@ body[data-theme='green'] {
 }
 
 .hill-mist {
-  background: #a6dcc0;
-  border-color: #6fb391;
-  opacity: 0.8;
+  /* Far away, so hazy and close to the sky colour: white text on top stays readable. */
+  background: #3e88b0;
+  border-color: #5a9dc2;
+  opacity: 0.85;
 }
 
 /* Big titles get a dark outline so they stay readable where they cross a white cloud. */
@@ -4799,4 +4800,13 @@ body[data-theme='green'] .critter i {
   font-size: 13px;
   line-height: 1.45;
   color: #ffb3b3;
+}
+
+.play-banner-flags {
+  font-family: var(--font-mono);
+  color: var(--muted);
+}
+
+.play-banner-flags.is-complete {
+  color: #7dff6b;
 }

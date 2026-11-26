@@ -174,6 +174,9 @@ function LevelPage() {
           <span className="play-banner-time" ref={refs.timerRef}>
             0:00
           </span>
+          <span className={`play-banner-flags${playState.checkpoints >= 5 ? ' is-complete' : ''}`} title={t.level.checkpointsTitle}>
+            ⚑ {playState.checkpoints}/5
+          </span>
           {playState.isPowered && <span className="play-banner-power">◆ {t.level.powered}</span>}
           <span className="play-banner-hint">{t.level.exitPlay}</span>
         </div>

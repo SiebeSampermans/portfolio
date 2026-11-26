@@ -48,7 +48,7 @@ const nl = {
     name: 'Level Siebe',
     start: 'Scroll om te starten',
     startShort: 'Tik of scroll om te starten',
-    runHint: 'Blijf scrollen om verder te rennen',
+    runHint: 'Scroll verder om alles te ontdekken',
     checkpoint: 'Checkpoint',
     progress: 'Voortgang van het level',
     skipTo: 'Spring naar projecten',
@@ -83,7 +83,8 @@ const nl = {
     bugs: 'Bugs geplet',
     playing: 'Speelmodus',
     attempt: 'Poging',
-    exitPlay: 'Scroll om te stoppen',
+    exitPlay: 'Esc of scroll om te stoppen',
+    checkpointsTitle: 'Checkpoints geraakt in deze poging',
     died: 'Au! Terug naar de start',
     menu: 'Checkpoints',
     sections: {
