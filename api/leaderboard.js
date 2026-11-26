@@ -10,8 +10,10 @@ const MIN_MS = 45000; // running flat out without stopping still takes about 55 
 const MAX_MS = 60 * 60 * 1000;
 
 const redisConfig = () => {
-  const url = (process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL || '').trim();
-  const token = (process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN || '').trim();
+  // Vercel names the variables after the prefix chosen when connecting the database (KV_ by default).
+  const env = process.env;
+  const url = (env.KV_REST_API_URL || env.UPSTASH_REDIS_REST_URL || env.STORAGE_REST_API_URL || env.STORAGE_KV_REST_API_URL || '').trim();
+  const token = (env.KV_REST_API_TOKEN || env.UPSTASH_REDIS_REST_TOKEN || env.STORAGE_REST_API_TOKEN || env.STORAGE_KV_REST_API_TOKEN || '').trim();
   return url && token ? { url: url.replace(/\/$/, ''), token } : null;
 };
 
