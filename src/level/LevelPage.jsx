@@ -4,6 +4,8 @@ import useSpotifyNowPlaying from '../hooks/useSpotifyNowPlaying';
 import useTheme from '../hooks/useTheme';
 import { useLanguage } from '../i18n/LanguageContext';
 import Hud from './Hud';
+import { useLeaderboard } from './leaderboard';
+import { ClearCard } from './Leaderboard';
 import { colorValue, RunnerBlock, TRAIL_BITS } from './Runner';
 import useLevelEngine, { SECTION_IDS } from './useLevelEngine';
 import AboutZone from './zones/AboutZone';
@@ -92,6 +94,7 @@ function LevelPage() {
   const { t } = useLanguage();
   const theme = useTheme();
   const spotify = useSpotifyNowPlaying();
+  const board = useLeaderboard();
   const [activeSection, setActiveSection] = useState(() => sectionFromPath(location.pathname));
   const hasArrivedRef = useRef(false);
   const isPlaying = spotify.status === 'ready' && Boolean(spotify.track?.isPlaying);
@@ -176,22 +179,17 @@ function LevelPage() {
         </div>
       )}
       {playState.finish && (
-        <div className="clear-card" role="status">
-          <strong>{t.level.cleared}</strong>
-          <dl>
-            <dt>{t.level.bits}</dt>
-            <dd>{playState.bits}</dd>
-            <dt>{t.level.bugs}</dt>
-            <dd>{playState.bugs}</dd>
-            <dt>{t.level.flagBonus}</dt>
-            <dd>{playState.finish.flagBonus}</dd>
-            <dt>{t.level.time}</dt>
-            <dd>{playState.finish.time}</dd>
-            <dt className="clear-total">{t.level.score}</dt>
-            <dd className="clear-total">{playState.finish.score}</dd>
-          </dl>
-          <small>{t.level.playAgain}</small>
-        </div>
+        <ClearCard
+          finish={playState.finish}
+          stats={playState}
+          board={board}
+          text={t.level}
+          onAgain={() => window.dispatchEvent(new Event('level-respawn'))}
+          onHome={() => {
+            window.dispatchEvent(new Event('level-exit-play'));
+            navigate('home');
+          }}
+        />
       )}
       {playState.isDead && (
         <div className="death-flash" aria-live="assertive">
@@ -221,7 +219,7 @@ function LevelPage() {
             <AboutZone spotify={spotify} />
             <ProjectsZone />
             <CvZone isBlue={theme.isBlue} />
-            <ContactZone onReplay={() => navigate('home')} />
+            <ContactZone onReplay={() => navigate('home')} board={board} />
           </main>
         </div>
       </div>

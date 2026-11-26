@@ -458,6 +458,7 @@ function useLevelEngine({ onSectionChange }) {
       const tag = target?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target?.isContentEditable) return true;
       // Space on a focused button or link should still press it.
+      if (target?.closest?.('.clear-card')) return true;
       return action === 'jump' && (tag === 'BUTTON' || tag === 'A') && !playRef.current;
     };
 
@@ -574,6 +575,7 @@ function useLevelEngine({ onSectionChange }) {
           const flagBonus = Math.round((100 + events.finish.height * (SCORE.flag - 100)) / 100) * 100;
           worldRef.current?.querySelector('.flagpole')?.classList.add('is-grabbed');
           const finish = {
+            ms: Math.round(performance.now() - play.startedAt),
             flagBonus,
             time: formatTime(performance.now() - play.startedAt),
             score: scoreOf(play.taken, flagBonus),
@@ -666,6 +668,7 @@ function useLevelEngine({ onSectionChange }) {
     window.addEventListener('touchstart', onWheel, { passive: true });
     window.addEventListener('blur', onBlur);
     window.addEventListener('level-exit-play', exitPlay);
+    window.addEventListener('level-respawn', respawn);
     // `?levelcheck` exposes the measured course so an automated run can prove it is beatable.
     if (window.location.search.includes('levelcheck')) {
       window.__level = { layout: () => layoutRef.current, stepPhysics, newTaken, runner: () => playRef.current };
@@ -678,6 +681,7 @@ function useLevelEngine({ onSectionChange }) {
       window.removeEventListener('touchstart', onWheel);
       window.removeEventListener('blur', onBlur);
       window.removeEventListener('level-exit-play', exitPlay);
+      window.removeEventListener('level-respawn', respawn);
       if (frame) window.cancelAnimationFrame(frame);
       playRef.current = null;
       document.documentElement.classList.remove('is-play-mode');

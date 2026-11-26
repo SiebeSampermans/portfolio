@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import LinkedInQr from '../../components/LinkedInQr';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { LeaderboardList } from '../Leaderboard';
 import { Card, Checkpoint, Seg } from '../parts';
 
 const LINKEDIN_URL = 'https://www.linkedin.com/in/siebe-sampermans-727a75330/';
@@ -73,7 +74,7 @@ const SOCIAL_CARDS = [
   },
 ];
 
-function ContactZone({ onReplay }) {
+function ContactZone({ onReplay, board }) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -375,8 +376,9 @@ function ContactZone({ onReplay }) {
           <h2>{level.complete}</h2>
           <p>{level.completeText}</p>
           <button type="button" className="btn btn-primary" onClick={onReplay}>
-            ↺ {level.replay}
+            ⚑ {level.backToStart}
           </button>
+          {board && <LeaderboardList board={board} text={level} />}
           <small>{translation.home.footer}</small>
         </div>
       </Seg>
