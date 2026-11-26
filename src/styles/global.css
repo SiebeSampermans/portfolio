@@ -4874,3 +4874,31 @@ body[data-theme='green'] .level.is-own-music {
     animation: none;
   }
 }
+
+/* ---------- Playground after the finish ---------- */
+.seg-playground {
+  min-width: max(var(--lane-min, 0px), 46vw);
+}
+
+.seg-world-end {
+  --seg-w: 60vw;
+}
+
+.playground-sign {
+  display: grid;
+  gap: 8px;
+  max-width: 420px;
+  padding: 16px 20px;
+  border: 3px solid var(--wood, #b06a2c);
+  border-radius: 12px;
+  background: rgba(3, 6, 18, 0.82);
+}
+
+.playground-sign p {
+  margin: 0;
+  color: var(--white);
+}
+
+.is-vertical .seg-playground {
+  display: none;
+}

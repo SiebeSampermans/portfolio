@@ -382,6 +382,22 @@ function ContactZone({ onReplay, board }) {
           <small>{translation.home.footer}</small>
         </div>
       </Seg>
+
+      {/* A small playground after the finish, to keep jumping around once the run is done. */}
+      <Seg className="seg-playground" obstacle="play-mushrooms">
+        <div className="playground-sign">
+          <span className="mono-label">{level.playground}</span>
+          <p>{level.playgroundText}</p>
+        </div>
+      </Seg>
+      <Seg className="seg-playground" obstacle="brick-row"></Seg>
+      <Seg className="seg-playground" obstacle="play-tower"></Seg>
+      <Seg className="seg-playground" obstacle="hill-climb"></Seg>
+      <Seg className="seg-playground seg-world-end">
+        <div className="playground-sign">
+          <span className="mono-label">{level.playgroundEnd}</span>
+        </div>
+      </Seg>
     </section>
   );
 }

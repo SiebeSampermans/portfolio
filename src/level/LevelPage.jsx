@@ -186,13 +186,14 @@ function LevelPage() {
           <span className="play-banner-hint">{t.level.exitPlay}</span>
         </div>
       )}
-      {playState.finish && (
+      {playState.finish && playState.cardOpen && (
         <ClearCard
           finish={playState.finish}
           stats={playState}
           board={board}
           text={t.level}
           onAgain={() => window.dispatchEvent(new Event('level-respawn'))}
+          onContinue={() => window.dispatchEvent(new Event('level-card-close'))}
           onHome={() => {
             window.dispatchEvent(new Event('level-exit-play'));
             navigate('home');

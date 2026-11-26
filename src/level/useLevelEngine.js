@@ -48,7 +48,7 @@ function placeGroundDecor(world, worldWidth, pits, parts) {
 export const SECTION_IDS = ['home', 'about', 'projects', 'cv', 'contact'];
 
 const EMPTY_PLAY = {
-  isPlaying: false, attempts: 1, isDead: false, bits: 0, bugs: 0, score: 0, isPowered: false, finish: null, checkpoints: 0,
+  isPlaying: false, attempts: 1, isDead: false, bits: 0, bugs: 0, score: 0, isPowered: false, finish: null, checkpoints: 0, cardOpen: false,
 };
 const SCORE = { bit: 100, bug: 200, brick: 50, flag: 5000 };
 const formatTime = (ms) => {
@@ -453,7 +453,7 @@ function useLevelEngine({ onSectionChange }) {
     const startX = () => window.innerWidth * RUNNER_SCREEN_X;
     const freshRunner = (x) => ({
       x, y: 0, vx: 0, vy: 0, rotation: 0, grounded: true, dead: false,
-      powered: false, hurtUntil: 0, jumpHeld: false, jumpCut: true, finished: false, finishedAt: 0, facing: 1,
+      powered: false, hurtUntil: 0, jumpHeld: false, jumpCut: true, finished: false, finishedAt: 0, cardOpen: false, facing: 1,
     });
     const scoreOf = (taken, flagBonus = 0) =>
       (taken.usedBonus.size + taken.collected.size) * SCORE.bit +
@@ -500,8 +500,17 @@ function useLevelEngine({ onSectionChange }) {
       Object.assign(play, freshRunner(startX()));
       resetTaken(play);
       window.scrollTo({ top: 0, behavior: 'auto' });
-      setPlayState((current) => ({ ...current, isDead: false, bits: 0, bugs: 0, score: 0, isPowered: false, finish: null }));
+      setPlayState((current) => ({ ...current, isDead: false, bits: 0, bugs: 0, score: 0, isPowered: false, finish: null, cardOpen: false }));
       render();
+    };
+
+    // Close the finish card and keep playing where you are (the time stays frozen at the flag).
+    const closeCard = () => {
+      const play = playRef.current;
+      if (!play?.cardOpen) return;
+      play.cardOpen = false;
+      keys.left = keys.right = keys.jump = false;
+      setPlayState((current) => ({ ...current, cardOpen: false }));
     };
 
     const die = () => {
@@ -560,8 +569,9 @@ function useLevelEngine({ onSectionChange }) {
       if (!play.dead) {
         const layout = layoutRef.current;
         const { maxScroll } = layout;
-        const dir = play.finished ? 0 : (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
-        const jump = play.finished ? false : keys.jump;
+        // While the finish card is open you stand still; after closing it you can roam freely.
+        const dir = play.cardOpen ? 0 : (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+        const jump = play.cardOpen ? false : keys.jump;
         const prevRight = play.x + RUNNER_SIZE;
         const wasGrounded = play.grounded;
         const fallSpeed = play.vy;
@@ -608,6 +618,7 @@ function useLevelEngine({ onSectionChange }) {
         if (events.finish) {
           sfx('flag');
           play.finishedAt = time;
+          play.cardOpen = true;
           const flagBonus = Math.round((100 + events.finish.height * (SCORE.flag - 100)) / 100) * 100;
           worldRef.current?.querySelector('.flagpole')?.classList.add('is-grabbed');
           const finish = {
@@ -618,7 +629,7 @@ function useLevelEngine({ onSectionChange }) {
             time: formatTime(performance.now() - play.startedAt),
             score: scoreOf(play.taken, flagBonus),
           };
-          setPlayState((current) => ({ ...current, finish, score: finish.score }));
+          setPlayState((current) => ({ ...current, finish, score: finish.score, cardOpen: true }));
         }
         if (
           events.bonus.length || events.coins.length || events.stomped.length || events.broken.length ||
@@ -679,19 +690,14 @@ function useLevelEngine({ onSectionChange }) {
       const action = keyAction(event.key);
       // Escape leaves play mode (unless a dialog or field wants it).
       if (event.key === 'Escape' && playRef.current && !document.documentElement.classList.contains('has-modal')) {
-        if (event.target?.tagName !== 'INPUT') exitPlay();
+        if (playRef.current.cardOpen) closeCard();
+        else if (event.target?.tagName !== 'INPUT') exitPlay();
         return;
       }
       if (!action || event.ctrlKey || event.metaKey || event.altKey) return;
       if (ignoreTarget(event.target, action)) return;
       event.preventDefault();
       keys[action] = true;
-      const play = playRef.current;
-      // After the flag, any key (after a short pause) starts a new run.
-      if (play?.finished && performance.now() - play.finishedAt > 900) {
-        respawn();
-        return;
-      }
       enterPlay();
     };
 
@@ -712,6 +718,7 @@ function useLevelEngine({ onSectionChange }) {
     window.addEventListener('blur', onBlur);
     window.addEventListener('level-exit-play', exitPlay);
     window.addEventListener('level-respawn', respawn);
+    window.addEventListener('level-card-close', closeCard);
     // `?levelcheck` exposes the measured course so an automated run can prove it is beatable.
     if (window.location.search.includes('levelcheck')) {
       window.__level = { layout: () => layoutRef.current, stepPhysics, newTaken, runner: () => playRef.current };
@@ -725,6 +732,7 @@ function useLevelEngine({ onSectionChange }) {
       window.removeEventListener('blur', onBlur);
       window.removeEventListener('level-exit-play', exitPlay);
       window.removeEventListener('level-respawn', respawn);
+      window.removeEventListener('level-card-close', closeCard);
       if (frame) window.cancelAnimationFrame(frame);
       playRef.current = null;
       document.documentElement.classList.remove('is-play-mode');

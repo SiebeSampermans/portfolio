@@ -28,7 +28,7 @@ export function LeaderboardList({ board, text, compact = false }) {
 }
 
 /** Shown when you grab the flag: your result, a name to put on the board, and where to go next. */
-export function ClearCard({ finish, stats, board, text, onAgain, onHome }) {
+export function ClearCard({ finish, stats, board, text, onAgain, onHome, onContinue }) {
   const [name, setName] = useState(savedName);
   const [status, setStatus] = useState('idle'); // idle | saving | saved
   const [rank, setRank] = useState(null);
@@ -98,7 +98,10 @@ export function ClearCard({ finish, stats, board, text, onAgain, onHome }) {
       <LeaderboardList board={board} text={text} compact />
 
       <div className="clear-actions">
-        <button type="button" className="btn btn-primary" onClick={onAgain}>
+        <button type="button" className={`btn ${status === 'saved' ? 'btn-primary' : 'btn-ghost'}`} onClick={onContinue}>
+          ▶ {text.keepPlaying}
+        </button>
+        <button type="button" className="btn btn-ghost" onClick={onAgain}>
           ↺ {text.again}
         </button>
         <button type="button" className="btn btn-ghost" onClick={onHome}>
