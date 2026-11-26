@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import LinkedInQr from '../components/LinkedInQr';
-import PageFooter from '../components/PageFooter';
-import usePageTitle from '../hooks/usePageTitle';
-import useScrollReveal from '../hooks/useScrollReveal';
-import { useLanguage } from '../i18n/LanguageContext';
+import LinkedInQr from '../../components/LinkedInQr';
+import { useLanguage } from '../../i18n/LanguageContext';
+import { LeaderboardList } from '../Leaderboard';
+import { Card, Checkpoint, Seg } from '../parts';
 
 const LINKEDIN_URL = 'https://www.linkedin.com/in/siebe-sampermans-727a75330/';
 const INSTAGRAM_URL = 'https://www.instagram.com/siebe_sampermans/';
@@ -75,7 +74,7 @@ const SOCIAL_CARDS = [
   },
 ];
 
-function ContactPage() {
+function ContactZone({ onReplay, board }) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -92,9 +91,7 @@ function ContactPage() {
 
   const { t: translation } = useLanguage();
   const t = translation.contact;
-
-  usePageTitle(t.title);
-  useScrollReveal();
+  const level = translation.level;
 
   useEffect(() => () => {
     if (progressTimerRef.current) {
@@ -247,191 +244,146 @@ function ContactPage() {
   };
 
   return (
-    <>
-      <main>
-        <section className="page-intro">
-          <div className="container">
-            <span className="eyebrow scroll-reveal">{t.eyebrow}</span>
-            <h1 className="page-title scroll-reveal">{t.heading}</h1>
-            <p className="page-text scroll-reveal">{t.intro}</p>
-          </div>
-        </section>
+    <section className="zone zone-contact" aria-labelledby="contact-title">
+      <Checkpoint id="contact" index={5} label={level.sections.contact} word={level.checkpoint} />
 
-        <section>
-          <div className="container contact-layout">
-            <div className="contact-card contact-form-card scroll-reveal">
-              <span className="card-label">{t.formLabel}</span>
-              <h2>{t.formTitle}</h2>
-              <p>
-                {t.formText} <code>{CONTACT_RECIPIENT}</code>.
-              </p>
+      <Seg className="seg-heading" obstacle="block">
+        <div className="big-sign">
+          <span className="mono-label">{t.eyebrow}</span>
+          <h2 id="contact-title">{t.heading}</h2>
+          <p>{t.intro}</p>
+        </div>
+      </Seg>
 
-              <form
-                className="contact-form"
-                onSubmit={submitWithEmailJs}
-                aria-busy={sendState.status === 'sending'}
+      <Seg className="seg-form" obstacle="spikes">
+        <Card className="card-form">
+          <span className="mono-label">{t.formLabel}</span>
+          <h3>{t.formTitle}</h3>
+          <p className="form-note">
+            {t.formText} <code>{CONTACT_RECIPIENT}</code>.
+          </p>
+
+          <form className="contact-form" onSubmit={submitWithEmailJs} aria-busy={sendState.status === 'sending'}>
+            <label className="field field-honeypot" aria-hidden="true">
+              <span>{t.honeypot}</span>
+              <input
+                type="text"
+                name="contact_company"
+                value={honeypotValue}
+                onChange={(event) => setHoneypotValue(event.target.value)}
+                tabIndex="-1"
+                autoComplete="new-password"
+              />
+            </label>
+            <div className="field-row">
+              <label className="field">
+                <span>{t.name}</span>
+                <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder={t.namePlaceholder} required />
+              </label>
+              <label className="field">
+                <span>{t.email}</span>
+                <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder={t.emailPlaceholder} required />
+              </label>
+            </div>
+            <label className="field">
+              <span>{t.message}</span>
+              <textarea name="message" value={formData.message} onChange={handleChange} placeholder={t.messagePlaceholder} rows="4" required></textarea>
+            </label>
+
+            {sendState.status !== 'idle' && (
+              <div
+                className={`send-state${sendState.status === 'success' ? ' is-success' : sendState.status === 'error' ? ' is-error' : ''}`}
+                aria-live="polite"
               >
-                <label className="contact-field contact-field-honeypot" aria-hidden="true">
-                  <span>{t.honeypot}</span>
-                  <input
-                    type="text"
-                    name="contact_company"
-                    value={honeypotValue}
-                    onChange={(event) => setHoneypotValue(event.target.value)}
-                    tabIndex="-1"
-                    autoComplete="new-password"
-                  />
-                </label>
-
-                <label className="contact-field">
-                  <span>{t.name}</span>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder={t.namePlaceholder}
-                    required
-                  />
-                </label>
-
-                <label className="contact-field">
-                  <span>{t.email}</span>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder={t.emailPlaceholder}
-                    required
-                  />
-                </label>
-
-                <label className="contact-field">
-                  <span>{t.message}</span>
-                  <textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    placeholder={t.messagePlaceholder}
-                    rows="6"
-                    required
-                  ></textarea>
-                </label>
-
-                {(sendState.status === 'sending' ||
-                  sendState.status === 'success' ||
-                  sendState.status === 'error') && (
-                  <div className="contact-feedback">
-                    <div
-                      className={`contact-progress${
-                        sendState.status === 'success'
-                          ? ' is-success'
-                          : sendState.status === 'error'
-                            ? ' is-error'
-                            : ''
-                      }`}
-                      aria-live="polite"
-                    >
-                      <div className="contact-progress-meta">
-                        <span>{t.sendingEmail}</span>
-                        <span>{Math.round(sendState.progress)}%</span>
-                      </div>
-                      <div className="contact-progress-track">
-                        <div
-                          className="contact-progress-indicator"
-                          style={{ width: `${sendState.progress}%` }}
-                        ></div>
-                      </div>
-                    </div>
-
-                    {sendState.status !== 'sending' && (
-                      <div
-                        className={`contact-alert${
-                          sendState.status === 'success' ? ' is-success' : ' is-error'
-                        }`}
-                        role="alert"
-                      >
-                        <strong>{sendState.status === 'success' ? t.success : t.error}</strong>
-                        <span>{sendState.message}</span>
-                      </div>
-                    )}
-                  </div>
+                <div className="send-meta">
+                  <span>{t.sendingEmail}</span>
+                  <span>{Math.round(sendState.progress)}%</span>
+                </div>
+                <div className="send-track">
+                  <span style={{ width: `${sendState.progress}%` }}></span>
+                </div>
+                {sendState.status !== 'sending' && (
+                  <p role="alert">
+                    <strong>{sendState.status === 'success' ? t.success : t.error}:</strong> {sendState.message}
+                  </p>
                 )}
-
-                <button
-                  className="btn btn-primary"
-                  type="submit"
-                  disabled={sendState.status === 'sending'}
-                >
-                  {sendState.status === 'sending' ? t.sending : t.send}
-                </button>
-              </form>
-            </div>
-
-            <aside className="contact-card linkedin-card scroll-reveal">
-              <span className="card-label">LinkedIn</span>
-              <h2>{t.linkedinTitle}</h2>
-              <p>{t.linkedinText}</p>
-
-              <div className="linkedin-qr-frame">
-                <LinkedInQr value={LINKEDIN_URL} />
               </div>
+            )}
 
-              <a className="btn btn-secondary" href={LINKEDIN_URL} target="_blank" rel="noreferrer">
-                {t.openLinkedin}
-              </a>
-            </aside>
+            <button className="btn btn-primary" type="submit" disabled={sendState.status === 'sending'}>
+              {sendState.status === 'sending' ? t.sending : t.send}
+            </button>
+          </form>
+        </Card>
+      </Seg>
+
+      <Seg className="seg-qr" obstacle="block-spike">
+        <Card className="card-qr">
+          <span className="mono-label">LinkedIn</span>
+          <h3>{t.linkedinTitle}</h3>
+          <div className="qr-frame">
+            <LinkedInQr value={LINKEDIN_URL} />
           </div>
-        </section>
+          <p>{t.linkedinText}</p>
+          <a className="btn btn-ghost" href={LINKEDIN_URL} target="_blank" rel="noreferrer">
+            {t.openLinkedin} ↗
+          </a>
+        </Card>
+      </Seg>
 
-        <section>
-          <div className="container">
-            <div className="section-header scroll-reveal">
-              <span className="eyebrow">{t.socialsEyebrow}</span>
-              <h2>{t.socialsTitle}</h2>
-              <p>{t.socialsText}</p>
-            </div>
-
-            <div className="contact-social-grid">
-              {SOCIAL_CARDS.map((card) => (
+      <Seg className="seg-socials" obstacle="stairs">
+        <div className="socials">
+          <span className="mono-label">{t.socialsEyebrow}</span>
+          <h3>{t.socialsTitle}</h3>
+          <p>{t.socialsText}</p>
+          <ul>
+            {SOCIAL_CARDS.map((card) => (
+              <li key={card.label}>
                 <a
-                  key={card.label}
-                  className="contact-social-card scroll-reveal"
                   href={card.href}
                   target={card.href.startsWith('http') ? '_blank' : undefined}
                   rel={card.href.startsWith('http') ? 'noreferrer' : undefined}
                   aria-label={t.socials[card.label].cta}
                 >
-                  <div className="contact-social-card-inner">
-                    <div className="contact-social-face contact-social-face-front">
-                      <span className="card-label">{card.label}</span>
-                      <span className="contact-social-icon" aria-hidden="true">
-                        <SocialIcon label={card.label} />
-                      </span>
-                      <strong>{card.label}</strong>
-                    </div>
-
-                    <div className="contact-social-face contact-social-face-back">
-                      <span className="card-label">{card.label}</span>
-                      <span className="contact-social-icon" aria-hidden="true">
-                        <SocialIcon label={card.label} />
-                      </span>
-                      <strong>{card.handle}</strong>
-                      <p>{t.socials[card.label].text}</p>
-                      <span className="contact-social-cta">{t.socials[card.label].cta}</span>
-                    </div>
-                  </div>
+                  <span className="social-icon" aria-hidden="true">
+                    <SocialIcon label={card.label} />
+                  </span>
+                  <span className="social-copy">
+                    <strong>{card.label}</strong>
+                    <span>{card.handle}</span>
+                  </span>
+                  <span className="social-arrow" aria-hidden="true">→</span>
                 </a>
-              ))}
-            </div>
-          </div>
-        </section>
-      </main>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Seg>
 
-      <PageFooter text={t.footer} linkTo="/cv" linkLabel={t.footerLink} />
-    </>
+      <Seg
+        className="seg-flag"
+        obstacle="finish-stairs"
+        lane={
+          <span className="flagpole">
+            <i></i>
+          </span>
+        }
+      ></Seg>
+
+      <Seg className="seg-finish">
+        <div className="finish">
+          <span className="mono-label">100%</span>
+          <h2>{level.complete}</h2>
+          <p>{level.completeText}</p>
+          <button type="button" className="btn btn-primary" onClick={onReplay}>
+            ⚑ {level.backToStart}
+          </button>
+          {board && <LeaderboardList board={board} text={level} />}
+          <small>{translation.home.footer}</small>
+        </div>
+      </Seg>
+    </section>
   );
 }
 
-export default ContactPage;
+export default ContactZone;

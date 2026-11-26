@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import QRCodeStyling from 'qr-code-styling';
 
+/** LinkedIn QR code in the theme colour. The QR library is only downloaded when this card is shown. */
 function LinkedInQr({ value }) {
   const qrRef = useRef(null);
-  const qrCodeRef = useRef(null);
   const [theme, setTheme] = useState(() =>
     typeof document !== 'undefined' ? document.body.dataset.theme || 'blue' : 'blue',
   );
@@ -21,66 +20,37 @@ function LinkedInQr({ value }) {
     return () => observer.disconnect();
   }, []);
 
-  const isBlueTheme = theme === 'blue';
-  const accent = isBlueTheme ? '#78a8ff' : '#76ff8b';
-  const accentStrong = isBlueTheme ? '#4f7dff' : '#effff2';
+  const accent = theme === 'blue' ? '#5ef1ff' : '#c6ff3d';
+  const accentStrong = '#ffffff';
 
   useEffect(() => {
-    if (!qrRef.current) {
+    const container = qrRef.current;
+    if (!container) {
       return undefined;
     }
 
-    if (!qrCodeRef.current) {
-      qrCodeRef.current = new QRCodeStyling({
-        width: 180,
-        height: 180,
+    let cancelled = false;
+    import('qr-code-styling').then(({ default: QRCodeStyling }) => {
+      if (cancelled) return;
+      const qrCode = new QRCodeStyling({
+        width: 168,
+        height: 168,
         data: value,
         type: 'svg',
         margin: 0,
-        qrOptions: {
-          errorCorrectionLevel: 'Q',
-        },
-        dotsOptions: {
-          color: accent,
-          type: 'rounded',
-        },
-        cornersSquareOptions: {
-          color: accentStrong,
-          type: 'extra-rounded',
-        },
-        cornersDotOptions: {
-          color: accent,
-          type: 'dot',
-        },
-        backgroundOptions: {
-          color: 'transparent',
-        },
+        qrOptions: { errorCorrectionLevel: 'Q' },
+        dotsOptions: { color: accent, type: 'rounded' },
+        cornersSquareOptions: { color: accentStrong, type: 'extra-rounded' },
+        cornersDotOptions: { color: accent, type: 'dot' },
+        backgroundOptions: { color: 'transparent' },
       });
-
-      qrCodeRef.current.append(qrRef.current);
-    } else {
-      qrCodeRef.current.update({
-        data: value,
-        dotsOptions: {
-          color: accent,
-          type: 'rounded',
-        },
-        cornersSquareOptions: {
-          color: accentStrong,
-          type: 'extra-rounded',
-        },
-        cornersDotOptions: {
-          color: accent,
-          type: 'dot',
-        },
-      });
-    }
+      container.innerHTML = '';
+      qrCode.append(container);
+    });
 
     return () => {
-      if (qrRef.current) {
-        qrRef.current.innerHTML = '';
-      }
-      qrCodeRef.current = null;
+      cancelled = true;
+      container.innerHTML = '';
     };
   }, [accent, accentStrong, value]);
 
